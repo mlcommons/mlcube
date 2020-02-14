@@ -1,0 +1,9 @@
+- name: preprocess
+  io:
+  - data
+  - parameters
+  - workspace
+  - log
+platforms:
+  - docker-amd64
+
