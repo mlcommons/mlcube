@@ -1,0 +1,40 @@
+type: mlbox
+name: transformer
+version: 0.1
+io:
+- name: data
+  path: io/data
+- name: parameters
+  path: io/parameters
+- name: workspace
+  path: io/workspace
+- name: log
+  path: io/log
+tasks:
+- name: download-data
+  io:
+  - data
+  platforms:
+  - docker-amd64
+- name: preprocess
+  io:
+  - data
+  - parameters
+  - workspace
+  - log
+  platforms:
+  - docker-amd64
+- name: train
+  io:
+  - parameters
+  - workspace
+  - log
+  platforms:
+  - docker-amd64
+- name: postprocess
+  io:
+  - parameters
+  - workspace
+  - log
+  platforms:
+  - docker-amd64
