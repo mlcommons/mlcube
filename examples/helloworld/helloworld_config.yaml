@@ -1,9 +1,0 @@
-mlbox: PATH_TO_MLBOX_REPO/examples/helloworld/helloworld_mlbox.yaml
-io:
-  data:
-    path: FULL_PATH_TO_MLBOX_REPO/examples/helloworld/input
-  output:
-    path: FULL_PATH_TO_MLBOX_REPO/examples/helloworld/output
-  log:
-    path: FULL_PATH_TO_MLBOX_REPO/examples/helloworld/log
-platform: {}
