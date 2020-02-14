@@ -1,0 +1,14 @@
+# Specify number of GPUs and things here.
+
+platform_type:
+        single_host
+
+single_host:
+        gpu:
+                number: 0
+                type: null
+        # This is future support for TPUs
+        # tpu:
+        #        name: train_tpu
+        #        type: 'v3-8'
+
