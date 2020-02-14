@@ -1,6 +1,6 @@
 # MLBox
 
-This is the MLBox Prototype. This is  still under construction, some parts probably dont work yet.
+This is the MLBox Prototype. This is  still under construction, some parts probably don't work yet.
 
 ## Installation
 
@@ -24,11 +24,11 @@ pip uninstall mlbox
 TO run an example, such as our toy "fake model", 
 
 ```# To use the default values
-python mlbox local_run examples/fake_model:train/small_batch
+mlbox local_run examples/fake_model:train/small_batch
 ```
 
 ```# To override and specify different files, 
-python mlbox local_run examples/fake_model:train/small_batch --log_file=/tmp/my_log_file
+mlbox local_run examples/fake_model:train/small_batch --log_file=/tmp/my_log_file
 ```
 
 ## Examples
