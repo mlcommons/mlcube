@@ -1,0 +1,11 @@
+type: mlbox-runtime-config
+version: 0.1
+io:
+- name: data
+  path: data/
+- name: parameters
+  path: parameters/
+outputs:
+- name: log
+  path: log/
+task: train
