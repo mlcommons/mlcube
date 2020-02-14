@@ -1,0 +1,6 @@
+
+output:
+  - data
+platforms:
+- docker-amd64
+

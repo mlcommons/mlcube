@@ -1,0 +1,8 @@
+
+io:
+  - parameters
+  - workspace
+  - log
+  platforms:
+  - docker-amd64
+

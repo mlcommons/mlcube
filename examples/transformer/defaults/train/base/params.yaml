@@ -1,13 +1,13 @@
-batch_size: 4096  # Maximum number of tokens per batch of examples.
+batch_size: 2048  # Maximum number of tokens per batch of examples.
 max_length: 256  # Maximum number of tokens per example.
 
 # Model params
 initializer_gain: 1.0  # Used in trainable variable initialization.
 vocab_size: 33708  # Number of tokens defined in the vocabulary file.
-hidden_size: 1024  # Model dimension in the hidden layers.
+hidden_size: 512  # Model dimension in the hidden layers.
 num_hidden_layers: 6  # Number of layers in the encoder and decoder stacks.
-num_heads: 16  # Number of heads to use in multi-headed attention.
-filter_size: 4096  # Inner layer dimensionality in the feedforward network.
+num_heads: 8  # Number of heads to use in multi-headed attention.
+filter_size: 2048  # Inner layer dimensionality in the feedforward network.
 
 # Dropout values (only used when training)
 layer_postprocess_dropout: 0.1
@@ -29,3 +29,4 @@ optimizer_adam_epsilon: 1e-09
 extra_decode_length: 50
 beam_size: 4
 alpha: 0.6  # used to calculate length normalization in beam search
+
