@@ -1,0 +1,3 @@
+batch_size: 1
+step_size: 0.7
+dataset_direct: $inputs.dataset

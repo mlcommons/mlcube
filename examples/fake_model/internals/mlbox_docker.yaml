@@ -1,0 +1,9 @@
+container:
+  image: mlcommons/mlbox-helloworld:latest
+  command: ["python", "main_box.py"]
+
+# Configure how arguments are passed to the main file
+commandline_config:
+        # True means pass each input and output as --mlbox_$NAME=path
+        pass_mlbox_args: True
+
