@@ -24,11 +24,12 @@ pip uninstall mlbox
 TO run an example, such as our toy "fake model", 
 
 ```# To use the default values
-python mlbox local_run examples/fake_model:train/small_batch
+cd mlbox
+python mlbox_run.py ../examples/fake_model:train/small_batch
 ```
 
 ```# To override and specify different files, 
-python mlbox local_run examples/fake_model:train/small_batch --log_file=/tmp/my_log_file
+--log_file=/tmp/my_log_file
 ```
 
 ## Examples
