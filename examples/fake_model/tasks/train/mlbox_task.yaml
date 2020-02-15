@@ -1,3 +1,4 @@
+task_name: train
 
 inputs:
         params:
