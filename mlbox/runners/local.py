@@ -41,4 +41,10 @@ class LocalRunner(MLBoxRunner):
       if output:
         sys.stdout.write(output)
         sys.stdout.flush()
+    if process.stdout:
+      process.stdout.close()
+    if process.stdin:
+      process.stdin.close()
+    if process.stderr:
+      process.stderr.close()
     return process.poll()

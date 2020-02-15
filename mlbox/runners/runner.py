@@ -43,7 +43,7 @@ class MLBoxRunner(object):
 
     if ContainerManager is None:
       raise RuntimeError("The 'docker' package is missing.")
-    cfg["container"]["command"] = ' '.join(cmd)
+    cfg["container"]["command"] = cmd
     container_manager = ContainerManager(cfg["container"], cfg["volumes"])
-    container_manager.run()
+    container_manager.run(detach=False)
     return True

@@ -27,7 +27,7 @@ class ContainerManager(object):
         volume_config[path] = {"bind": mount_path, "mode": mode}
     return volume_config
 
-  def run(self):
+  def run(self, detach=True):
     """Run a container in detach mode.
     The container info will be saved in the ContainerManager object.
     """
@@ -38,7 +38,7 @@ class ContainerManager(object):
           image=image,
           command=command,
           volumes=self.volume_config,
-          detach=True)
+          detach=detach)
       print("Started container: {}".format(self.container.short_id))
     except:
       raise
