@@ -23,7 +23,7 @@ pip uninstall mlbox
 
 TO run an example, such as our toy "fake model", 
 
-```# To use the default values
+```# NOTICE: This is not yet fully implemented. This will print a docker command simliar to what will be run.
 cd mlbox
 python mlbox_run.py ../examples/fake_model:train/small_batch
 ```
