@@ -1,7 +1,0 @@
-export MLBOX_HOME=/mlbox_home
-export MLBOX_LOCAL=${MLBOX_HOME}/local
-export MLBOX_IO=${MLBOX_HOME}/io
-export MLBOX_DATA=${MLBOX_IO}/data
-export MLBOX_WORKSPACE=${MLBOX_IO}/workspace
-export MLBOX_PARAMETERS=${MLBOX_IO}/parameters
-export MLBOX_LOG=${MLBOX_IO}/log
