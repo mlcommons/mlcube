@@ -1,0 +1,30 @@
+# MLBox definition file (section 6.1).
+
+type: mlbox
+name: ngc_resnet_50
+version: 0.1
+author: MLPerf Best Practices WG members
+implementation: mlbox_docker
+task_info:
+  train:
+    inputs:
+    outputs:
+
+# Parameters used by mlbox_docker (section 7.1). This section is only relevant if implementation is 'mlbox_docker'.
+mlbox_docker_info:
+  # Name of a docker image
+  image: nvcr.io/nvidia/tensorflow:18.07-py3
+  # Docker executable (docker / nvidia-docker). Instead of nvidia-docker, 'docker ... --runtime=nvidia ...' can be used.
+  docker: nvidia-docker
+  # Action for the configure phase - build, pull or load. For pull action, we may need credentials, docker hub info etc.
+  configure: pull
+  # If build action is provided for configure phase, user build args such as proxy servers. The tester module will
+  # append http_proxy and https_proxy variables if they are found in the environment (this also applies for run_args).
+  build_args: {}
+  # Docker run args (not including volume arguments, image name and command to be ran inside container).
+  # Examples are: ['--rm', '-i', '--security-opt seccomp=unconfined', '--pid=host', '--ipc=host', '--shm-size=1g',
+  #                '--ulimit memlock=-1', '--ulimit stack=67108864'] and many others.
+  run_args: ['--rm', '-i', '--shm-size=1g', '--ulimit', 'memlock=-1', '--ulimit', 'stack=67108864']
+  # Just for testing purposes, command to run inside a container
+  # run_cmd: ['/bin/bash', '-c', 'cd /workspace/nvidia-examples/cnn && mpiexec --allow-run-as-root --bind-to socket -np 1 python resnet.py --precision=fp32 --log_dir=/tmp/nvtfcnn --batch_size=2 --num_iter=10 --iter_unit=batch --layers=50']
+  run_cmd: ['/bin/bash', '-c', 'cd /workspace/nvidia-examples/cnn && mpiexec --allow-run-as-root --bind-to socket -np 1 python resnet.py --precision=fp32 --log_dir=/tmp/nvtfcnn --batch_size=2 --num_iter=10 --iter_unit=batch --layers=50']

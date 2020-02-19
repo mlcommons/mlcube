@@ -1,0 +1,12 @@
+# An example configuration file to test various runtimes and explore different ideas.
+
+configure:
+  # docker build --build-arg http_proxy=$http.proxy --build-arg https_proxy=$https.proxy t mlperf/mlbox-example-mnist .
+  action: docker-build
+  build-args:
+    http_proxy: http://web-proxy-pa.labs.hpecorp.net:8088
+    https_proxy: https://web-proxy-pa.labs.hpecorp.net:8088
+  image: mlperf/mlbox-example-mnist
+
+execute:
+  action: run
