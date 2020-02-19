@@ -26,5 +26,4 @@ mlbox_docker_info:
   #                '--ulimit memlock=-1', '--ulimit stack=67108864'] and many others.
   run_args: ['--rm', '-i', '--shm-size=1g', '--ulimit', 'memlock=-1', '--ulimit', 'stack=67108864']
   # Just for testing purposes, command to run inside a container
-  # run_cmd: ['/bin/bash', '-c', 'cd /workspace/nvidia-examples/cnn && mpiexec --allow-run-as-root --bind-to socket -np 1 python resnet.py --precision=fp32 --log_dir=/tmp/nvtfcnn --batch_size=2 --num_iter=10 --iter_unit=batch --layers=50']
   run_cmd: ['/bin/bash', '-c', 'cd /workspace/nvidia-examples/cnn && mpiexec --allow-run-as-root --bind-to socket -np 1 python resnet.py --precision=fp32 --log_dir=/tmp/nvtfcnn --batch_size=2 --num_iter=10 --iter_unit=batch --layers=50']
