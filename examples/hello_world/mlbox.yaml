@@ -1,0 +1,23 @@
+name: hello_world
+
+
+tasks:
+        hello:
+                inputs:
+                        name:
+                                desc: The naem to say hello to.
+                outputs:
+                        greeting:
+                                desc: A friendly greeting.
+
+        goodbye:
+                inputs:
+                        name:
+                                desc: The name to say goodbye to.
+                        greeting:
+                                desc: The greeting you received.
+                outputs:
+                        farewell:
+                                desc: a farewell.
+
+
