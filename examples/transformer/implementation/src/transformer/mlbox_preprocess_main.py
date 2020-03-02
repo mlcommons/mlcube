@@ -387,18 +387,19 @@ if __name__ == "__main__":
   #          "closest to the target size (%d)." % constants.TARGET_VOCAB_SIZE)
 
   FLAGS, unparsed = parser.parse_known_args()
+  FLAGS.search = True
 
   # Load parameter file and combile flags with those set in command line.
   # The flags set in command line take higher priority.
-  if FLAGS.parameter_file is not None:
-    try:
-      with open(FLAGS.parameter_file, "r") as f:
-        parameters = yaml.load(f) or {}
-      for key, val in parameters.items():
-        if getattr(FLAGS, key, None) is None:
-          setattr(FLAGS, key, val)
-    except Exception:
-      print("Failed to load parameter file.")
-      raise
+  # if FLAGS.parameter_file is not None:
+  #   try:
+  #     with open(FLAGS.parameter_file, "r") as f:
+  #       parameters = yaml.load(f) or {}
+  #     for key, val in parameters.items():
+  #       if getattr(FLAGS, key, None) is None:
+  #         setattr(FLAGS, key, val)
+  #   except Exception:
+  #     print("Failed to load parameter file.")
+  #     raise
 
   main(sys.argv)
