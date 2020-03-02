@@ -1,4 +1,5 @@
 import  os
+import sys
 import argparse
 
 
@@ -55,12 +56,12 @@ def main():
         raise Exception('needs --mlbox_task')
 
     if FLAGS.mlbox_task  == 'downloaddata':
-        return run('python mlbox_download_main.py --raw_dir={raw_dir}', raw_dir=FLAGS.raw_dir)
+        return run('python3 -m mlbox_download_main --raw_dir={raw_dir}', raw_dir=FLAGS.raw_dir)
     if FLAGS.mlbox_task  == 'preprocess':
-        return run('python mlbox_preprocess_main.py --raw_dir={raw_dir} --data_dir={data_dir}',
+        return run('python3 -m mlbox_preprocess_main --raw_dir={raw_dir} --data_dir={data_dir}',
                 raw_dir=FLAGS.raw_dir, data_dir=FLAGS.data_dir)
     if FLAGS.mlbox_task  == 'train':
-        return run('python mlbox_train_main.py --data_dir={data_dir}'
+        return run('python3 -m mlbox_train_main --data_dir={data_dir}'
             '--parameter_file={parameter_file} --vocab_file={vocab_file}'
             '--model_dir={model_dir} --bleu_dir={bleu_dir} --mlperf_log_dir={mlperf_log_dir}',
             data_dir=FLAGS.data_dir, parameter_file=FLAGS.parameter_file,
