@@ -355,163 +355,161 @@ def main(_):
 
 
 if __name__ == "__main__":
-  parser = argparse.ArgumentParser()
+  mlbox_parser = argparse.ArgumentParser()
 
-  parser.add_argument(
-      "--parameter_file", "-pf", type=str, default=None,
+  mlbox_parser.add_argument(
+      "--parameter_file", type=str, default=None,
       help="Parameter file to use. The parameter file should be a yaml file "
-           "that serves as an alternative of command line arguments. If a "
-           "parameter is set in both parameter file and command line, the "
-           "value set in command line will be used.",
+           "that serves as command line arguments.",
       metavar="<PF>")
 
-  parser.add_argument(
-      "--data_dir", "-dd", type=str, default="/tmp/translate_ende",
+  mlbox_parser.add_argument(
+      "--data_dir", type=str, default="/tmp/translate_ende",
       help="[default: %(default)s] Directory containing training and "
            "evaluation data, and vocab file used for encoding.",
       metavar="<DD>")
-  parser.add_argument(
-      "--vocab_file", "-vf", type=str, default=mlbox_const.VOCAB_FILE,
+  mlbox_parser.add_argument(
+      "--vocab_file", type=str, default=mlbox_const.VOCAB_FILE,
       help="[default: %(default)s] Name of vocabulary file.",
       metavar="<VF>")
-  parser.add_argument(
-      "--model_dir", "-md", type=str, default="/tmp/transformer_model",
+  mlbox_parser.add_argument(
+      "--model_dir", type=str, default="/tmp/transformer_model",
       help="[default: %(default)s] Directory to save Transformer model "
            "training checkpoints",
       metavar="<MD>")
-  parser.add_argument(
-      "--bleu_dir", "-bd", type=str, default="/tmp/bleu",
+  mlbox_parser.add_argument(
+      "--bleu_dir", type=str, default="/tmp/bleu",
       help="[default: %(default)s] Directory to save BLEU scores."
   )
-  parser.add_argument(
-      "--mlperf_log_dir", "-ld", type=str, default="/tmp/mlperf_log",
+  mlbox_parser.add_argument(
+      "--mlperf_log_dir", type=str, default="/tmp/mlperf_log",
       help="[default: %(default)s] Directory for mlperf log files.", metavar="<LD>"
   )
 
-  parser.add_argument(
-      "--num_cpu_cores", "-nc", type=int, default=4,
-      help="[default: %(default)d] Number of CPU cores to use in the input "
-           "pipeline.",
-      metavar="<NC>")
+  # parser.add_argument(
+  #     "--num_cpu_cores", "-nc", type=int, default=4,
+  #     help="[default: %(default)d] Number of CPU cores to use in the input "
+  #          "pipeline.",
+  #     metavar="<NC>")
 
-  # Flags for training with epochs. (default)
-  parser.add_argument(
-      "--train_epochs", "-te", type=int, default=None,
-      help="The number of epochs used to train. If both --train_epochs and "
-           "--train_steps are not set, the model will train for %d epochs." %
-      mlbox_const.DEFAULT_TRAIN_EPOCHS,
-      metavar="<TE>")
-  parser.add_argument(
-      "--epochs_between_eval", "-ebe", type=int, default=1,
-      help="[default: %(default)s] The number of training epochs to run "
-           "between evaluations.",
-      metavar="<EBE>")
+  # # Flags for training with epochs. (default)
+  # parser.add_argument(
+  #     "--train_epochs", "-te", type=int, default=None,
+  #     help="The number of epochs used to train. If both --train_epochs and "
+  #          "--train_steps are not set, the model will train for %d epochs." %
+  #     mlbox_const.DEFAULT_TRAIN_EPOCHS,
+  #     metavar="<TE>")
+  # parser.add_argument(
+  #     "--epochs_between_eval", "-ebe", type=int, default=1,
+  #     help="[default: %(default)s] The number of training epochs to run "
+  #          "between evaluations.",
+  #     metavar="<EBE>")
 
-  # Flags for training with steps (may be used for debugging)
-  parser.add_argument(
-      "--train_steps", "-ts", type=int, default=None,
-      help="Total number of training steps. If both --train_epochs and "
-           "--train_steps are not set, the model will train for %d epochs." %
-      mlbox_const.DEFAULT_TRAIN_EPOCHS,
-      metavar="<TS>")
-  parser.add_argument(
-      "--steps_between_eval", "-sbe", type=int, default=1000,
-      help="[default: %(default)s] Number of training steps to run between "
-           "evaluations.",
-      metavar="<SBE>")
+  # # Flags for training with steps (may be used for debugging)
+  # parser.add_argument(
+  #     "--train_steps", "-ts", type=int, default=None,
+  #     help="Total number of training steps. If both --train_epochs and "
+  #          "--train_steps are not set, the model will train for %d epochs." %
+  #     mlbox_const.DEFAULT_TRAIN_EPOCHS,
+  #     metavar="<TS>")
+  # parser.add_argument(
+  #     "--steps_between_eval", "-sbe", type=int, default=1000,
+  #     help="[default: %(default)s] Number of training steps to run between "
+  #          "evaluations.",
+  #     metavar="<SBE>")
 
-  # BLEU score computation
-  parser.add_argument(
-      "--bleu_source", "-bs", type=str, default=None,
-      help="Path to source file containing text translate when calculating the "
-           "official BLEU score. Both --bleu_source and --bleu_ref must be "
-           "set. The BLEU score will be calculated during model evaluation.",
-      metavar="<BS>")
-  parser.add_argument(
-      "--bleu_ref", "-br", type=str, default=None,
-      help="Path to file containing the reference translation for calculating "
-           "the official BLEU score. Both --bleu_source and --bleu_ref must be "
-           "set. The BLEU score will be calculated during model evaluation.",
-      metavar="<BR>")
-  parser.add_argument(
-      "--bleu_threshold", "-bt", type=float, default=None,
-      help="Stop training when the uncased BLEU score reaches this value. "
-           "Setting this overrides the total number of steps or epochs set by "
-           "--train_steps or --train_epochs.",
-      metavar="<BT>")
+  # # BLEU score computation
+  # parser.add_argument(
+  #     "--bleu_source", "-bs", type=str, default=None,
+  #     help="Path to source file containing text translate when calculating the "
+  #          "official BLEU score. Both --bleu_source and --bleu_ref must be "
+  #          "set. The BLEU score will be calculated during model evaluation.",
+  #     metavar="<BS>")
+  # parser.add_argument(
+  #     "--bleu_ref", "-br", type=str, default=None,
+  #     help="Path to file containing the reference translation for calculating "
+  #          "the official BLEU score. Both --bleu_source and --bleu_ref must be "
+  #          "set. The BLEU score will be calculated during model evaluation.",
+  #     metavar="<BR>")
+  # parser.add_argument(
+  #     "--bleu_threshold", "-bt", type=float, default=None,
+  #     help="Stop training when the uncased BLEU score reaches this value. "
+  #          "Setting this overrides the total number of steps or epochs set by "
+  #          "--train_steps or --train_epochs.",
+  #     metavar="<BT>")
 
-  parser.add_argument(
-      "--random_seed", "-rs", type=int, default=None,
-      help="the random seed to use", metavar="<SEED>")
+  # parser.add_argument(
+  #     "--random_seed", "-rs", type=int, default=None,
+  #     help="the random seed to use", metavar="<SEED>")
 
-  # model parameters
-  parser.add_argument(
-      "--batch_size", type=int, default=2048,
-      help="Maximum number of tokens per batch of examples.", metavar="<BS>")
-  parser.add_argument(
-      "--max_length", type=int, default=256,
-      help="Maximum number of tokens per example.", metavar="<ML>")
-  parser.add_argument(
-      "--initializer_gain", type=float, default=1.0,
-      help="Gain value in trainable variable initialization.", metavar="<IG>")
-  parser.add_argument(
-      "--vocab_size", type=int, default=33708,
-      help="Number of tokens defined in the vocabulary file.", metavar="<VS>")
-  parser.add_argument(
-      "--hidden_size", type=int, default=512,
-      help="Model dimension in the hidden layers.", metavar="<HS>")
-  parser.add_argument(
-      "--num_hidden_layers", type=int, default=6,
-      help="Number of layers in the encoder and decoder stacks.", metavar="<NHL>")
-  parser.add_argument(
-      "--num_heads", type=int, default=8,
-      help="Number of heads to use in multi-headed attention.", metavar="<NH>")
-  parser.add_argument(
-      "--filter_size", type=int, default=2048,
-      help="Inner layer dimensionality in the feedforward network.", metavar="<FS>")
-  parser.add_argument(
-      "--layer_postprocess_dropout", type=float, default=0.1,
-      help="Layer postprocess dropout.", metavar="<LPD>")
-  parser.add_argument(
-      "--attention_dropout", type=float, default=0.1,
-      help="Attention dropout.", metavar="<AD>")
-  parser.add_argument(
-      "--relu_dropout", type=float, default=0.1,
-      help="Relu droupout.", metavar="<RD>")
-  parser.add_argument(
-      "--label_smoothing", type=float, default=0.1,
-      help="Label smoothing.", metavar="<LS>")
-  parser.add_argument(
-      "--learning_rate", type=float, default=2.0,
-      help="Learning rate.", metavar="<LR>")
-  parser.add_argument(
-      "--learning_rate_decay_rate", type=float, default=1.0,
-      help="Learning rate decay rate", metavar="<LRD>")
-  parser.add_argument(
-      "--learning_rate_warmup_steps", type=int, default=16000,
-      help="Learning rate warmup steps", metavar="<LRW>")
-  parser.add_argument(
-      "--optimizer_adam_beta1", type=float, default=0.9,
-      help="Adam optimizer parameter beta1", metavar="<OAB1>")
-  parser.add_argument(
-      "--optimizer_adam_beta2", type=float, default=0.997,
-      help="Adam optimizer parameter beta2", metavar="<OAB2>")
-  parser.add_argument(
-      "--optimizer_adam_epsilon", type=float, default=1e-09,
-      help="Adam optimizer parameter epsilon", metavar="<OAE>")
-  parser.add_argument(
-      "--extra_decode_length", type=int, default=50,
-      help="Prediction parameter: extra decode length", metavar="<EDL>")
-  parser.add_argument(
-      "--beam_size", type=int, default=4,
-      help="Prediction parameter: beam size", metavar="<BS>")
-  parser.add_argument(
-      "--alpha", type=float, default=0.6,
-      help="Prediction parameter: alpha, for calculating length " +
-           "normalization in beam search",
-      metavar="<ALPHA>")
+  # # model parameters
+  # parser.add_argument(
+  #     "--batch_size", type=int, default=2048,
+  #     help="Maximum number of tokens per batch of examples.", metavar="<BS>")
+  # parser.add_argument(
+  #     "--max_length", type=int, default=256,
+  #     help="Maximum number of tokens per example.", metavar="<ML>")
+  # parser.add_argument(
+  #     "--initializer_gain", type=float, default=1.0,
+  #     help="Gain value in trainable variable initialization.", metavar="<IG>")
+  # parser.add_argument(
+  #     "--vocab_size", type=int, default=33708,
+  #     help="Number of tokens defined in the vocabulary file.", metavar="<VS>")
+  # parser.add_argument(
+  #     "--hidden_size", type=int, default=512,
+  #     help="Model dimension in the hidden layers.", metavar="<HS>")
+  # parser.add_argument(
+  #     "--num_hidden_layers", type=int, default=6,
+  #     help="Number of layers in the encoder and decoder stacks.", metavar="<NHL>")
+  # parser.add_argument(
+  #     "--num_heads", type=int, default=8,
+  #     help="Number of heads to use in multi-headed attention.", metavar="<NH>")
+  # parser.add_argument(
+  #     "--filter_size", type=int, default=2048,
+  #     help="Inner layer dimensionality in the feedforward network.", metavar="<FS>")
+  # parser.add_argument(
+  #     "--layer_postprocess_dropout", type=float, default=0.1,
+  #     help="Layer postprocess dropout.", metavar="<LPD>")
+  # parser.add_argument(
+  #     "--attention_dropout", type=float, default=0.1,
+  #     help="Attention dropout.", metavar="<AD>")
+  # parser.add_argument(
+  #     "--relu_dropout", type=float, default=0.1,
+  #     help="Relu droupout.", metavar="<RD>")
+  # parser.add_argument(
+  #     "--label_smoothing", type=float, default=0.1,
+  #     help="Label smoothing.", metavar="<LS>")
+  # parser.add_argument(
+  #     "--learning_rate", type=float, default=2.0,
+  #     help="Learning rate.", metavar="<LR>")
+  # parser.add_argument(
+  #     "--learning_rate_decay_rate", type=float, default=1.0,
+  #     help="Learning rate decay rate", metavar="<LRD>")
+  # parser.add_argument(
+  #     "--learning_rate_warmup_steps", type=int, default=16000,
+  #     help="Learning rate warmup steps", metavar="<LRW>")
+  # parser.add_argument(
+  #     "--optimizer_adam_beta1", type=float, default=0.9,
+  #     help="Adam optimizer parameter beta1", metavar="<OAB1>")
+  # parser.add_argument(
+  #     "--optimizer_adam_beta2", type=float, default=0.997,
+  #     help="Adam optimizer parameter beta2", metavar="<OAB2>")
+  # parser.add_argument(
+  #     "--optimizer_adam_epsilon", type=float, default=1e-09,
+  #     help="Adam optimizer parameter epsilon", metavar="<OAE>")
+  # parser.add_argument(
+  #     "--extra_decode_length", type=int, default=50,
+  #     help="Prediction parameter: extra decode length", metavar="<EDL>")
+  # parser.add_argument(
+  #     "--beam_size", type=int, default=4,
+  #     help="Prediction parameter: beam size", metavar="<BS>")
+  # parser.add_argument(
+  #     "--alpha", type=float, default=0.6,
+  #     help="Prediction parameter: alpha, for calculating length " +
+  #          "normalization in beam search",
+  #     metavar="<ALPHA>")
 
-  FLAGS, unparsed = parser.parse_known_args()
+  FLAGS, unparsed = mlbox_parser.parse_known_args()
 
   # Load parameter file and combile flags with those set in command line.
   # The flags set in command line take higher priority.

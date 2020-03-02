@@ -169,13 +169,13 @@ def main(unused_argv):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
-  parser.add_argument(
-      "--parameter_file", "-pf", type=str, default=None,
-      help="Parameter file to use. The parameter file should be a yaml file "
-           "that serves as an alternative of command line arguments. If a "
-           "parameter is set in both parameter file and command line, the "
-           "value set in command line will be used.",
-      metavar="<PF>")
+  # parser.add_argument(
+  #     "--parameter_file", "-pf", type=str, default=None,
+  #     help="Parameter file to use. The parameter file should be a yaml file "
+  #          "that serves as an alternative of command line arguments. If a "
+  #          "parameter is set in both parameter file and command line, the "
+  #          "value set in command line will be used.",
+  #     metavar="<PF>")
   parser.add_argument(
       "--raw_dir", "-rd", type=str, default="/tmp/translate_ende_raw",
       help="[default: %(default)s] Path where the raw data will be downloaded "
@@ -186,15 +186,15 @@ if __name__ == "__main__":
 
   # Load parameter file and combile flags with those set in command line.
   # The flags set in command line take higher priority.
-  if FLAGS.parameter_file is not None:
-    try:
-      with open(FLAGS.parameter_file, "r") as f:
-        parameters = yaml.load(f) or {}
-      for key, val in parameters.items():
-        if getattr(FLAGS, key, None) is None:
-          setattr(FLAGS, key, val)
-    except Exception:
-      print("Failed to load parameter file.")
-      raise
+  #if FLAGS.parameter_file is not None:
+  #  try:
+  #    with open(FLAGS.parameter_file, "r") as f:
+  #      parameters = yaml.load(f) or {}
+  #    for key, val in parameters.items():
+  #      if getattr(FLAGS, key, None) is None:
+  #        setattr(FLAGS, key, val)
+  #  except Exception:
+  #    print("Failed to load parameter file.")
+  #    raise
 
   main(sys.argv)

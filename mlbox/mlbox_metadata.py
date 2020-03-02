@@ -45,8 +45,6 @@ class MLBox:
         return os.path.join(self.implementation_dir, 'mlbox_implementation.yaml')
 
 
-
-
 class MLTask:
     def __init__(self, name):
         self.name = name
@@ -73,8 +71,20 @@ class MLTaskDefaults:
         self.default_paths = default_paths
 
 
-class DirectPythonImplementation:
-    def __init__(self, main_file):
-        self.main_file = main_file
+class DockerImplementation:
+    def __init__(self):
+        self.dockerfile_path = None
+        self.docker_runtime = None
+        self.docker_args = None
+        self.image = None
+        self.command = None
+        self.args = None
+
+    def set_from_dict(self, d):
+        self.docker_runtime = d['docker_runtime']
+        self.docker_args = d['docker_args']
+        self.image = d['image']
+        self.command = d['command']
+        self.args = d['args']
 
 

@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import pprint
 
 import yaml
 try:
@@ -99,7 +100,6 @@ def create_metadata(box_dir):
     mlbox.set_name(metadata['name'])
     print(mlbox.name)
 
-
     for task_name in metadata['tasks']:
         print('loading task: {}'.format(task_name))
         task = metadata['tasks'][task_name]
@@ -110,24 +110,28 @@ def create_metadata(box_dir):
             print('input: {}'.format(input_name))
             task_input = task['inputs'][input_name]
             mltask_input = mlbox_metadata.MLTaskInput(input_name,
-                    task_input['desc'])
+                    task_input['description'])
             mltask.inputs[input_name] = mltask_input
         for output_name in task['outputs']:
             print('output: {}'.format(output_name))
             task_output = task['outputs'][output_name]
             mltask_output = mlbox_metadata.MLTaskOutput(output_name,
-                    task_output['desc'])
+                    task_output['description'])
             mltask.outputs[output_name] = mltask_output
         mlbox.tasks[task_name] = mltask
 
     impl = load_yaml(mlbox.implementation_file)
 
-    if impl['implementation_type'] != 'direct_python':
-        raise Exception('Only direct python supported.')
-
-    print('Implementation main file: {}'.format(impl['main_file']))
-    mlbox.implementation_type = 'direct_python'
-    mlbox.implementation = mlbox_metadata.DirectPythonImplementation(impl['main_file'])
+    if impl['implementation_type'] != 'docker':
+        raise Exception('Only docker supported.')
+    docker_impl = mlbox_metadata.DockerImplementation()
+    docker_impl.set_from_dict(impl)
+    docker_impl.dockerfile_path = os.path.join(
+            mlbox.implementation_dir,
+            'docker/dockerfiles/Dockerfile')
+    mlbox.implementation_type = 'docker'
+    mlbox.implementation = docker_impl
+    print('Discovered image: {}'.format(docker_impl.image))
 
     # Find the defaults for tasks
     print("listing: {}".format(mlbox.tasks_dir))
@@ -140,16 +144,15 @@ def create_metadata(box_dir):
             defaults = load_yaml(os.path.join(mlbox.tasks_dir, default_name))
             default_name = os.path.basename(default_name).strip('.yaml')
             print('Found default: {}'.format(default_name))
+            pprint.pprint(defaults)
             mldefaults = mlbox_metadata.MLTaskDefaults(default_name, defaults)
             mlbox.tasks[task_name].defaults[default_name] = mldefaults
-
 
     return mlbox
 
 
 def main():
     create_metadata(sys.argv[1])
-
 
 if __name__ == '__main__':
     main()
