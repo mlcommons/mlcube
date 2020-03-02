@@ -117,16 +117,16 @@ def run_docker(docker_name, input_map):
     #     sys.exit(1)
 
 
-def construct_docker_run_command(image_name, mount_volumes, kw_args):
+def construct_docker_run_command(mlbox, mount_volumes, kw_args):
     volumes_str = ' '.join(
           ['-v {}:{}'.format(t[0], t[1]) for t in mount_volumes.items()])
     args_str = ' '.join(sorted(['--{}={}'.format(k, v) for k, v in kw_args.items()]))
-    cmd = 'sudo docker run {} --net=host --privileged=true -t {} {}'.format(
-          volumes_str, image_name, args_str)
+    cmd = 'sudo {} run {} --net=host --privileged=true -t {} {}'.format(mlbox.implementation.docker_runtime,
+          volumes_str, mlbox.implementation.image, args_str)
     return cmd
 
-def construct_docker_build_command(dockerfile_path):
-    return 'cd {}; docker build .'.format(os.path.dirname(dockerfile_path))
+def construct_docker_build_command(mlbox_root, image_name):
+    return 'cd {}; sudo docker build -t {} -f implementation/docker/dockerfiles/Dockerfile .'.format(mlbox_root, image_name)
 
 
 def get_args_with_defaults(mlbox, overrides, task_name, defaults=None):
@@ -155,6 +155,12 @@ def get_args_with_defaults(mlbox, overrides, task_name, defaults=None):
     return args
 
 
+def run_or_die(cmd):
+    print(cmd)
+    if os.system(cmd) != 0:
+        raise Exception('Command failed: {}'.format(cmd))
+
+
 def main():
     mlbox_dir, task_name, input_group, io = get_commandline_args()
     # Run using a direct python runner
@@ -167,14 +173,17 @@ def main():
     # path_map is a map from host pathst to internal docker paths
     dir_map, path_map = get_volumes_and_paths(args.values())
     internal_args = {name: path_map[args[name]] for name in args}
-    args['mlbox_task'] = task_name
+    internal_args['mlbox_task'] = task_name
     print(internal_args)
     print(dir_map)
 
-    print(construct_docker_build_command(mlbox.implementation.dockerfile_path))
-    print(construct_docker_run_command(mlbox.implementation.image, dir_map, internal_args))
-    #print(cmd)
-    #os.system(cmd)
+    build_cmd = construct_docker_build_command(mlbox.path, mlbox.implementation.image)
+    run_cmd = construct_docker_run_command(mlbox, dir_map, internal_args)
+    print(build_cmd)
+    print(run_cmd)
+    print('Starting!')
+    run_or_die(build_cmd)
+    run_or_die(run_cmd)
 
 
 if __name__ == '__main__':
