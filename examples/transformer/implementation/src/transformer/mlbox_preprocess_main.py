@@ -364,27 +364,27 @@ def main(unused_argv):
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
+  # parser.add_argument(
+  #     "--params", type=str, default=None,
+  #     help="Parameter file to use. The parameter file should be a yaml file "
+  #          "that serves as an alternative of command line arguments. If a "
+  #          "parameter is set in both parameter file and command line, the "
+  #          "value set in command line will be used.",
+  #     metavar="<PF>")
   parser.add_argument(
-      "--parameter_file", "-pf", type=str, default=None,
-      help="Parameter file to use. The parameter file should be a yaml file "
-           "that serves as an alternative of command line arguments. If a "
-           "parameter is set in both parameter file and command line, the "
-           "value set in command line will be used.",
-      metavar="<PF>")
-  parser.add_argument(
-      "--data_dir", "-dd", type=str, default="/tmp/translate_ende",
+      "--data_dir", type=str, default="/tmp/translate_ende",
       help="[default: %(default)s] Path where the training and evaluation "
            "data are saved.",
       metavar="<DD>")
   parser.add_argument(
-      "--raw_dir", "-rd", type=str, default="/tmp/translate_ende_raw",
+      "--raw_dir", type=str, default="/tmp/translate_ende_raw",
       help="[default: %(default)s] Path where the raw data will be downloaded "
            "and extracted.",
       metavar="<RD>")
-  parser.add_argument(
-      "--search", action="store_true",
-      help="If set, use binary search to find the vocabulary set with size"
-           "closest to the target size (%d)." % constants.TARGET_VOCAB_SIZE)
+  # parser.add_argument(
+  #     "--search", action="store_true",
+  #     help="If set, use binary search to find the vocabulary set with size"
+  #          "closest to the target size (%d)." % constants.TARGET_VOCAB_SIZE)
 
   FLAGS, unparsed = parser.parse_known_args()
 

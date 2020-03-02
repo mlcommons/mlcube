@@ -21,4 +21,4 @@ RUN pip3 install wheel && pip3 install -r implementation/src/requirements.txt
 # Install mlperf logging lib
 RUN pip3 install "git+https://github.com/mlperf/logging.git@44d26ff1341eaf7ed5a7105176c8ccc36e088d59"
 
-ENTRYPOINT ["/bin/bash"]
+ENTRYPOINT ["implementation/src/scripts/mlbox_entry.sh"]
