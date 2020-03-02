@@ -2,7 +2,16 @@
 
 This is the MLBox Prototype. This is  still under construction, some parts probably dont work yet.
 
-## Installation
+## Running Locally
+
+```
+cd mlbox/
+python mlbox_local_run.py ../examples/transformer:downloaddata/default
+python mlbox_local_run.py ../examples/transformer:preprocess/default
+python mlbox_local_run.py ../examples/transformer:train/default
+```
+
+## Old Documentation (Ignore below)
 
 To install:
 
