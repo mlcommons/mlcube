@@ -10,6 +10,8 @@ RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
     python3 get-pip.py && \
     rm get-pip.py
 
-RUN pip3 --no-cache-dir install tensorflow==2.1.0
+COPY implementation/src/requirements.txt /requirements.txt
+RUN pip3 install --no-cache-dir -r /requirements.txt
 
-COPY mnist.py /workspace/mnist.py
+COPY implementation/src/mnist.py /workspace/mnist.py
+ENTRYPOINT ["python3", "/workspace/mnist.py"]

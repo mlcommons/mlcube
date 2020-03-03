@@ -1,29 +1,25 @@
-# MLBox definition file (section 6.1).
-
 type: mlbox
+mlbox_spec_version: 0.1
 name: MNIST
 version: 0.1
-author: MLPerf Best Practices WG members
+author: MLPerf Best Practices Working Group
 implementation: mlbox_docker
-task_info:
+tasks:
+  downloaddata:
+    inputs: {}
+    outputs:
+      data_dir:
+        description: "A directory where MNIST dataset is downloaded."
+      log_dir:
+        description: "Directory for MLPerf log files."
   train:
     inputs:
+      data_dir:
+        description: "Input MNIST data set downloaded by the 'downloaddata' task."
+      parameters_file:
+        description: "Default values for the MNIST training implementation."
     outputs:
-
-# Parameters used by mlbox_docker (section 7.1). This section is only relevant if implementation is 'mlbox_docker'.
-mlbox_docker_info:
-  # Name of a docker image
-  image: mlperf/mlbox-example-mnist
-  # Docker executable (docker / nvidia-docker). Instead of nvidia-docker, 'docker ... --runtime=nvidia ...' can be used.
-  docker: docker
-  # Action for the configure phase - build, pull or load. For pull action, we may need credentials, docker hub info etc.
-  configure: build
-  # If build action is provided for configure phase, user build args such as proxy servers. The tester module will
-  # append http_proxy and https_proxy variables if they are found in the environment (this also applies for run_args).
-  build_args: {}
-  # Docker run args (not including volume arguments, image name and command to be ran inside container).
-  # Examples are: ['--rm', '-i', '--security-opt seccomp=unconfined', '--pid=host', '--ipc=host', '--shm-size=1g',
-  #                '--ulimit memlock=-1', '--ulimit stack=67108864'] and many others.
-  run_args: ['--rm', '-i']
-  # Just for testing purposes, command to run inside a container
-  run_cmd: ['/bin/bash', '-c', 'cd /workspace && python3 ./mnist.py']
+      log_dir:
+        description: "Directory for MLPerf log files."
+      model_dir:
+        description: "Directory to save MNIST model training checkpoints."
