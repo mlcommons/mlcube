@@ -1,0 +1,25 @@
+type: mlbox
+mlbox_spec_version: 0.1
+name: MNIST
+version: 0.1
+author: MLPerf Best Practices Working Group
+implementation: mlbox_docker
+tasks:
+  downloaddata:
+    inputs: {}
+    outputs:
+      data_dir:
+        description: "A directory where MNIST dataset is downloaded."
+      log_dir:
+        description: "Directory for MLPerf log files."
+  train:
+    inputs:
+      data_dir:
+        description: "Input MNIST data set downloaded by the 'downloaddata' task."
+      parameters_file:
+        description: "Default values for the MNIST training implementation."
+    outputs:
+      log_dir:
+        description: "Directory for MLPerf log files."
+      model_dir:
+        description: "Directory to save MNIST model training checkpoints."

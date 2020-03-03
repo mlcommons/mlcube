@@ -1,0 +1,4 @@
+parameters_file: parameters/default.parameters.yaml
+data_dir: data
+log_dir: log
+model_dir: model
