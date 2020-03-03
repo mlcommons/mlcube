@@ -1,0 +1,6 @@
+model: resnet
+precision: fp32
+batch_size: 2
+num_iter: 10
+iter_unit: batch
+layers: 50

@@ -1,0 +1,14 @@
+type: mlbox
+mlbox_spec_version: 0.1
+name: MNIST
+version: 0.1
+author: MLPerf Best Practices Working Group
+implementation: mlbox_docker
+tasks:
+  train:
+    inputs:
+      parameters_file:
+        description: "Default values for the NGC TensorFlow benchmark implementation."
+    outputs:
+      log_dir:
+        description: "Directory for MLPerf log files and model checkpoints."
