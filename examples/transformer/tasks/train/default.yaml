@@ -1,5 +1,6 @@
-parameters_file: workspace/params/debug.parameters.yaml
+parameter_file: workspace/params/debug.parameters.yaml
 data_dir: workspace/data/translate_ende
+vocab_file: workspace/data/translate_ende/vocab.ende.32768
 bleu_source: workspace/data/translate_ende_raw/newstest2014.en
 bleu_ref: workspace/data/translate_ende_raw/newstest2014.de
 mlperf_log_dir: workspace/log

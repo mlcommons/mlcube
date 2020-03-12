@@ -1,0 +1,8 @@
+parameter_file: /tmp/mlbox/examples/transformer/workspace/params/debug.parameters.yaml
+data_dir: /tmp/mlbox/examples/transformer/workspace/data/translate_ende
+vocab_file: /tmp/mlbox/examples/transformer/workspace/data/translate_ende/vocab.ende.32768
+bleu_source: /tmp/mlbox/examples/transformer/workspace/data/translate_ende_raw/newstest2014.en
+bleu_ref: /tmp/mlbox/examples/transformer/workspace/data/translate_ende_raw/newstest2014.de
+mlperf_log_dir: /tmp/mlbox/examples/transformer/workspace/log
+model_dir: /tmp/mlbox/examples/transformer/workspace/model
+bleu_dir: /tmp/mlbox/examples/transformer/workspace/bleu

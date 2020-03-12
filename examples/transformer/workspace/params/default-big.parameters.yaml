@@ -1,4 +1,4 @@
-seed: 1
+random_seed: 1
 bleu_threshold: 25
 
 # Model params

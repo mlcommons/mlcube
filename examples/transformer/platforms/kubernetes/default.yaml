@@ -1,0 +1,28 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: transformer
+  namespace: default
+spec:
+  template:
+    metadata:
+      annotations:
+        mlbox/target-containers: main
+    spec:
+      containers:
+      - name: main
+        image: xyhuang/mlbox-example-transformer:dev
+        imagePullPolicy: IfNotPresent
+        command: ["implementation/src/scripts/mlbox_entry.sh"]
+        resources:
+          limits:
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - name: workspace
+          mountPath: /mlbox/workspace
+      volumes:
+      - name: workspace
+        hostPath:
+          path: /tmp/mlbox/examples/transformer/workspace
+      restartPolicy: Never
+  backoffLimit: 0
