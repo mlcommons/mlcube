@@ -1,0 +1,9 @@
+name: example_mlbox
+tasks:
+  example_task:
+    inputs:
+      example_input:
+        description: "Example input."
+    outputs:
+      example_output:
+        description: "Example output."

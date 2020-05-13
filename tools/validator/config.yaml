@@ -1,0 +1,22 @@
+- path: mlbox.yaml
+  type: file
+  validators:
+  - name: FileValidator
+    args: {}
+  - name: SchemaValidator
+    args: {}
+- path: tasks
+  type: directory
+  validators:
+  - name: DirectoryValidator
+    args: {}
+- path: implementation
+  type: directory
+  validators:
+  - name: DirectoryValidator
+    args: {}
+- path: implementation/src
+  type: directory
+  validators:
+  - name: DirectoryValidator
+    args: {}
