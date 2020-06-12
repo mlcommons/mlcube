@@ -1,0 +1,7 @@
+schema_version: 1.0.0
+schema_type: mlbox_task
+
+inputs: {}
+outputs:
+  raw_dir:
+    description: "Path where the raw data will be downloaded and extracted."
