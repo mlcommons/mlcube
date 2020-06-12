@@ -1,6 +1,26 @@
+
 # MLBox
 
-This is the MLBox Prototype. This is  still under construction, some parts probably dont work yet.
+MLBox is a way to package and share a model which makes it easy for others to understand and leverage.
+
+## What is a MLBox
+
+An MLBox is a directory which follows the specificed format and has specific metadata files. 
+
+
+## How can I start runninng an MLBox?
+
+You can follow the tutorial here to run an MLBox (TUTORIAL LINK).
+
+## How can I make an MLBox?
+
+You can follow the tutorial here to create an MLBox (TUTORIAL LINK).
+
+
+
+
+
+# Technical Details
 
 ## Running Locally
 
