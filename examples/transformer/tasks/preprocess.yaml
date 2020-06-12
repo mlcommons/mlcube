@@ -1,0 +1,11 @@
+# Schema
+schema_version: 1.0.0
+schema_type: mlbox_task
+
+# Task Inputs
+inputs:
+  raw_dir: workspace/data/translate_ende_raw
+
+# Task Outputs
+outputs:
+  data_dir: workspace/data/translate_ende
