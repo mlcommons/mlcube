@@ -7,6 +7,6 @@ version: 0.1
 mlbox_spec_version: 0.1
 
 tasks:
-  - 'tasks/download_data.yaml'
+  - 'tasks/downloaddata.yaml'
   - 'tasks/preprocess.yaml'
   - 'tasks/train.yaml'
