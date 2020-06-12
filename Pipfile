@@ -11,6 +11,7 @@ ipython = "*"
 mlspeclib = "*"
 black = "*"
 marshmallow = "*"
+msgpack = "*"
 
 [requires]
 python_version = "3.8"
