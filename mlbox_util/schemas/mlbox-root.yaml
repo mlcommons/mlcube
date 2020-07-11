@@ -2,7 +2,7 @@ mlspec_schema_version:
   meta: 1.0.0
 
 mlspec_schema_type: 
-  meta: mlbox_inputs
+  meta: mlbox_root
 
 schema_version:
   # User previded: Identifies version of mlbox_input to use

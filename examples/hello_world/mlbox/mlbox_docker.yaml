@@ -1,0 +1,7 @@
+schema_version: 1.0.0
+schema_type: mlbox_docker
+
+image: xyhuang/mlbox-example-transformer:dev
+docker_runtime: docker # nvidia-docker # OR docker
+
+

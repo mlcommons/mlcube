@@ -14,10 +14,6 @@ schema_type:
   type: string
   required: True
 
-implementation_type: 
-  type: string
-  required: True
-
 docker_runtime:
   type: string
   required: True
@@ -25,20 +21,20 @@ docker_runtime:
     - "docker"
     - "nvidia-docker"
 
-docker_args:
-  type: list
-  required: True
-  empty: True
+#docker_args:
+#  type: list
+#  required: True
+#  empty: True
 
 image:
   type: string
   required: True
 
-command:
-  type: list
-  required: True
+# command:
+#   type: list
+#   required: True
 
-args: 
-  type: list
-  required: True
-  empty: True
+# args: 
+#   type: list
+#   required: True
+#   empty: True

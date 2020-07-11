@@ -1,0 +1,12 @@
+# Schema
+schema_version: 1.0.0
+schema_type: mlbox_task
+
+# Task Inputs
+inputs:
+        name: {}  # default filesystem
+        greeting: {}  # default filesystem
+
+# Task Outputs
+outputs:
+        message: {}  # default filesystem
