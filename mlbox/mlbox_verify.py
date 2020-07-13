@@ -9,7 +9,7 @@ import sys
 
 from pathlib import Path
 
-import mlbox_check
+from mlbox import mlbox_check
 
 
 def main():

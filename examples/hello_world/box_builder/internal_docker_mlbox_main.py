@@ -8,7 +8,7 @@ def mlbox_hello(iomap):
   name = iomap['name']
   greeting = iomap['greeting']
 
-  raise NotImplementedError('mlbox_whiz')
+  return os.system('python3 src/mlbox_hello.py {} {}'.format(name, greeting)) == 0
 
 
 def parse_command_line():
@@ -30,10 +30,10 @@ def main():
 
   if task == 'hello':
     if not mlbox_hello(iomap):
-      system.exit(1)
+      sys.exit(1)
   elif task == 'goodbye':
     if not mlbox_goodbye(iomap):
-      system.exit(1)
+      sys.exit(1)
   else:
     print('No known MLBox task: {}'.format(task))
     sys.exit(1)

@@ -25,6 +25,13 @@ def _register_schemas():
   MLSchema.append_schema_to_registry(Path(Path(__file__).parent,  "schemas"))
 
 
+def parse_mlbox_invoke(filename):
+  if not os.path.exists(filename):
+    return None, 'No such invocation file: {}'.format(filename)
+  (root, err) = MLObject.create_object_from_file(filename)
+  return root, err
+
+
 def parse_mlbox_root(filename):
   (root, err) = MLObject.create_object_from_file(filename)
   return root, err
@@ -41,7 +48,11 @@ def parse_mlbox_docker(filename):
 
 
 def parse_mlbox(root_dir):
-  root, err = parse_mlbox_root(Path(root_dir, 'mlbox.yaml').as_posix())
+  path = Path(root_dir, 'mlbox.yaml').as_posix()
+  if not os.path.exists(path):
+    return None, 'root metadata does not exist: {}'.format(path)
+
+  root, err = parse_mlbox_root(path)
   if err:
     return None, err
 
@@ -61,5 +72,3 @@ def parse_mlbox(root_dir):
 
 
 _register_schemas()
-parse_mlbox('/usr/local/google/home/vbittorf/mlbox/examples/hello_world/mlbox/')
-

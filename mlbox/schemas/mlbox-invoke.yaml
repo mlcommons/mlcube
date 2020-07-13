@@ -1,0 +1,27 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type:
+  meta: mlbox_invoke
+
+schema_type:
+  type: string
+  required: True
+
+
+schema_version:
+  type: semver
+  required: True
+
+task_name:
+  type: string
+  required: True
+
+input_binding:
+  type: dict
+  required: True
+
+output_binding:
+  type: dict
+  required: True
+
