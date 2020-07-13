@@ -4,9 +4,13 @@ schema_type: mlbox_task
 
 # Task Inputs
 inputs:
-        name: {}  # default filesystem
-        greeting: {}  # default filesystem
+        - name: name
+          type: file
+
+        - name: greeting
+          type: file
 
 # Task Outputs
 outputs:
-        message: {}  # default filesystem
+        - name: message
+          type: file

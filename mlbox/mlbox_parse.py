@@ -37,9 +37,47 @@ def parse_mlbox_root(filename):
   return root, err
 
 
+def mlobject_from_dict(schema_type, schema_version, dict_value):
+    ml_object = MLObject()
+    ml_object.set_type(
+        schema_version=schema_version,
+        schema_type=schema_type,
+    )
+    dict_value['schema_type'] = schema_type
+    dict_value['schema_version'] = schema_version
+    MLObject.update_tree(ml_object, dict_value)
+    errors = ml_object.validate()
+
+    if errors:
+        return None, errors
+    else:
+        return ml_object, None
+
+
 def parse_mlbox_task(filename):
     (task, err) = MLObject.create_object_from_file(filename)
-    return task, err
+    if err:
+      return None, err
+
+    inputs = {}
+    for input_dict in task.inputs:
+      input_obj, err = mlobject_from_dict('mlbox_task_input', '1.0.0', input_dict)
+      if err:
+        return None, err
+      inputs[input_obj.name] = input_obj
+
+    outputs = {}
+    for output_dict in task.outputs:
+      output_obj, err = mlobject_from_dict('mlbox_task_output', '1.0.0', output_dict)
+      if err:
+        return None, err
+      outputs[output_obj.name] = output_obj
+
+    task.inputs = inputs
+    task.outputs = outputs
+    print(task)
+
+    return task, None
 
 
 def parse_mlbox_docker(filename):
@@ -59,9 +97,11 @@ def parse_mlbox(root_dir):
   tasks = {}
   for task_file in root.tasks:
     task, err = parse_mlbox_task(os.path.join(root_dir, task_file))
-    name = Path(task_file).name.strip('.yaml')
     if err:
       return None, err
+    if task is None:
+      raise Exception(root_dir)
+    name = Path(task_file).name.strip('.yaml')
     tasks[name] = task
 
   docker, err = parse_mlbox_docker(Path(root_dir, 'mlbox_docker.yaml').as_posix())
