@@ -12,10 +12,17 @@ from pathlib import Path
 from mlspeclib import MLObject, MLSchema
 
 
+class MLBoxMetadata:
+  def __init__(self, root, tasks, docker):
+    self.root = root
+    self.tasks = tasks
+    self.docker = docker
+
+
 def _register_schemas():
   MLSchema.populate_registry()
   # TODO fix pathing
-  MLSchema.append_schema_to_registry(Path("schemas"))
+  MLSchema.append_schema_to_registry(Path(Path(__file__).parent,  "schemas"))
 
 
 def parse_mlbox_root(filename):
@@ -34,23 +41,23 @@ def parse_mlbox_docker(filename):
 
 
 def parse_mlbox(root_dir):
-  root, err = parse_mlbox_root(root_dir + 'mlbox.yaml')
-  print(root, err)
+  root, err = parse_mlbox_root(Path(root_dir, 'mlbox.yaml').as_posix())
+  if err:
+    return None, err
 
-  tasks = []
+  tasks = {}
   for task_file in root.tasks:
     task, err = parse_mlbox_task(os.path.join(root_dir, task_file))
-    print(task, err)
-    tasks.append(task)
+    name = Path(task_file).name.strip('.yaml')
+    if err:
+      return None, err
+    tasks[name] = task
 
-  docker, err = parse_mlbox_docker(root_dir +  'mlbox_docker.yaml')
-  print(docker, err)
-  
+  docker, err = parse_mlbox_docker(Path(root_dir, 'mlbox_docker.yaml').as_posix())
+  if err:
+    return None, err
 
-
-
-
-
+  return MLBoxMetadata(root, tasks, docker), None
 
 
 _register_schemas()

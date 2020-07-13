@@ -1,9 +1,0 @@
-schema_version: 1.0.0
-schema_type: mlbox_docker
-
-implementation_type: docker
-docker_runtime: nvidia-docker # OR docker
-docker_args: []
-image: xyhuang/mlbox-example-transformer:dev
-command: ["implementation/src/scripts/run_training.sh"]
-args: []
