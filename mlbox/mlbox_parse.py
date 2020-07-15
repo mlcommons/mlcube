@@ -5,8 +5,6 @@ Will return objects which represent the metadata of the box.
 """
 
 import os
-import pprint
-
 from pathlib import Path
 
 from mlspeclib import MLObject, MLSchema
@@ -75,8 +73,6 @@ def parse_mlbox_task(filename):
 
     task.inputs = inputs
     task.outputs = outputs
-    print(task)
-
     return task, None
 
 

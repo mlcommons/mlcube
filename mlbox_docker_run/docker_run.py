@@ -26,7 +26,10 @@ def main():
   mlbox_check.check_invoke_semantics_or_die(metadata, invoke)
 
   workspace = os.path.abspath(sys.argv[1] + '/workspace')
-  docker = build_invoke(metadata, invoke, 'docker', '-t hello_world:latest', 
+
+  # TODO pull the image
+  # pull_image(metadata.docker.image)
+  docker = build_invoke(metadata, invoke, 'docker', metadata.docker.image,
                         workspace=workspace)
 
   print(docker.command_str())
@@ -89,6 +92,10 @@ def build_invoke(metadata, invoke, docker_command, image_tag, workspace):
 
   docker.set_args(args)
   return docker
+
+
+def pull_image(image_name):
+  os.system('docker pull {}'.format(image_name)
 
 
 class DockerRun:

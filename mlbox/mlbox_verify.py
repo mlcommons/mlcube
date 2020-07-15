@@ -22,11 +22,14 @@ def main():
 
   if err:
     print(err)
+    print('ERROR - NOT VERIFIED')
     sys.exit(1)
 
-  pprint.pprint(metadata.root)
-  pprint.pprint(metadata.tasks)
-  pprint.pprint(metadata.docker)
+  # pprint.pprint(metadata.root)
+  # pprint.pprint(metadata.tasks)
+  # pprint.pprint(metadata.docker)
+
+  print('OK - VERIFIED')
 
 
 if __name__ == '__main__':
