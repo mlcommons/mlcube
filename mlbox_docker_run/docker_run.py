@@ -3,6 +3,7 @@
 
 """
 
+import argparse
 import sys
 import os
 
@@ -12,29 +13,64 @@ from mlbox import mlbox_parse
 from mlbox import mlbox_check
 
 
+def make_parser():
+  parser = argparse.ArgumentParser(description='Process some integers.')
+  parser.add_argument('invoke_file', type=str)
+  parser.add_argument('--mlbox-root', dest='mlbox_root', type=str, default=None)
+  parser.add_argument('--nvidia-docker-command', type=str, default='nvidia-docker', dest='nvidia_docker')
+  parser.add_argument('--docker-command', type=str, default='sudo docker run', dest='docker')
+  parser.add_argument('--pull', dest='pull', action='store_true')
+  parser.add_argument('--no-pull', dest='pull', action='store_false')
+  parser.add_argument('--dry-run', dest='dry_run', action='store_true', default=False)
+  parser.add_argument('--force', '-f', dest='force', action='store_true', default=False)
+  parser.set_defaults(pull=True)
+  return parser
+
+
+def resolve_docker_command(mlbox, docker, nvidia_docker):
+  if mlbox.docker.docker_runtime == 'docker':
+    return 'docker'
+  if mlbox.docker.docker_runtime == 'nvidia-docker':
+    return nvidia_docker
+
+
 def main():
-  if len(sys.argv) != 3:
-    print('usage: docker_run.py MLBOX_ROOT INVOKE_FILE')
-    sys.exit(1)
+  parser = make_parser()
 
-  metadata = mlbox_check.check_root_dir_or_die(sys.argv[1])
-  pprint.pprint(metadata.tasks)
-  print('Checked')
-  invoke = mlbox_check.check_invoke_file_or_die(sys.argv[2])
+  args = parser.parse_args()
 
-  mlbox_check.check_invoke_semantics_or_die(metadata, invoke)
+  mlbox_root = os.path.dirname(os.path.dirname(args.invoke_file))
+  if args.mlbox_root is not None:
+    mlbox_root = args.mlbox_root
 
-  workspace = os.path.abspath(sys.argv[1] + '/workspace')
+  mlbox_root = os.path.abspath(mlbox_root)
 
-  # TODO pull the image
-  # pull_image(metadata.docker.image)
-  docker = build_invoke(metadata, invoke, 'docker', metadata.docker.image,
-                        workspace=workspace)
+  mlbox = mlbox_check.check_root_dir_or_die(mlbox_root)
+  invoke = mlbox_check.check_invoke_file_or_die(args.invoke_file)
 
-  print(docker.command_str())
+  mlbox_check.check_invoke_semantics_or_die(mlbox, invoke)
+
+  workspace = os.path.abspath(os.path.join(mlbox_root, 'workspace'))
+
+  docker_command = resolve_docker_command(mlbox, docker=args.docker, nvidia_docker=args.nvidia_docker)
+
+  if args.pull:
+    command = pull_image_command(mlbox.docker.image)
+    print(command)
+    if not args.dry_run:
+      if os.system(command) != 0:
+        sys.exit(1)
+
+  docker = build_invoke(mlbox, invoke, docker_command, mlbox.docker.image,
+                        workspace=workspace, force=args.force)
+
+  command = docker.command_str()
+  print(command)
+  if not args.dry_run:
+    sys.exit(os.system(command))
 
 
-def check_input_path_or_die(metadata, invoke, input_name, input_path):
+def check_input_path_or_die(metadata, invoke, input_name, input_path, force=False):
   task_metadata = metadata.tasks[invoke.task_name]
   is_file = task_metadata.inputs[input_name].type == 'file'
 
@@ -54,8 +90,8 @@ def check_input_path_or_die(metadata, invoke, input_name, input_path):
     sys.exit(1)
 
 
-def check_output_path_or_die(metadata, invoke, output_name, output_path):
-  if os.path.exists(output_path):
+def check_output_path_or_die(metadata, invoke, output_name, output_path, force=False):
+  if os.path.exists(output_path) and not force:
     print('WARNING: Refusing verwrite Output "{}" already exists: {}'.format(
         output_name, output_path))
     sys.exit(1)
@@ -71,20 +107,20 @@ def check_output_path_or_die(metadata, invoke, output_name, output_path):
   # TODO similar check for the directory
 
 
-def build_invoke(metadata, invoke, docker_command, image_tag, workspace):
+def build_invoke(metadata, invoke, docker_command, image_tag, workspace, force=False):
   docker = DockerRun(docker_command, image_tag)
 
   args = [invoke.task_name]
   for input_name, input_path in invoke.input_binding.items():
     input_path = input_path.replace('$WORKSPACE', workspace)
-    check_input_path_or_die(metadata, invoke, input_name, input_path)
+    check_input_path_or_die(metadata, invoke, input_name, input_path, force=force)
 
     translated_path = docker.mount_and_translate_path(input_path)
     args.append('--{}={}'.format(input_name, translated_path))
 
   for output_name, output_path in invoke.output_binding.items():
     output_path = output_path.replace('$WORKSPACE', workspace)
-    check_output_path_or_die(metadata, invoke, output_name, output_path)
+    check_output_path_or_die(metadata, invoke, output_name, output_path, force=force)
 
     translated_path = docker.mount_and_translate_path(output_path)
     args.append('--{}={}'.format(output_name, translated_path))
@@ -93,8 +129,8 @@ def build_invoke(metadata, invoke, docker_command, image_tag, workspace):
   return docker
 
 
-def pull_image(image_name):
-  os.system('docker pull {}'.format(image_name))
+def pull_image_command(image_name):
+  return 'docker pull {}'.format(image_name)
 
 
 class DockerRun:
@@ -119,7 +155,7 @@ class DockerRun:
          for path in self.mounts])
 
   def command_str(self):
-    return 'sudo {} run {} --net=host --privileged=true -t {} {}'.format(
+    return '{} {} --net=host --privileged=true -t {} {}'.format(
         self.docker_command,
         self.mount_str(),
         self.image_tag,
