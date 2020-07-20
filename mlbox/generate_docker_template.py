@@ -77,7 +77,7 @@ def generate_function(task_name, io_names):
   for io_name in io_names:
     code += '  {} = iomap["{}"]\n'.format(io_name, io_name)
 
-  command_line = '  return os.system("python3 internal_docker_mlbox_{}_main.py '.format(task_name)
+  command_line = '  return os.system("python3 internal_docker_mlbox_task_{}.py '.format(task_name)
   command_line += ' {} ' * len(io_names)
   command_line += '".format({}))'.format(', '.join(io_names))
   code += command_line

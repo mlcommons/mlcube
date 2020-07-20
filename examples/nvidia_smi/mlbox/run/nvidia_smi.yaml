@@ -1,0 +1,10 @@
+schema_type: mlbox_invoke
+schema_version: 1.0.0
+
+task_name: nvidia_smi 
+
+input_binding: {}
+
+output_binding:
+        nvidia_smi: $WORKSPACE/nvidia-smi.txt
+
