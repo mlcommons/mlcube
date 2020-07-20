@@ -1,7 +1,6 @@
 # Lint as: python3
-"""
+"""Runs an MLBox.
 
-TODO(vbittorf): DO NOT SUBMIT without a detailed description of docker_run.
 """
 
 import sys
@@ -95,7 +94,7 @@ def build_invoke(metadata, invoke, docker_command, image_tag, workspace):
 
 
 def pull_image(image_name):
-  os.system('docker pull {}'.format(image_name)
+  os.system('docker pull {}'.format(image_name))
 
 
 class DockerRun:
