@@ -36,7 +36,6 @@ def resolve_docker_command(mlbox, docker, nvidia_docker):
 
 def main():
   parser = make_parser()
-
   args = parser.parse_args()
 
   mlbox_root = os.path.dirname(os.path.dirname(args.invoke_file))
@@ -44,14 +43,10 @@ def main():
     mlbox_root = args.mlbox_root
 
   mlbox_root = os.path.abspath(mlbox_root)
-
   mlbox = mlbox_check.check_root_dir_or_die(mlbox_root)
   invoke = mlbox_check.check_invoke_file_or_die(args.invoke_file)
-
   mlbox_check.check_invoke_semantics_or_die(mlbox, invoke)
-
   workspace = os.path.abspath(os.path.join(mlbox_root, 'workspace'))
-
   docker_command = resolve_docker_command(mlbox, docker=args.docker, nvidia_docker=args.nvidia_docker)
 
   if args.pull:

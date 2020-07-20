@@ -113,7 +113,19 @@ def generate_task_main_text(task_name, io_names):
   return TASK_MAIN.format(args=args)
 
 
-def generate_readme_text(mlbox, task_main_names):
+def generate_readme_text(mlbox_root, mlbox, task_main_names):
+  run_yamls = []
+  for f in os.listdir(os.path.join(mlbox_root, 'run')):
+    if '.yaml' in f:
+      run_yamls.append(os.path.join(os.path.join(mlbox_root, 'run'), f))
+
+  if len(run_yamls) == 0:
+    run_text = 'You need to first create some run configs under {}'.format(os.path.join(mlbox_root, 'run'))
+  else:
+    run_text = ''
+    for run in run_yamls:
+      run_text += 'python3 mlbox_docker_run/docker_run.py --no-pull {}\n'.format(run)
+
   text = r"""Here is a starting point to create your MLBox's Docker Image.
 
 Here are some notes to get started:
@@ -129,12 +141,12 @@ Edit these files to call your model.
 2. Build your docker;
 sudo docker build . -t {docker_tag}
 
-3. Try running your docker;
-TODO mlbox runner command
+3. Try running your docker (may want to -f for overwriting output files);
+{run_text}
 
 4. Once  your docker works, upload it to the respository.
 docker push {docker_tag}
-""".format(task_mains=', '.join(task_main_names), docker_tag=mlbox.docker.image)
+""".format(task_mains=', '.join(task_main_names), docker_tag=mlbox.docker.image, run_text=run_text)
   return text
 
 
@@ -175,13 +187,11 @@ def generate(mlbox_dir, mlbox):
     task_main_names.append(task_file_path)
     write_file(task_file_path, task_main_texts[task_name])
 
-  readme_text = generate_readme_text(mlbox, task_main_names)
-
   docker_file_path = os.path.join(mlbox_dir, 'build', 'Dockerfile')
   write_file(docker_file_path, DOCKER_TEMPLATE)
 
   readme_file_path = os.path.join(mlbox_dir, 'build', 'README.md')
-  readme_text = generate_readme_text(mlbox, task_main_names)
+  readme_text = generate_readme_text(mlbox_dir, mlbox, task_main_names)
   write_file(readme_file_path, readme_text)
 
 
