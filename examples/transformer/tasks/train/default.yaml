@@ -1,7 +1,0 @@
-parameters_file: workspace/params/debug.parameters.yaml
-data_dir: workspace/data/translate_ende
-bleu_source: workspace/data/translate_ende_raw/newstest2014.en
-bleu_ref: workspace/data/translate_ende_raw/newstest2014.de
-mlperf_log_dir: workspace/log
-model_dir: workspace/model
-bleu_dir: workspace/bleu
