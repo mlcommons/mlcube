@@ -150,9 +150,10 @@ class DockerRun:
          for path in self.mounts])
 
   def command_str(self):
-    return '{} {} --net=host --privileged=true -t {} {}'.format(
+    return '{} run {} {} --net=host --privileged=true -t {} {}'.format(
         self.docker_command,
         self.mount_str(),
+        os.environ.get('MLBOX_DOCKER_ARGS', ''),
         self.image_tag,
         ' '.join(self.args))
 
