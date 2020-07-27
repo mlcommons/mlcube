@@ -1,0 +1,62 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type: 
+  meta: mlbox_root
+
+schema_version:
+  # User previded: Identifies version of mlbox_input to use
+  type: semver
+  required: True
+
+schema_type:
+  # User previded: Identifies that this is a mlbox_input
+  type: string
+  required: True
+
+name:
+  type: string
+  required: True
+
+author:
+  type: string
+  required: True
+
+version:
+  type: semver
+  required: True
+
+mlbox_spec_version: 
+  type: semver
+  required: True
+
+tasks:
+  type: list
+  required: True
+
+# definitions:
+#  MLBoxRootConfig:
+#    type: "object"
+#    description: "MLBox root configuration"
+#    properties:
+#      Name:
+#        type: "string"
+#      Version:
+#        type: "string"
+#      MLBoxSpecVersion:
+#        type: "string"
+#      Tasks:
+#        type: "object"
+#        additionalProperties:
+#          type: "object"
+#          properties:
+#            Inputs:
+#              type: "object"
+#              properties:
+#                Description:
+#                  type: "string"
+#            Outputs:
+#              type: "object"
+#              properties:
+#                Description:
+#                  type: "string"

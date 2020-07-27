@@ -1,0 +1,40 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type: 
+  meta: mlbox_docker
+
+schema_version:
+  # User previded: Identifies version of mlbox_input to use
+  type: semver
+  required: True
+
+schema_type:
+  # User previded: Identifies that this is a mlbox_input
+  type: string
+  required: True
+
+docker_runtime:
+  type: string
+  required: True
+  allowed:
+    - "docker"
+    - "nvidia-docker"
+
+#docker_args:
+#  type: list
+#  required: True
+#  empty: True
+
+image:
+  type: string
+  required: True
+
+# command:
+#   type: list
+#   required: True
+
+# args: 
+#   type: list
+#   required: True
+#   empty: True

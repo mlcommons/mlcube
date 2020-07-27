@@ -1,0 +1,22 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type: 
+  meta: mlbox_task_input
+
+schema_version:
+  type: semver
+  required: True
+
+schema_type:
+  type: string
+  required: True
+
+name:
+  type: string
+  required: True
+
+type:
+  type: string
+  required: True
+

@@ -1,0 +1,16 @@
+# Schema
+schema_version: 1.0.0
+schema_type: mlbox_task
+
+# Task Inputs
+inputs:
+        - name: name
+          type: file
+
+        - name: greeting
+          type: file
+
+# Task Outputs
+outputs:
+        - name: message
+          type: file

@@ -1,0 +1,23 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type: 
+  meta: mlbox_task
+
+schema_version:
+  type: semver
+  required: True
+
+schema_type:
+  type: string
+  required: True
+
+inputs:
+  type: list
+  empty: True
+  required: True
+
+outputs:
+  type: list
+  empty: True
+  required: True

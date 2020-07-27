@@ -1,0 +1,11 @@
+schema_type: mlbox_invoke
+schema_version: 1.0.0
+
+task_name: hello
+
+input_binding:
+        name: $WORKSPACE/xinyuan.txt
+
+output_binding:
+        greeting: $WORKSPACE/xin_hello.txt
+

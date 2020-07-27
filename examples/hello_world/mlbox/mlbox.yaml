@@ -1,0 +1,12 @@
+schema_version: 1.0.0
+schema_type: mlbox_root
+
+name: hello_world
+author: MLPerf Best Practices Working Group
+version: 0.1.0
+mlbox_spec_version: 0.1.0
+
+tasks:
+  - 'tasks/hello.yaml'
+  - 'tasks/goodbye.yaml'
+
