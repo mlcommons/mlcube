@@ -1,0 +1,10 @@
+schema_type: mlbox_invoke
+schema_version: 1.0.0
+
+task_name: download
+
+input_binding: {}
+
+output_binding:
+        data_dir: $WORKSPACE/data
+        log_dir: $WORKSPACE/download_logs
