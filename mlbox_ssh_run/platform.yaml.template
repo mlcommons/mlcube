@@ -1,0 +1,27 @@
+host: HOST_IP         # Remote host IP address.
+user: USER            # User name, assuming passwordless authentication using keys has been set up.
+env:                  # This is for syncing MLBox library itself (library, runners etc.)
+    path: ./mlbox     # Path on a remote node, this is the default value. Relative paths are relative to use home dir.
+    sync: true
+    interpreter:      # Environment for running runners, mlbox can have its own interpreter. Dependencies must be inst.
+        type: system
+        python: python3.6   # Can also be an absolute path to user python environment (virtualenv, conda etc.)
+    variables: {}     # Environmental variables (will be used by docker build/run), remove '{}' if variables present.
+        # http_proxy: '...'
+        # https_proxy: '...'
+mlbox:                # Remote location of the MLBox to run
+    path:             # Null, the path will be set to ./.mlbox/mlboxes/mnist-${version}
+    sync: true
+
+
+# Other possible choices for interpreters. Not supported yet.
+# interpreter:
+#     type: virtualenv
+#     python: python3.8
+#     location: env
+#     requirements: mlspeclib
+
+# interpreter:
+#     type: conda
+#     name: mnist-0.01
+#     version: '3.7'

@@ -1,24 +1,27 @@
 # MLBox
 
-This is the MLBox Prototype. This is  still under construction, some parts probably dont work yet.
+This is the MLBox Prototype. This is  still under construction, some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
 
-## Running Locally
+## Get MLBox
 
-```
-cd mlbox/
-python mlbox_local_run.py ../examples/transformer:downloaddata/default
-python mlbox_local_run.py ../examples/transformer:preprocess/default
-python mlbox_local_run.py ../examples/transformer:train/default
-```
+### Downloading
 
-## Old Documentation (Ignore below)
+You can get the MLBox project as a zip file for direct download from https://github.com/mlperf/mlbox/archive/master.zip
 
-To install:
+Expand this locally on the filesystem in your location of choice.
+
+### Git Clone
+
+You can clone the MLBox project using Git from https://github.com/mlperf/mlbox.git
+
+```git clone https://github.com/mlperf/mlbox.git```
+
+## Installing
+
+After downloading or cloning, you can install:
 
 ```sh
-git clone https://github.com/xyhuang/mlbox.git
 cd mlbox
-
 pip install .
 ```
 
@@ -28,9 +31,11 @@ To uninstall:
 pip uninstall mlbox
 ```
 
-## Run an MLBox
+## Running Locally
 
-TO run an example, such as our toy "fake model", 
+### Toy Implementation
+
+To run the toy implementation (aka "fake model"): 
 
 ```# NOTICE: This is not yet fully implemented. This will print a docker command simliar to what will be run.
 cd mlbox
@@ -41,6 +46,26 @@ python mlbox_run.py ../examples/fake_model:train/small_batch
 --log_file=/tmp/my_log_file
 ```
 
-## Examples
+### Transformer Implementation
+
+To run the transformer implementation: 
+
+```
+cd mlbox/
+python mlbox_local_run.py ../examples/transformer:downloaddata/default
+python mlbox_local_run.py ../examples/transformer:preprocess/default
+python mlbox_local_run.py ../examples/transformer:train/default
+```
+
+## Usage Examples
 
 Check out the [examples directory](examples) for detailed examples.
+
+## License
+mlperf/mlbox is licensed under the Apache License 2.0. 
+
+See https://github.com/mlperf/mlbox/blob/master/LICENSE for more information
+
+## Support
+
+Create an issue https://github.com/mlperf/mlbox/issues/new/choose
