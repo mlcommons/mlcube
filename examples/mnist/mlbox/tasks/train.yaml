@@ -1,0 +1,18 @@
+# Schema
+schema_version: 1.0.0
+schema_type: mlbox_task
+
+# Task Inputs
+inputs:
+        - name: data_dir
+          type: directory
+
+        - name: parameters_file
+          type: file
+# Task Outputs
+outputs:
+        - name: log_dir
+          type: directory
+
+        - name: model_dir
+          type: directory

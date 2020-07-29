@@ -1,0 +1,3 @@
+optimizer: "adam"
+train_epochs: 5
+batch_size: 32

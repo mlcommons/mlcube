@@ -1,0 +1,5 @@
+schema_version: 1.0.0
+schema_type: mlbox_docker
+
+image: mlperf/mlbox:mnist
+docker_runtime: docker # nvidia-docker # OR docker
