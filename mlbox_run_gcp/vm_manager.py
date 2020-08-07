@@ -22,12 +22,17 @@ def list_instances(compute, project, zone):
 # [END list_instances]
 
 
+# Example machine type: 'zones/{}/machineTypes/n1-standard-8'.format(zone)
+# machine_type
+
+
+# self.source_disk_image = 'projects/tf-benchmark-dashboard/global/images/ubuntu-1804-cuda10-20191003'
 class VMConfig:
-    def __init__(self, project, zone):
+    def __init__(self, project, zone, name, machine_type):
       self.project = project
       self.zone = zone
-      self.name = 'vbittorf-test'
-      self.machine_type = 'zones/{}/machineTypes/n1-standard-8'.format(zone)
+      self.name = name
+      self.machine_type = machine_type
       self.source_disk_image = 'projects/tf-benchmark-dashboard/global/images/ubuntu-1804-cuda10-20191003'
 
     def get_config(self):
