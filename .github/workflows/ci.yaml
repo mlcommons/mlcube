@@ -31,7 +31,7 @@ jobs:
           python_version: 3.6
           poetry_version: 1.0.10
           working_directory: ./box
-          args: black . --check
+          args: run black . --check
 
       - name: Test with pytest
         # Set pytest coverage to 20% to prevent failures
@@ -41,4 +41,4 @@ jobs:
           python_version: 3.6
           poetry_version: 1.0.10
           working_directory: ./box
-          args: pytest --cov . --cov-fail-under=20 -n 2
+          args: run pytest --cov . --cov-fail-under=20 -n 2
