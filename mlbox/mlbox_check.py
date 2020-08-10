@@ -8,7 +8,7 @@ import sys
 
 from pathlib import Path
 
-from mlbox import mlbox_parse
+from . import mlbox_parse
 
 
 def check_root_dir(root_dir):
