@@ -18,30 +18,21 @@ jobs:
           python-version: 3.6
 
       - name: Install Poetry
-        uses: dschep/install-poetry-action@v1.2
-
-      - name: Cache Poetry virtualenv
-        uses: actions/cache@v1
-        id: cache
+        uses: abatilo/actions-poetry@v1.10.0
         with:
-          path: ~/.virtualenvs
-          key: poetry-${{ hashFiles('**/poetry.lock') }}
-          restore-keys: |
-            poetry-${{ hashFiles('**/poetry.lock') }}
-
-      - name: Set Poetry config
-        run: |
-          poetry config settings.virtualenvs.in-project false
-          poetry config settings.virtualenvs.path ~/.virtualenvs
-
-      - name: Install Dependencies
-        run: poetry install
-        if: steps.cache.outputs.cache-hit != 'true'
+          poetry_version: 1.0.10
+          args: install
 
       - name: Linting
-        run: poetry run black . --check
+        uses: abatilo/actions-poetry@v1.10.0
+        with:
+          poetry_version: 1.0.10
+          args: black . --check
 
       - name: Test with pytest
         # Set pytest coverage to 20% to prevent failures
         # TODO(swiftdiaries): add more tests and increase coverage
-        run: poetry run pytest --cov . --cov-fail-under=20 -n 2
+        uses: abatilo/actions-poetry@v1.10.0
+        with:
+          poetry_version: 1.0.10
+          args: pytest --cov . --cov-fail-under=20 -n 2
