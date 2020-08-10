@@ -21,8 +21,8 @@ You can clone the MLBox project using Git from https://github.com/mlperf/mlbox.g
 After downloading or cloning, you can install:
 
 ```sh
-cd mlbox
-pip install .
+python setup.py bdist_wheel sdist
+pip install dist/mlbox-0.0.1-py3-none-any.whl
 ```
 
 To uninstall:
