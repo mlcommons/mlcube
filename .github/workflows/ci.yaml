@@ -20,13 +20,17 @@ jobs:
       - name: Install Poetry
         uses: abatilo/actions-poetry@v1.10.0
         with:
+          python_version: 3.6
           poetry_version: 1.0.10
+          working_directory: ./box
           args: install
 
       - name: Linting
         uses: abatilo/actions-poetry@v1.10.0
         with:
+          python_version: 3.6
           poetry_version: 1.0.10
+          working_directory: ./box
           args: black . --check
 
       - name: Test with pytest
@@ -34,5 +38,7 @@ jobs:
         # TODO(swiftdiaries): add more tests and increase coverage
         uses: abatilo/actions-poetry@v1.10.0
         with:
+          python_version: 3.6
           poetry_version: 1.0.10
+          working_directory: ./box
           args: pytest --cov . --cov-fail-under=20 -n 2
