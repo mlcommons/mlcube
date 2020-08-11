@@ -1,6 +1,6 @@
 site_name: 'MLBox'
 site_description: 'Documentation site for MLBox'
-site_author: 'Adhita Selvaraj <adhita.selvaraj@gmail.com>'
+site_author: '<MLPerf.org> mlperf@googlegroups.com'
 docs_dir: 'docs/'
 
 nav:
@@ -13,7 +13,6 @@ theme:
 
 theme:
   name: material
-  #logo: 'assets/android-chrome-512x512.png'
   favicon: 'assets/favicon.ico'
   language: 'en'
   palette:

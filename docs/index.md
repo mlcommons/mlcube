@@ -1,6 +1,6 @@
 # MLBox 
 
-This is the MLBox 📦 Prototype. This is  still under construction, some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
+This is the MLBox 📦 Prototype. 
 
 ## Get MLBox
 

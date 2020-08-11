@@ -1,37 +1,28 @@
 # MLBox
 
-This is the MLBox 📦 Prototype. This is  still under construction, some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
-
-[Documentation](https://mlperf.github.io/mlbox)
+This is the MLBox Prototype. This is  still under construction, some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
 
 ## Get MLBox
 
-### Direct Download
+### Downloading
 
-Directly download the project
+You can get the MLBox project as a zip file for direct download from https://github.com/mlperf/mlbox/archive/master.zip
 
-```
-wget -O mlbox-master.zip https://github.com/mlperf/mlbox/archive/master.zip
-unzip mlbox-master.zip -d mlbox
-rm -r mlbox-master.zip
-cd mlbox
-```
+Expand this locally on the filesystem in your location of choice.
 
 ### Git Clone
 
-You can clone the MLBox project using Git
+You can clone the MLBox project using Git from https://github.com/mlperf/mlbox.git
 
-```
-git clone https://github.com/mlperf/mlbox.git
-cd mlbox
-```
+```git clone https://github.com/mlperf/mlbox.git```
 
 ## Installing
 
-After downloading or cloning, from the root of the project directory you can install:
+After downloading or cloning, you can install:
 
 ```sh
-pip install .
+python setup.py bdist_wheel sdist
+pip install dist/mlbox-0.0.1-py3-none-any.whl
 ```
 
 To uninstall:
@@ -46,17 +37,14 @@ pip uninstall mlbox
 
 To run the toy implementation (aka "fake model"): 
 
-!!! notice
-    This is not yet fully implemented. This will print a docker command simliar to what will be run.
-    ```
-    cd mlbox
-    python mlbox_run.py ../examples/fake_model:train/small_batch
-    ```
+```# NOTICE: This is not yet fully implemented. This will print a docker command simliar to what will be run.
+cd mlbox
+python mlbox_run.py ../examples/fake_model:train/small_batch
+```
 
-    To override and specify different files:
-    ``` 
-    --log_file=/tmp/my_log_file
-    ```
+```# To override and specify different files, 
+--log_file=/tmp/my_log_file
+```
 
 ### Transformer Implementation
 
@@ -74,10 +62,10 @@ python mlbox_local_run.py ../examples/transformer:train/default
 Check out the [examples directory](examples) for detailed examples.
 
 ## License
-[MLBox](https://github.com/mlperf/mlbox/) is licensed under the Apache License 2.0. 
+mlperf/mlbox is licensed under the Apache License 2.0. 
 
-See [LICENSE](https://github.com/mlperf/mlbox/blob/master/LICENSE) for more information.
+See https://github.com/mlperf/mlbox/blob/master/LICENSE for more information
 
 ## Support
 
-[Create a GitHub issue](https://github.com/mlperf/mlbox/issues/new/choose)
+Create an issue https://github.com/mlperf/mlbox/issues/new/choose
