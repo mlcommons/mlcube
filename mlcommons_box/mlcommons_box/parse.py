@@ -20,7 +20,7 @@ class MLBoxMetadata:
 def _register_schemas():
   MLSchema.populate_registry()
   # TODO fix pathing
-  MLSchema.append_schema_to_registry(Path(Path(__file__).parent,  "schemas"))
+  MLSchema.append_schema_to_registry(Path(Path(__file__).parent, "schemas"))
 
 
 def parse_mlbox_invoke(filename):
