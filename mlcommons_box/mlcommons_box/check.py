@@ -7,12 +7,10 @@ Will crawl a parsed metadata and check for sanity and correctness.
 import sys
 
 from pathlib import Path
-
-from . import mlbox_parse
-
+from mlcommons_box.parse import parse_mlbox
 
 def check_root_dir(root_dir):
-  metadata, err = mlbox_parse.parse_mlbox(Path(root_dir).resolve().as_posix())
+  metadata, err = parse_mlbox(Path(root_dir).resolve().as_posix())
   if err:
     return None, err
 
@@ -31,7 +29,7 @@ def check_root_dir_or_die(root_dir):
 
 
 def check_invoke_file(invoke_file):
-  metadata, err = mlbox_parse.parse_mlbox_invoke(Path(invoke_file).resolve().as_posix())
+  metadata, err = parse_mlbox_invoke(Path(invoke_file).resolve().as_posix())
   if err:
     return None, err
 
