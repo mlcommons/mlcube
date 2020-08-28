@@ -1,6 +1,8 @@
+import os
 import copy
 from enum import Enum
 from typing import Optional
+from mlcommons_box.common.utils import Utils
 
 
 """
@@ -88,13 +90,34 @@ class MLBox(object):
 
 class Platform(object):
     """Defined SHH Runner platform parameters."""
-    def __init__(self, platform: dict):
-        """
-        Args:
-            platform (dict): Content of the MLBox platform file for the SHH runner.
-        """
-        print(platform)
-        self.platform = copy.deepcopy(platform)
+    def __init__(self, path: str, mlbox_qualified_name: str):
+        """"""
+        metadata = Utils.load_yaml(path)
+
+        if 'host' not in metadata:
+            raise ValueError("Missing mandatory parameter 'host'")
+        if 'user' not in metadata:
+            raise ValueError("Missing mandatory parameter 'user'")
+        #
+        metadata['env'] = Utils.get(metadata, 'env', {'path': None, 'sync': True,
+                                                      'interpreter': {'type': 'system', 'python': 'python'},
+                                                      'variables': {}})
+        metadata['env']['path'] = Utils.get(metadata['env'], 'path', '.mlbox')
+        metadata['env']['sync'] = Utils.get(metadata['env'], 'sync', True)
+        metadata['env']['interpreter'] = Utils.get(metadata['env'], 'interpreter',
+                                                   {'type': 'system', 'python': 'python'})
+        metadata['env']['variables'] = Utils.get(metadata['env'], 'variables', {})
+
+        metadata['mlbox'] = Utils.get(metadata, 'mlbox', {'path': None, 'sync': True})
+        metadata['mlbox']['path'] = Utils.get(
+            metadata['mlbox'],
+            'path',
+            os.path.join(metadata['env']['path'], 'mlboxes', mlbox_qualified_name)
+        )
+        metadata['mlbox']['sync'] = Utils.get(metadata['mlbox'], 'sync', True)
+
+        self.type: str = 'ssh'
+        self.platform: dict = copy.deepcopy(metadata)
 
     @property
     def host(self) -> Optional[str]:
@@ -113,6 +136,11 @@ class Platform(object):
         return self.platform.get('user', None)
 
     @property
+    def mlbox_platform(self) -> Optional[str]:
+        """Rename me."""
+        return self.platform.get('platform', None)
+
+    @property
     def env(self) -> Env:
         """
         Returns:
@@ -129,4 +157,5 @@ class Platform(object):
         return MLBox(**self.platform['mlbox'])
 
     def __str__(self) -> str:
-        return f"Platform(host={self.host}, user={self.user}, env={self.env}, mlbox={self.mlbox})"
+        return f"Platform(host={self.host}, user={self.user}, platform={self.platform}, "\
+               f"env={self.env}, mlbox={self.mlbox})"
