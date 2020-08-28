@@ -1,0 +1,19 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type:
+  meta: mlbox_singularity
+
+schema_version:
+  # User provided: Identifies version of mlbox_input to use
+  type: semver
+  required: True
+
+schema_type:
+  # User provided: Identifies that this is a mlbox_input
+  type: string
+  required: True
+
+image:
+  type: string
+  required: True

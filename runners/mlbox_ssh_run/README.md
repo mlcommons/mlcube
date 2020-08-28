@@ -2,12 +2,16 @@
 
 This is the port of the SHH runner from this [repository](https://github.com/sergey-serebryakov/mlbox/tree/feature/mlbox_runners_v2)
 
+__Porting Status__  
+- Support for new MLBox directory structure.
+- Still runs only docker MLBoxes. Configure phase works, the run phase does not because of different directory tree.
+
 ## Pre-requisites
 1. Remote server available via SSH/rsync.
 2. Password-less login with public/private keys. If it's not the case, the ssh runner will be asking for a password 
    several times (quite annoying).
-3. Remote server must provide python interpreter with ssh runner requirements (`mlspeclib`). It can be either a system
-   python or user python (virtualenv, conda etc.). Full path to the python executable must be known.
+3. Remote server must provide python interpreter with ssh runner requirements (`mlspeclib`, `typer`). It can be either
+   a system python or user python (virtualenv, conda etc.). Full path to the python executable must be known.
 4. Python version should be at least 3.5 (or maybe 3.6 - type annotations are used).
  
 ## Current limitations (may not be the complete list)
@@ -20,7 +24,7 @@ This is the port of the SHH runner from this [repository](https://github.com/ser
 > Pretty much all of these can easily be solved. In fact, the original repo do not have the first three limitations.
 
 ## How to use SSH runner using MNIST example MLBox
-1. Copy the [platform.yaml.template](./platform.yaml.template) file to the mlbox root directory and rename it to
+1. Copy the `ssh.yaml` platform file in the `platform` directory of a MLBox. 
    `platform.yaml`.
 2. Edit `platform.yaml`. Change the following fields: 
    - `host`: IP address of the remote host
@@ -31,12 +35,22 @@ This is the port of the SHH runner from this [repository](https://github.com/ser
      _http_proxy_ and _https_proxy_ variables need to be set.
 3. Configure remote host (copy mlbox runners, mlbox, build docker image) - run in the mlbox root directory:
    ```shell script
-   python ./mlbox_ssh_run/ssh_run.py configure ./examples/mnist/mlbox --platform ./platform.yaml
+   export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_ssh_run
+
+   python -m mlbox_ssh_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/ssh.yaml
    ```  
 4. Run two tasks - download data and model training. After each task execution, local mlbox workspace directory
    will contain tasks' output artifacts (data sets, log files, models etc.):
    ```shell script
-    python ./mlbox_ssh_run/ssh_run.py run ./examples/mnist/mlbox/run/download.yaml --platform ./platform.yaml
+    python -m mlbox_ssh_run run --mlbox=examples/mnist --platform=examples/mnist/platform/ssh.yaml --task=examples/mnist/run/download.yaml
 
-    python ./mlbox_ssh_run/ssh_run.py run ./examples/mnist/mlbox/run/train.yaml --platform ./platform.yaml
+    python -m mlbox_ssh_run run --mlbox=examples/mnist --platform=examples/mnist/platform/ssh.yaml --task=examples/mnist/run/train.yaml
    ```
+
+
+
+
+
+
+
+
