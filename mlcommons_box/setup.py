@@ -1,10 +1,6 @@
 from setuptools import find_packages, setup
 import os
 
-entry_point = (
-    "mlcommons_box = mlcommons_box.main:cli.app"
-)
-
 # get the dependencies and installs
 with open("requirements.txt", "r", encoding="utf-8") as f:
     requires = []
@@ -26,7 +22,10 @@ setup(
     name="mlcommons_box",
     version="0.1",
     packages=find_packages(exclude=["tests"]),
-    entry_points={"console_scripts": [entry_point]},
+    entry_points='''
+        [console_scripts]
+        mlcommons_box=mlcommons_box.main:cli
+    ''',
     install_requires=requires,
     package_data={"": extra_files},
     extras_require={},

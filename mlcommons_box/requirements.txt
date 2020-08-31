@@ -4,7 +4,7 @@ pytest-cov>=2.5, <3.0
 pytest-mock>=1.7.1,<2.0
 pytest>=5.0, <6.0
 wheel==0.32.2
-typer[all]==0.3.2
+click==7.1.2
 halo==0.0.30
 mlspeclib==0.0.7
 coloredlogs==14.0
