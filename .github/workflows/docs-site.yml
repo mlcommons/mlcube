@@ -25,10 +25,10 @@ jobs:
           mkdocs build --theme material \
                 --site-dir ../site/
       - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3.5.6
+        uses: peaceiris/actions-gh-pages@v3.6.4
         with:
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          deploy_key: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
           allow_empty_commit: true
