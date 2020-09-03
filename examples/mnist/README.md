@@ -34,7 +34,7 @@ such as Singularity containers should not be stored here unless users want to sy
   virtualenv -p python3.8 ./env
   source ./env/bin/activate
   pip install typer mlspeclib
-  export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run
+  export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run
   ```
 
 - Specify path to the Singularity image. In MNIST MLBox (`platform/singularity.yaml`), the path is
@@ -55,4 +55,30 @@ such as Singularity containers should not be stored here unless users want to sy
   ```shell script
   python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml --task=examples/mnist/run/download.yaml
   python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml --task=examples/mnist/run/train.yaml
+  ```
+
+### End to end example using Docker runner and GitHub source tree
+- Setup and activate python virtual environment, install runner requirements
+  ```shell script
+  virtualenv -p python3.8 ./env
+  source ./env/bin/activate
+  pip install typer mlspeclib
+  export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run
+  ```
+
+- Setup environment. This step is optional. Docker runner uses `http_proxy` and `https_proxy` environmental variables
+  (if set) and passes them to docker's build and run phases. 
+  ```shell script
+  export https_proxy=${http_proxy}
+  ```
+
+- Configure MNIST MLBox.
+  ```shell script
+  python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
+  ```
+
+- Run two tasks - `download` (download data) and `train`
+  ```shell script
+  python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
+  python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
   ```
