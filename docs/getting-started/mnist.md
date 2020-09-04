@@ -307,7 +307,7 @@ Python >= 3.6 is required together with runners' python dependencies:
 virtualenv -p python3.8 ./env
 source ./env/bin/activate
 pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run:$(pwd)/runners/mlbox_ssh_run
 ```
 
 Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
