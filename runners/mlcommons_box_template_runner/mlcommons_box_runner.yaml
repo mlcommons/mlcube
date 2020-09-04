@@ -1,0 +1,25 @@
+schema_version: 0.1.0
+schema_type: mlcommons_box_runner
+
+platform:
+  # type of platform the runner supports
+  type: PLATFORM_NAME
+  # the platform versions that the runner can support
+  # a runner should check version compatibility between the mlbox,
+  # the runner and the platform
+  version_filter:
+    min: null
+    max: null
+    good_list: []
+    bad_list: []
+config_options:
+  # the exec_types lists the supported spec format in which the runner can
+  # specify how to execute an action. each item in the list corresponds to
+  # a pre-defiend schema which can be used to validate an exec spec.
+  exec_types:
+  - "cli"
+  # the actions that the runner can take, the actions are used as
+  # runner subcommand
+  actions:
+  - "configure"
+  - "run"
