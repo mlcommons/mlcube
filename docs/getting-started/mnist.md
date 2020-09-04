@@ -293,3 +293,59 @@ mnist/                                   # MLBox root directory.
         singularity.yaml                 #    Singularity runtime definition. 
   mlbox.yaml                             # MLBox definition file.
 ```
+
+
+## Running MNIST MLBox
+This tutorial covers the case when MLBox library and MNIST MLBox are cloned from the GitHub repository:
+```
+git clone https://github.com/mlperf/mlbox ./mlbox
+cd ./mlbox
+```
+
+Python >= 3.6 is required together with runners' python dependencies:
+```
+virtualenv -p python3.8 ./env
+source ./env/bin/activate
+pip install typer mlspeclib
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run
+```
+
+Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
+```
+export http_proxy=...
+export https_proxy=...
+```
+
+> Before running MNIST MLBox below, it is probably a good idea to remove tasks' outputs from previous runs that are
+> located in `examples/mnist/workspace`. All directories except `parameters` can be removed.
+
+
+### Docker runner
+Configure MNIST MLBox:
+```
+python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
+```
+
+Run two tasks - `download` (download data) and `train` (train tiny neural network):
+```
+python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
+```
+
+
+### Singularity runner
+Update path to store Singularity image. Open `examples/mnist/platform/singularity.yaml` and update the `image` value
+that is set by default to `/opt/singularity/mlperf_mlbox_mnist-0.01.simg` (relative paths are supported, they are
+relative to `examples/mnist/workspace`).  
+
+
+Configure MNIST MLBox:
+```
+python -m mlbox_singularity_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml
+```
+
+Run two tasks - `download` (download data) and `train` (train tiny neural network):
+```
+python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml --task=examples/mnist/run/download.yaml
+python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml --task=examples/mnist/run/train.yaml
+```
