@@ -1,0 +1,15 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type: 
+  meta: mlbox_runner
+
+schema_version:
+  # User previded: Identifies version of mlbox_input to use
+  type: semver
+  required: True
+
+schema_type:
+  # User previded: Identifies that this is a mlbox_input
+  type: string
+  required: True
