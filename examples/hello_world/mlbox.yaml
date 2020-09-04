@@ -8,5 +8,5 @@ mlbox_spec_version: 0.1.0
 
 tasks:
   - 'tasks/hello.yaml'
-  - 'tasks/goodbye.yaml'
+  - 'tasks/bye.yaml'
 
