@@ -6,6 +6,8 @@ pytest>=5.0, <6.0
 wheel==0.32.2
 click==7.1.2
 halo==0.0.30
-mlspeclib==0.0.7
+mlspeclib==1.0.0
 coloredlogs==14.0
 cookiecutter==1.7.2
+docker==4.3.1
+pyyaml==5.3.1
