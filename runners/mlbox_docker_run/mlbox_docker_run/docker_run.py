@@ -57,6 +57,6 @@ class DockerRun(object):
 
         # Let's assume singularity containers provide entry point in the right way.
         args = ' '.join(args)
-        cmd = f"{docker_exec} run {volumes_str} {env_args} {image_name} {args}"
+        cmd = f"{docker_exec} run --rm --net=host --privileged=true {volumes_str} {env_args} {image_name} {args}"
         logger.info(cmd)
         Utils.run_or_die(cmd)
