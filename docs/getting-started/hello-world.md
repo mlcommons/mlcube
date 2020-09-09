@@ -25,7 +25,7 @@ Python >= 3.6 is required together with runners' python dependencies:
 virtualenv -p python3.8 ./env
 source ./env/bin/activate
 pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run:$(pwd)/runners/mlbox_ssh_run
 ```
 
 Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
@@ -40,7 +40,7 @@ command providing path to a MLBox root directory and path to a platform configur
 docker-based MLBox, so users provide path to a Docker platform configuration file that sets a number of parameters,
 including docker image name:
 ```
-python -m mlbox_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml
+python -m mlbox_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
 ```
 Docker runner will build a docker image for the Hello World MLBox.
 
@@ -49,8 +49,8 @@ Docker runner will build a docker image for the Hello World MLBox.
 In order to run MLBox, users need to provide the path to the root directory of the MLBox, platform configuration file
 and path to a task definition file. Run the following two commands one at a time:
 ```
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml --task=examples/hello_world/run/alice/bye.yaml
+python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/bye.yaml
 ```
 MLBox creates a file `examples/hello_world/workspace/chats/chat_with_alice.txt` that contains the following:
 ```
@@ -93,8 +93,8 @@ output_binding:
 
 Run the following two commands one at a time:
 ```
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml --task=examples/hello_world/run/donald/hello.yaml
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml --task=examples/hello_world/run/donald/bye.yaml
+python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/hello.yaml
+python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/bye.yaml
 ```
 MLBox creates a file `examples/hello_world/workspace/chats/chat_with_donald.txt` that contains the following:
 ```
@@ -117,11 +117,11 @@ def get_greeting_message(chat_file: str) -> str:
 
 Since we updated a file in `build` subdirectory, we need to re-configure the MLBox:
 ```
-python -m mlbox_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml
+python -m mlbox_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
 ```
 Now, run two `hello` task again:
 ```
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platform/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
 ```
 The MLBox recognized it was not the first time it talked to Alice, and changed the greeting:
 ```

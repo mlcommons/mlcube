@@ -1,28 +1,35 @@
 import os
-import typer
+import click
 from mlcommons_box import parse   # Do not remove (it registers schemas on import)
 from mlcommons_box.common import mlbox_metadata
 from mlbox_docker_run import metadata
 from mlbox_docker_run.docker_run import DockerRun
 
 
-app = typer.Typer()
+@click.group(name='mlbox_docker_run')
+def cli():
+    pass
 
 
-@app.command()
-def configure(mlbox: str = typer.Option(...), platform: str = typer.Option(...)):
+@cli.command(name='configure', help='Configure docker-based MLBox on a local host.')
+@click.option('--mlbox', required=True, type=click.Path(exists=True), help='Path to MLBox directory.')
+@click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLBox Platform definition file.')
+def configure(mlbox: str, platform: str):
     mlbox: mlbox_metadata.MLBox = mlbox_metadata.MLBox(path=mlbox)
-    mlbox.platform = metadata.DockerPlatform(path=platform)
+    mlbox.platform = metadata.DockerPlatform(path=platform, mlbox=mlbox)
     print(mlbox)
 
     runner = DockerRun(mlbox)
     runner.configure()
 
 
-@app.command()
-def run(mlbox: str = typer.Option(...), platform: str = typer.Option(...), task: str = typer.Option(...)):
+@cli.command(name='run', help='Run docker-based MLBox on a local host.')
+@click.option('--mlbox', required=True, type=click.Path(exists=True), help='Path to MLBox directory.')
+@click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLBox Platform definition file.')
+@click.option('--task', required=True, type=click.Path(exists=True), help='Path to MLBox Task definition file.')
+def run(mlbox: str, platform: str, task: str):
     mlbox: mlbox_metadata.MLBox = mlbox_metadata.MLBox(path=mlbox)
-    mlbox.platform = metadata.DockerPlatform(path=platform)
+    mlbox.platform = metadata.DockerPlatform(path=platform, mlbox=mlbox)
     mlbox.invoke = mlbox_metadata.MLBoxInvoke(task)
     mlbox.task = mlbox_metadata.MLBoxTask(os.path.join(mlbox.tasks_path, f'{mlbox.invoke.task_name}.yaml'))
     print(mlbox)
@@ -32,4 +39,4 @@ def run(mlbox: str = typer.Option(...), platform: str = typer.Option(...), task:
 
 
 if __name__ == '__main__':
-    app()
+    cli()

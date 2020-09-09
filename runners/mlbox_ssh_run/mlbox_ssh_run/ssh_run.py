@@ -18,7 +18,7 @@ class SSHRun(object):
     """
 
     def get_runner_on_remote_host(self):
-        config: dict = Utils.load_yaml(os.path.join(self.mlbox.root, 'platform', self.mlbox.platform.mlbox_platform))
+        config: dict = Utils.load_yaml(os.path.join(self.mlbox.root, 'platforms', self.mlbox.platform.mlbox_platform))
         if config.get('schema_type', None) == 'mlbox_singularity':
             return 'mlbox_singularity_run'
         if config.get('schema_type', None) == 'mlbox_docker':
@@ -93,7 +93,7 @@ class SSHRun(object):
         remote_task_file = os.path.join(mlbox_rel_path, 'run', os.path.basename(task_file))
         cmd = f"export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/{self.remote_runner}; "\
               f"{python} -m {self.remote_runner} run --mlbox={mlbox_rel_path} "\
-              f"--platform={mlbox_rel_path}/platform/{self.mlbox.platform.mlbox_platform} "\
+              f"--platform={mlbox_rel_path}/platforms/{self.mlbox.platform.mlbox_platform} "\
               f"--task={remote_task_file}"
         cmd = f"ssh -o StrictHostKeyChecking=no {conn} 'cd {self.mlbox.platform.env.path}; {cmd}'"
         Utils.run_or_die(cmd)

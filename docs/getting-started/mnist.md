@@ -239,7 +239,7 @@ configurations. For instance, Docker platform configuration at minimum provides 
 Platform configurations are supposed to be used by runners, and each runner has its own platform schema. The `Runners`
 documentation section provides detailed description of reference runners together with platform configuration schemas. 
 Since we wanted to support Docker and Singularity runtimes, we provide `docker.yaml` and `singularity.yaml` files in
-the `platform` subdirectory that is default location to store these types of files. Docker platform configuration is the
+the `platforms` subdirectory that is default location to store these types of files. Docker platform configuration is the
 following:
 ```yaml
 schema_version: 1.0.0
@@ -264,7 +264,7 @@ mnist/
   tasks/ {download.yaml, train.yaml}
   workspace/parameters/default.parameters.yaml
   run/ {download.yaml, train.yaml}
-  platform/
+  platforms/
     docker.yaml
     singularity.yaml
   mlbox.yaml
@@ -288,7 +288,7 @@ mnist/                                   # MLBox root directory.
     run/                                 # Run configurations - bind task parameters and values.
         download.yaml                    #    Concrete run specification for the download task.
         train.yaml                       #    Concrete run specification for the train task.
-    platform/                            # Platform definition files - define how MLBox runs.
+    platforms/                           # Platform definition files - define how MLBox runs.
         docker.yaml                      #    Docker runtime definition.
         singularity.yaml                 #    Singularity runtime definition. 
   mlbox.yaml                             # MLBox definition file.
@@ -323,29 +323,29 @@ export https_proxy=...
 ### Docker runner
 Configure MNIST MLBox:
 ```
-python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
+python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
 ```
-python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
+python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
 ```
 
 
 ### Singularity runner
-Update path to store Singularity image. Open `examples/mnist/platform/singularity.yaml` and update the `image` value
+Update path to store Singularity image. Open `examples/mnist/platforms/singularity.yaml` and update the `image` value
 that is set by default to `/opt/singularity/mlperf_mlbox_mnist-0.01.simg` (relative paths are supported, they are
 relative to `examples/mnist/workspace`).  
 
 
 Configure MNIST MLBox:
 ```
-python -m mlbox_singularity_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml
+python -m mlbox_singularity_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
 ```
-python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml --task=examples/mnist/run/download.yaml
-python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platform/singularity.yaml --task=examples/mnist/run/train.yaml
+python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
+python -m mlbox_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
 ```
