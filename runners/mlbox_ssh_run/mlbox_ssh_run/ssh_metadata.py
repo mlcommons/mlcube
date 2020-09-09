@@ -2,6 +2,7 @@ import os
 import copy
 from enum import Enum
 from typing import Optional
+from mlcommons_box.common import mlbox_metadata
 from mlcommons_box.common.utils import Utils
 
 
@@ -89,9 +90,13 @@ class MLBox(object):
 
 
 class Platform(object):
-    """Defined SHH Runner platform parameters."""
-    def __init__(self, path: str, mlbox_qualified_name: str):
-        """"""
+
+    def __init__(self, path: str, mlbox: mlbox_metadata.MLBox):
+        """
+        Args:
+            path (str): Path to a SSH platform that is usually located in the MLBox `platforms` directory.
+            mlbox (MLBox): MLBox definition object.
+        """
         metadata = Utils.load_yaml(path)
 
         if 'host' not in metadata:
@@ -112,7 +117,7 @@ class Platform(object):
         metadata['mlbox']['path'] = Utils.get(
             metadata['mlbox'],
             'path',
-            os.path.join(metadata['env']['path'], 'mlboxes', mlbox_qualified_name)
+            os.path.join(metadata['env']['path'], 'mlboxes', mlbox.qualified_name)
         )
         metadata['mlbox']['sync'] = Utils.get(metadata['mlbox'], 'sync', True)
 

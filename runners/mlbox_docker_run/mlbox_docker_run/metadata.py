@@ -1,12 +1,15 @@
+from typing import Any
 from mlspeclib import MLObject
 
 
 class DockerPlatform(object):
-    """MLBox implementation is the singularity image."""
-    def __init__(self, path: str):
+
+    def __init__(self, path: str, **kwargs: Any):
         """
         Args:
-            path (str): Path to a  'mlbox_docker.yaml' that is usually located in the MLBox root directory.
+            path (str): Path to a Docker platform that is usually located in the MLBox `platforms` directory.
+            **kwargs (Any): Reserved for future use to unify implementation of Platform Definition classes across
+                various runners.
         """
         metadata, err = MLObject.create_object_from_file(path)
         if err:
