@@ -6,12 +6,15 @@ from mlcommons_box_ssh_run import ssh_metadata
 from mlcommons_box_ssh_run.ssh_run import SSHRun
 
 
-@click.group(name='mlbox_docker_run')
+@click.group(name='mlcommons_box_ssh_run')
 def cli():
+    """
+    MLCommons-Box SSH Runner runs boxes (packaged Machine Learning (ML) workloads) in the remote environment.
+    """
     pass
 
 
-@cli.command(name='configure', help='Configure docker-based MLBox on a local host.')
+@cli.command(name='configure', help='Configure remote environment for MLCommons-Box ML workload.')
 @click.option('--mlbox', required=True, type=click.Path(exists=True), help='Path to MLBox directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLBox Platform definition file.')
 def configure(mlbox: str, platform: str):
@@ -23,7 +26,7 @@ def configure(mlbox: str, platform: str):
     runner.configure()
 
 
-@cli.command(name='run', help='Run docker-based MLBox on a local host.')
+@cli.command(name='run', help='Run MLCommons-Box ML workload in the remote environment.')
 @click.option('--mlbox', required=True, type=click.Path(exists=True), help='Path to MLBox directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLBox Platform definition file.')
 @click.option('--task', required=True, type=click.Path(exists=True), help='Path to MLBox Task definition file.')
