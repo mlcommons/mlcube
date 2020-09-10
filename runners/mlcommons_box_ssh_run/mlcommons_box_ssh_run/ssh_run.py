@@ -1,9 +1,10 @@
 import os
 import logging
 from mlcommons_box import parse   # Do not remove (it registers schemas on import)
-from mlbox_ssh_run.ssh_metadata import InterpreterType
-from mlbox_ssh_run.utils import Utils
 from mlcommons_box.common import mlbox_metadata
+from mlcommons_box_ssh_run.ssh_metadata import InterpreterType
+from mlcommons_box_ssh_run.utils import Utils
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +21,9 @@ class SSHRun(object):
     def get_runner_on_remote_host(self):
         config: dict = Utils.load_yaml(os.path.join(self.mlbox.root, 'platforms', self.mlbox.platform.mlbox_platform))
         if config.get('schema_type', None) == 'mlbox_singularity':
-            return 'mlbox_singularity_run'
+            return 'mlcommons_box_singularity_run'
         if config.get('schema_type', None) == 'mlbox_docker':
-            return 'mlbox_docker_run'
+            return 'mlcommons_box_docker_run'
         raise ValueError(f"Invalid platform configuration file")
 
     def __init__(self, mlbox: mlbox_metadata.MLBox):

@@ -1,9 +1,9 @@
 # Hello World
 ## Docker runtime
-Hello World MLBox is an example of a docker-based MLBox, and docker runtime must be installed in a system. Installation 
-guides for various operating systems can be found [here](https://docs.docker.com/engine/install/). This example was 
-tested on a system where users are in the docker group and run docker without `sudo`. To add yourself to a docker group, 
-run the following:
+Hello World MLCommons-Box is an example of a docker-based box. Docker runtime must be installed in a system.
+Installation guides for various operating systems can be found [here](https://docs.docker.com/engine/install/). This
+example was tested on a system where users are in the docker group and run docker without `sudo`. To add yourself to a
+docker group, run the following:
 ```
 sudo groupadd docker             # Add the docker group if it doesn't already exist.
 sudo gpasswd -a ${USER} docker   # Add the connected user "${USER}" to the docker group. Change the user name to match your preferred user.
@@ -13,8 +13,8 @@ newgrp docker                    # Either do aÂ newgrp dockerÂ or log out/in t
 
  
 ## Host python environment
-Hello World is an example of a simple python program distributed as an MLBox. This tutorial covers the case when MLBox 
-library and Hello World MLBox are cloned from the GitHub repository:
+Hello World is an example of a simple python program distributed as an MLCommons-Box. This tutorial covers the case
+when the MLCommons-Box library and Hello World box are cloned from the GitHub repository:
 ```
 git clone https://github.com/mlperf/mlbox ./mlbox
 cd ./mlbox
@@ -25,7 +25,7 @@ Python >= 3.6 is required together with runners' python dependencies:
 virtualenv -p python3.8 ./env
 source ./env/bin/activate
 pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlbox_singularity_run:$(pwd)/runners/mlbox_docker_run:$(pwd)/runners/mlbox_ssh_run
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity_run:$(pwd)/runners/mlcommons_box_docker_run:$(pwd)/runners/mlcommons_box_ssh_run
 ```
 
 Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
@@ -34,31 +34,31 @@ export http_proxy=...
 export https_proxy=...
 ```
 
-## Configuring MLBox
-MLBoxes need to be configured before they can run. To do so, users need to run the MLBox runner with `configure` 
-command providing path to a MLBox root directory and path to a platform configuration file. Hello World MLBox is a 
-docker-based MLBox, so users provide path to a Docker platform configuration file that sets a number of parameters,
-including docker image name:
+## Configuring Hello World MLCommons-Box
+Boxes need to be configured before they can run. To do so, users need to run a MLCommons-Box runner with `configure` 
+command providing path to a box root directory and path to a platform configuration file. The Hello World box is a 
+docker-based box, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
+parameters, including docker image name:
 ```
-python -m mlbox_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
+python -m mlcommons_box_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
 ```
-Docker runner will build a docker image for the Hello World MLBox.
+The Docker runner will build a docker image for the Hello World box.
 
 
-## Running MLBox
-In order to run MLBox, users need to provide the path to the root directory of the MLBox, platform configuration file
-and path to a task definition file. Run the following two commands one at a time:
+## Running Hello World MLCommons-Box 
+In order to run the Hello World box, users need to provide the path to the root directory of the box, platform
+configuration file and path to a task definition file. Run the following two commands one at a time:
 ```
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/bye.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/bye.yaml
 ```
-MLBox creates a file `examples/hello_world/workspace/chats/chat_with_alice.txt` that contains the following:
+Hello World creates a file `examples/hello_world/workspace/chats/chat_with_alice.txt` that contains the following:
 ```
 [2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 ```
  
-## Modifying MLBox
+## Modifying MLCommons-Box
 
 ### Adding new user 
 Create a new file `examples/hello_world/workspace/names/donald.txt` with the following content: `Donald`.
@@ -93,10 +93,11 @@ output_binding:
 
 Run the following two commands one at a time:
 ```
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/hello.yaml
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/bye.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/hello.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/bye.yaml
 ```
-MLBox creates a file `examples/hello_world/workspace/chats/chat_with_donald.txt` that contains the following:
+The Hello World box creates a file `examples/hello_world/workspace/chats/chat_with_donald.txt` that contains the
+following:
 ```
 [2020-09-03 09:23:09.569558]  Hi, Donald! Nice to meet you.
 [2020-09-03 09:23:20.076845]  Bye, Donald! It was great talking to you.
@@ -104,24 +105,24 @@ MLBox creates a file `examples/hello_world/workspace/chats/chat_with_donald.txt`
 
 
 ### Providing a better greeting message
-The way how Hello World MLBox application was implemented, the greeting message is always the following: 
-`Nice to meet you.`. We will update the implementation so that if this is not the first time Alice says `hello`, the 
-MLBox will respond: `Nice to see you again.`.
+Because how Hello World box was implemented, the greeting message is always the following: `Nice to meet you.`. We will
+update the implementation so that if this is not the first time Alice says `hello`, the  MLBox will respond: `Nice to 
+see you again.`.
 
-Modify the file `examples/hello_world/build/hello_world.py`. Update the function named `get_greeting_message` at line
+Modify the file `examples/hello_world/build/hello_world.py`. Update the function named `get_greeting_message` on line
 14. It should have the following implementation:
 ```python
 def get_greeting_message(chat_file: str) -> str:
     return "Nice to meet you." if not os.path.exists(chat_file) else "Nice to see you again."
 ```
 
-Since we updated a file in `build` subdirectory, we need to re-configure the MLBox:
+Since we updated a file in the `build` subdirectory, we need to re-configure the Hello World box:
 ```
-python -m mlbox_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
+python -m mlcommons_box_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
 ```
 Now, run two `hello` task again:
 ```
-python -m mlbox_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
 ```
 The MLBox recognized it was not the first time it talked to Alice, and changed the greeting:
 ```

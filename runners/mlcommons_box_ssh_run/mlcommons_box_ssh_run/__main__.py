@@ -2,8 +2,8 @@ import os
 import click
 from mlcommons_box import parse   # Do not remove (it registers schemas on import)
 from mlcommons_box.common import mlbox_metadata
-from mlbox_ssh_run import ssh_metadata
-from mlbox_ssh_run.ssh_run import SSHRun
+from mlcommons_box_ssh_run import ssh_metadata
+from mlcommons_box_ssh_run.ssh_run import SSHRun
 
 
 @click.group(name='mlbox_docker_run')
