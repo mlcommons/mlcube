@@ -1,8 +1,8 @@
 import os
 import logging
-from mlbox_singularity_run import metadata
 from mlcommons_box.common import mlbox_metadata
 from mlcommons_box.common.utils import Utils
+from mlcommons_box_singularity_run import metadata
 
 logger = logging.getLogger(__name__)
 

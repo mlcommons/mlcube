@@ -1,10 +1,11 @@
 # Docker Runner
-Docker runner uses docker/nvidia-docker to run MLBoxes. It supports two mandatory commands - `configure` and `run` with
-standard arguments - `mlbox`, `platform` and `task`. Docker platform configuration is used to configure docker runner.
+Docker runner uses docker/nvidia-docker to run MLCommons-Box boxes. It supports two mandatory commands - `configure` and
+`run` with standard arguments - `mlbox`, `platform` and `task`. Docker platform configuration is used to configure
+docker runner.
 
 ## Platform Configuration File
 Docker platform configuration file is a YAML file that follows `mlbox_docker` ML schema. The configuration file for the
-reference MNIST MLBox is the following:
+reference MNIST box is the following:
 ```yaml
 schema_version: 1.0.0
 schema_type: mlbox_docker
@@ -21,9 +22,9 @@ configure and run phases:
 
 
 ## Build command
-Docker runner uses `{MLBOX_ROOT}/build` directory as the build context directory. This implies that all files that must
-be packaged in a docker image, must be located in that directory, including source files, python requirements, resource
-files, ML models etc. The docker recipe must have the standard name `Dockerfile`.
+Docker runner uses `{MLCOMMONS_BOX_ROOT}/build` directory as the build context directory. This implies that all files
+that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
+resource files, ML models etc. The docker recipe must have the standard name `Dockerfile`.
 
 In current implementation, only docker `build` is supported (i.e., Dockerfile must present). In future releases, Docker
 runner will support docker `pull` as well.
@@ -33,10 +34,10 @@ Docker runner under the hood runs the following command line:
 cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile .
 ```  
 where:  
-- `{build_path}` is `{MLBOX_ROOT}/build` root directory.  
-- `{env_args}` is the arguments retrieved from user environment, currently, only `http_proxy` and `https_proxy` are
+- `{build_path}` is `{MLCOMMONS_BOX_ROOT}/build` root directory.  
+- `{env_args}` is the arguments retrieved from user environment. Currently, only `http_proxy` and `https_proxy` are
   supported.  
--  `{image_name}` is the image name from the platform configuration file.  
+-  `{image_name}` is the image name defined in the platform configuration file.  
 
 
 ## Run command
@@ -46,10 +47,10 @@ Docker runner runs the following command:
 ```  
 where:    
 - `{docker_exec}` is the docker_runtime value from the Docker platform configuration file.  
-- `{volumes}` are the mount points that MLBox library automatically constructed based upon task input/output
+- `{volumes}` are the mount points that the runner automatically constructs based upon the task input/output
   specifications.  
 - `{env_args}` is the arguments retrieved from user environment, currently, only `http_proxy` and `https_proxy` are
   supported.  
 - `{image_name}` is the image name from the platform configuration file.  
-- `{args}` is the task command line arguments, constructed automatically by the MLBox library.  
+- `{args}` is the task command line arguments, constructed automatically by the runner.  
  
