@@ -1,0 +1,928 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation site for MLBox">
+      
+      
+      
+        <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+    
+    
+      
+        <title>MNIST - MLBox</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4dd2dd8d.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#mnist" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            MLBox
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              MNIST
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    MLBox
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hello-world/" title="Hello World" class="md-nav__link">
+      Hello World
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        MNIST
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="MNIST" class="md-nav__link md-nav__link--active">
+      MNIST
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mnist-training-code" class="md-nav__link">
+    MNIST training code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mlcommons-box-implementation" class="md-nav__link">
+    MLCommons-Box implementation
+  </a>
+  
+    <nav class="md-nav" aria-label="MLCommons-Box implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-location" class="md-nav__link">
+    Build location
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mlcommons-box-definition-file" class="md-nav__link">
+    MLCommons-Box definition file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-definition-file" class="md-nav__link">
+    Task definition file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspace" class="md-nav__link">
+    Workspace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-configurations" class="md-nav__link">
+    Run configurations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-configurations" class="md-nav__link">
+    Platform configurations
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mnist-mlcommons-box-directory-structure-summary" class="md-nav__link">
+    MNIST MLCommons-Box directory structure summary
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-mnist-mlcommons-box" class="md-nav__link">
+    Running MNIST MLCommons-Box
+  </a>
+  
+    <nav class="md-nav" aria-label="Running MNIST MLCommons-Box">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-runner" class="md-nav__link">
+    Docker Runner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#singularity-runner" class="md-nav__link">
+    Singularity Runner
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Runners
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Runners" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Runners
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/" title="Runners" class="md-nav__link">
+      Runners
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/docker-runner/" title="Docker Runner" class="md-nav__link">
+      Docker Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/singularity-runner/" title="Singularity Runner" class="md-nav__link">
+      Singularity Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/ssh-runner/" title="SSH Runner" class="md-nav__link">
+      SSH Runner
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#mnist-training-code" class="md-nav__link">
+    MNIST training code
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mlcommons-box-implementation" class="md-nav__link">
+    MLCommons-Box implementation
+  </a>
+  
+    <nav class="md-nav" aria-label="MLCommons-Box implementation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#build-location" class="md-nav__link">
+    Build location
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mlcommons-box-definition-file" class="md-nav__link">
+    MLCommons-Box definition file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#task-definition-file" class="md-nav__link">
+    Task definition file
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#workspace" class="md-nav__link">
+    Workspace
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-configurations" class="md-nav__link">
+    Run configurations
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform-configurations" class="md-nav__link">
+    Platform configurations
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mnist-mlcommons-box-directory-structure-summary" class="md-nav__link">
+    MNIST MLCommons-Box directory structure summary
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-mnist-mlcommons-box" class="md-nav__link">
+    Running MNIST MLCommons-Box
+  </a>
+  
+    <nav class="md-nav" aria-label="Running MNIST MLCommons-Box">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-runner" class="md-nav__link">
+    Docker Runner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#singularity-runner" class="md-nav__link">
+    Singularity Runner
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="mnist">MNIST<a class="headerlink" href="#mnist" title="Permanent link">&para;</a></h1>
+<p>The <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a> is a collection of 60,000 handwritten digits widely used for
+training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCommons-Box example demonstrates
+how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
+validation and inference code) as MLCommons-Box boxes. MLCommons-Box establishes a standard to package user workloads,
+and provides unified command line interface. In addition, MLCommons-Box provides a number of reference runners - python
+packages that can run boxes on different platforms including docker and singularity.</p>
+<blockquote>
+<p>A data scientist has been working on a machine learning project. The goal is to train a simple neural network to
+classify collection of 60,000 small images into 10 classes. </p>
+</blockquote>
+<h2 id="mnist-training-code">MNIST training code<a class="headerlink" href="#mnist-training-code" title="Permanent link">&para;</a></h2>
+<p>Training a ML model is a process involving multiple steps such as getting data, analyzing and cleaning data, 
+splitting into train/validation/test data sets, running hyper-parameter optimization experiments and performing final
+model testing. It is a relatively small and well studied dataset that provides standard train/test split. In this simple
+example a developer needs to implement two steps - (1) downloading data and (2) training a model. We'll call these steps
+as <code>tasks</code>. Each task requires several parameters, such as URL of the data set that we need to download, location on a
+local disk where the data set will be serialized, path to a directory that will contain training artifacts such as log
+files, training snapshots and ML models. We can characterize these two tasks in the following way:<br />
+- <code>Data Download</code> task:<br />
+  - <strong>Inputs</strong>: None. We'll assume the download URL is defined in the source code.<br />
+  - <strong>Outputs</strong>: Directory to serialize the data set (<code>data_dir</code>) and directory to serialize log files (<code>log_dir</code>).<br />
+- <code>Training</code> task:<br />
+  - <strong>Inputs</strong>: Directory with MNIST data set (<code>data_dir</code>), training hyper-parameters defined in a file
+    (<code>parameters_file</code>).<br />
+  - <strong>Outputs</strong>:  Directory to store training results (<code>model_dir</code>) and directory to store log files (<code>log_dir</code>).  </p>
+<p>We have intentionally made all input/output parameters to be file system artifacts. By doing so, we support
+reproducibility. Instead of command line arguments that can easily be lost, we store them in files. There are many
+different ways to implement the MNIST example. For simplicity, we assume the following:<br />
+- We use one python file.<br />
+- Task name (download, train) is a command line positional parameter.<br />
+- Both tasks write logs, so it makes sense to add parameter accepting directory for log files.<br />
+- The download task accepts additional data directory parameter. <br />
+- The train task accepts such parameters as data and model directories, path to a file with hyper-parameter.
+- Configurable hyper-parameters are: (1) optimizer name, (2) number of training epochs and (3) global batch size. </p>
+<p>Then, our implementation could look like this. Parse command line and identify task. If it is <code>download</code>, call a
+function that downloads data sets. If it is <code>train</code>, train a model. This is sort of single entrypoint implementation
+where we run one script asking to perform various tasks. We run our script (mnist.py) in the following way:
+<div class="highlight"><pre><span></span><code>python mnist.py download --data_dir=PATH --log_dir=PATH
+python mnist.py train --data_dir=PATH --log_dir=PATH --model_dir=PATH --parameters_file=PATH
+</code></pre></div></p>
+<h2 id="mlcommons-box-implementation">MLCommons-Box implementation<a class="headerlink" href="#mlcommons-box-implementation" title="Permanent link">&para;</a></h2>
+<p>Packaging our MNIST training script as a MLCommons-Box is done in several steps. We will be using a directory-based 
+box where a directory is structured in a certain way and contains specific files that make it MLCommons-Box compliant.
+We need to create an empty directory on a local disk. Let's assume we call it <code>mnist</code> and we'll use
+<code>{MLCOMMONS_BOX_ROOT}</code> to denote a full path to this directory. This is called a box root directory. At this point this
+directory is empty:
+<div class="highlight"><pre><span></span><code>mnist/
+</code></pre></div></p>
+<h3 id="build-location">Build location<a class="headerlink" href="#build-location" title="Permanent link">&para;</a></h3>
+<p>The box directory has a sub-directory called <code>build</code> (<code>{MLCOMMONS_BOX_ROOT}/build</code>) that stores project source files,
+resources required for training, other files to recreate run time (such as requirements.txt, docker and singularity
+recipes etc.). We need to create the build directory and copy two files: mnist.py that implements training and
+requirements.txt that lists python dependencies. By doing so, we are enforcing reproducibility. A developer of this 
+box wants to make it easier to run their training workload in a great variety of environments including universities, 
+commercial companies, HPC-friendly organizations such as national labs. One way to achieve it is to use container
+runtime such as docker or singularity. So, we'll provide both docker file and singularity recipe that we'll put into
+<code>build</code> directory as well. Thus, we'll make this directory a build context. The box directory now looks like:
+<div class="highlight"><pre><span></span><code>mnist/
+  build/
+    mnist.py
+    requirements.txt
+    Dockerfile
+    Singularity.recipe
+</code></pre></div>
+A good test at this point would be ensure that project is runnable from the build directory, and docker and singularity
+images can be built.  </p>
+<h3 id="mlcommons-box-definition-file">MLCommons-Box definition file<a class="headerlink" href="#mlcommons-box-definition-file" title="Permanent link">&para;</a></h3>
+<p>At this point we are ready to create a box definition file. This is the first definition file that makes some folder a
+MLCommons-Box folder. This is a YAML file that provides information such as name, author, version, named as <code>mlbox.yaml</code>
+and located in the box root directory . The most important section is the one that lists what tasks are implemented in
+this box:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>                            <span class="c1"># We use MLSpec library to validate YAML definition files. This is the</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_root</span>                          <span class="c1"># specification of the schema that this file must be consistent with. </span>
+
+<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mnist</span>                                      <span class="c1"># Name of this box.</span>
+<span class="nt">author</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MLPerf Best Practices Working Group</span>      <span class="c1"># A developer of the box.</span>
+<span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>                                   <span class="c1"># MLBox version.</span>
+<span class="nt">mlbox_spec_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>                        <span class="c1"># TODO: What is it?</span>
+
+<span class="nt">tasks</span><span class="p">:</span>                                           <span class="c1"># Tasks are defined in external YAML files located in tasks folder.</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;tasks/download.yaml&#39;</span>                        <span class="c1">#    &quot;Download data set&quot; task definition file.</span>
+  <span class="p p-Indicator">-</span> <span class="s">&#39;tasks/train.yaml&#39;</span>                           <span class="c1">#    &quot;Training a model&quot; task definition file.</span>
+</code></pre></div>
+At this point, the directory looks like:
+<div class="highlight"><pre><span></span><code>mnist/
+  build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
+  mlbox.yaml
+</code></pre></div></p>
+<h3 id="task-definition-file">Task definition file<a class="headerlink" href="#task-definition-file" title="Permanent link">&para;</a></h3>
+<p>The box definition file references two tasks defined in the <code>tasks</code> subdirectory. Each YAML file there defines a 
+task supported by the box. Task files are named the same as tasks. We need to create a tasks directory and two files
+inside that directory - <code>download.yaml</code> and <code>train.yaml</code>.</p>
+<p>Each task file defines input and output specifications for each task. The download task (download.yaml) is defined:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>           <span class="c1"># Task schema definition. Leave this two fields as is.</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_task</span>
+
+<span class="nt">inputs</span><span class="p">:</span> <span class="p p-Indicator">[]</span>                      <span class="c1"># Since this task does not have any inputs, the section is empty.</span>
+
+<span class="nt">outputs</span><span class="p">:</span>                        <span class="c1"># This task produces two artifacts - downloaded data and log files.</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data_dir</span>        <span class="c1">#    This parameter accepts path to a directory where data set will be serialized.</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">directory</span>       <span class="c1">#    We implicitly specify that this is a directory</span>
+
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">log_dir</span>         <span class="c1">#    This parameter accepts path to a directory with log files this task writes.</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">directory</span>       <span class="c1">#    We implicitly specify that this is a directory</span>
+</code></pre></div>
+Names of these parameters are the same that are accepted by mnist.py:
+<div class="highlight"><pre><span></span><code>python mnist.py download --data_dir=PATH --log_dir=PATH
+</code></pre></div></p>
+<p>The train task (<code>train.yaml</code>) is defined in the following way:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>                <span class="c1"># Task schema definition. Leave this two fields as is.</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_task</span>
+
+<span class="nt">inputs</span><span class="p">:</span>                              <span class="c1"># These are the task inputs.</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data_dir</span>             <span class="c1">#    This parameter accepts path to a directory where data set will be serialized.</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">directory</span>            <span class="c1">#    We implicitly specify that this is a directory</span>
+
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">parameters_file</span>      <span class="c1">#    A file containing training hyper-parameters.</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">file</span>                 <span class="c1">#    This is a file.</span>
+
+<span class="nt">outputs</span><span class="p">:</span>                             <span class="c1"># These are the task outputs.</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">log_dir</span>              <span class="c1">#    This parameter accepts path to a directory with log files this task writes.</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">directory</span>            <span class="c1">#    We implicitly specify that this is a directory</span>
+
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">model_dir</span>            <span class="c1">#    Path to a directory where training artifacts are stored.</span>
+          <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">directory</span>            <span class="c1">#    We implicitly specify that this is a directory</span>
+</code></pre></div>
+Names of these parameters are the same that are accepted by mnist.py:
+<div class="highlight"><pre><span></span><code>python mnist.py train --data_dir=PATH --log_dir=PATH --model_dir=PATH --parameters_file=PATH
+</code></pre></div>
+At this point, the MLBox directory looks like:
+<div class="highlight"><pre><span></span><code>mnist/
+  build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
+  tasks/ {download.yaml, train.yaml}
+  mlbox.yaml
+</code></pre></div></p>
+<h3 id="workspace">Workspace<a class="headerlink" href="#workspace" title="Permanent link">&para;</a></h3>
+<p>The workspace is a directory inside box (<code>workspace</code>) where, by default, input/output file system artifacts are
+stored. The are multiple reasons to have one. One is to formally have default place for data sets, configuration
+and log files etc. Having all these parameters in one place makes it simpler to run boxes on remote hosts and then
+sync results back to users' local machines.</p>
+<p>We need to be able to provide collection of hyper-parameters and formally define a directory to store logs, models and
+MNIST data set. To do so, we create the directory tree <code>workspace/parameters</code>, and then create a file 
+(<code>default.parameters.yaml</code>) with the following content:
+<div class="highlight"><pre><span></span><code><span class="nt">optimizer</span><span class="p">:</span> <span class="s">&quot;adam&quot;</span>
+<span class="nt">train_epochs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
+<span class="nt">batch_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">32</span>
+</code></pre></div>
+At this point, the box directory looks like:
+<div class="highlight"><pre><span></span><code>mnist/
+  build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
+  tasks/ {download.yaml, train.yaml}
+  workspace/
+    parameters/
+      default.parameters.yaml
+  mlbox.yaml
+</code></pre></div></p>
+<h3 id="run-configurations">Run configurations<a class="headerlink" href="#run-configurations" title="Permanent link">&para;</a></h3>
+<p>The MLCommons-Box definition file (<code>mlbox.yaml</code>) provides paths to task definition files that formally define tasks
+input/output parameters. A run configuration assigns values to task parameters. One reason to define and "implement" 
+parameters in different files is to be able to provide multiple configurations for the same task. One example could be 
+one-GPU training configuration and 8-GPU training configuration. Since we have two tasks - download and train - we need 
+to define at least two run configurations. Run configurations are defined in the <code>run</code> subdirectory.  </p>
+<p>Run configuration for the download task looks like:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>                     <span class="c1"># Run (invoke) schema definition. Leave this two fields as is.</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+
+<span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">download</span>                           <span class="c1"># Task name</span>
+
+<span class="nt">input_binding</span><span class="p">:</span> <span class="p p-Indicator">{}</span>                             <span class="c1"># No input parameters for this task.</span>
+
+<span class="nt">output_binding</span><span class="p">:</span>                               <span class="c1"># Output parameters, format is &quot;parameter: value&quot;</span>
+        <span class="nt">data_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/data</span>             <span class="c1">#    Path to serialize downloaded MNIST data set</span>
+        <span class="nt">log_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/download_logs</span>     <span class="c1">#    Path to log files.</span>
+</code></pre></div>
+The <code>$WORKSPACE</code> token is replaced with actual path to the box workspace. File system paths are relative to the
+workspace directory. This makes it possible to provide absolute paths for cases when data sets are stored on shared
+drives. Run configuration for the train task looks like:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>                     <span class="c1"># Run (invoke) schema definition. Leave this two fields as is.</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+
+<span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">train</span>                              <span class="c1"># Task name</span>
+
+<span class="nt">input_binding</span><span class="p">:</span>                                <span class="c1"># Input parameters (name: value)</span>
+        <span class="nt">data_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/data</span>
+        <span class="nt">parameters_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/parameters/default.parameters.yaml</span>
+
+<span class="nt">output_binding</span><span class="p">:</span>                               <span class="c1"># Output parameters (name: value)</span>
+        <span class="nt">log_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/train_logs</span>
+        <span class="nt">model_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/model</span>
+</code></pre></div>
+At this point, the box directory looks like:
+<div class="highlight"><pre><span></span><code>mnist/
+  build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
+  tasks/ {download.yaml, train.yaml}
+  workspace/parameters/default.parameters.yaml
+  run/
+    download.yaml
+    train.yaml
+  mlbox.yaml
+</code></pre></div></p>
+<h3 id="platform-configurations">Platform configurations<a class="headerlink" href="#platform-configurations" title="Permanent link">&para;</a></h3>
+<p>Platform configurations define how MLCommons-Box boxes run. Docker, Singularity, SSH and cloud runners have their own 
+configurations. For instance, Docker platform configuration at minimum provides image name and docker executable 
+(docker / nvidia-docker). SSH platform configuration could provide IP address of a remote host, login credentials etc.
+Platform configurations are supposed to be used by runners, and each runner has its own platform schema. The <code>Runners</code>
+documentation section provides detailed description of reference runners together with platform configuration schemas. 
+Since we wanted to support Docker and Singularity runtimes, we provide <code>docker.yaml</code> and <code>singularity.yaml</code> files in
+the <code>platforms</code> subdirectory that is default location to store these types of files. Docker platform configuration is
+the following:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_docker</span>
+
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlbox:mnist</span>   <span class="c1"># Docker image name</span>
+<span class="nt">docker_runtime</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>      <span class="c1"># Docker executable: docker or nvidia-docker</span>
+</code></pre></div></p>
+<p>Singularity platform configuration is the following:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_singularity</span>
+
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/singularity/mlperf_mlbox_mnist-0.01.simg</span>   <span class="c1"># Path to or name of a Singularity image.</span>
+</code></pre></div>
+At this point, the box directory looks like:
+<div class="highlight"><pre><span></span><code>mnist/
+  build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
+  tasks/ {download.yaml, train.yaml}
+  workspace/parameters/default.parameters.yaml
+  run/ {download.yaml, train.yaml}
+  platforms/
+    docker.yaml
+    singularity.yaml
+  mlbox.yaml
+</code></pre></div></p>
+<h2 id="mnist-mlcommons-box-directory-structure-summary">MNIST MLCommons-Box directory structure summary<a class="headerlink" href="#mnist-mlcommons-box-directory-structure-summary" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span>                                   <span class="c1"># MLBox root directory.</span>
+    <span class="l l-Scalar l-Scalar-Plain">build/</span>                               <span class="c1"># Project source code, resource files, Docker/Singularity recipes.</span>
+        <span class="l l-Scalar l-Scalar-Plain">mnist.py</span>                         <span class="c1">#    Python source code training simple neural network using MNIST data set.</span>
+        <span class="l l-Scalar l-Scalar-Plain">requirements.txt</span>                 <span class="c1">#    Python project dependencies.</span>
+        <span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>                       <span class="c1">#    Docker recipe.</span>
+        <span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>               <span class="c1">#    Singularity recipe.</span>
+    <span class="l l-Scalar l-Scalar-Plain">tasks/</span>                               <span class="c1"># Task definition files - define functionality that MLBox supports</span>
+        <span class="l l-Scalar l-Scalar-Plain">download.yaml</span>                    <span class="c1">#    Download MNIST data set.</span>
+        <span class="l l-Scalar l-Scalar-Plain">train.yaml</span>                       <span class="c1">#    Train neural network.</span>
+    <span class="l l-Scalar l-Scalar-Plain">workspace/</span>                           <span class="c1"># Default location for data sets, logs, models, parameter files.</span>
+        <span class="l l-Scalar l-Scalar-Plain">parameters/</span>                      <span class="c1">#    Model hyper-parameters can be stored at any location.</span>
+          <span class="l l-Scalar l-Scalar-Plain">default.parameters.yaml</span>        <span class="c1">#       This is just what is used in this implementation.</span>
+    <span class="l l-Scalar l-Scalar-Plain">run/</span>                                 <span class="c1"># Run configurations - bind task parameters and values.</span>
+        <span class="l l-Scalar l-Scalar-Plain">download.yaml</span>                    <span class="c1">#    Concrete run specification for the download task.</span>
+        <span class="l l-Scalar l-Scalar-Plain">train.yaml</span>                       <span class="c1">#    Concrete run specification for the train task.</span>
+    <span class="l l-Scalar l-Scalar-Plain">platforms/</span>                           <span class="c1"># Platform definition files - define how MLBox runs.</span>
+        <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span>                      <span class="c1">#    Docker runtime definition.</span>
+        <span class="l l-Scalar l-Scalar-Plain">singularity.yaml</span>                 <span class="c1">#    Singularity runtime definition. </span>
+  <span class="l l-Scalar l-Scalar-Plain">mlbox.yaml</span>                             <span class="c1"># MLBox definition file.</span>
+</code></pre></div>
+
+<h2 id="running-mnist-mlcommons-box">Running MNIST MLCommons-Box<a class="headerlink" href="#running-mnist-mlcommons-box" title="Permanent link">&para;</a></h2>
+<p>This tutorial covers the case when both MLCommons-Box library and the MNIST box are cloned from the GitHub repository:
+<div class="highlight"><pre><span></span><code>git clone https://github.com/mlperf/mlbox ./mlbox
+cd ./mlbox
+</code></pre></div></p>
+<p>Python &gt;= 3.6 is required together with runners' python dependencies:
+<div class="highlight"><pre><span></span><code>virtualenv -p python3.8 ./env
+source ./env/bin/activate
+pip install typer mlspeclib
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity_run:$(pwd)/runners/mlcommons_box_docker_run:$(pwd)/runners/mlcommons_box_ssh_run
+</code></pre></div></p>
+<p>Optionally, setup host environment by providing the correct <code>http_proxy</code> and <code>https_proxy</code> environmental variables.
+<div class="highlight"><pre><span></span><code>export http_proxy=...
+export https_proxy=...
+</code></pre></div></p>
+<blockquote>
+<p>Before running MNIST box below, it is probably a good idea to remove tasks' outputs from previous runs that are
+located in <code>examples/mnist/workspace</code>. All directories except <code>parameters</code> can be removed.</p>
+</blockquote>
+<h3 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h3>
+<p>Configure MNIST box:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
+</code></pre></div></p>
+<p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
+</code></pre></div></p>
+<h3 id="singularity-runner">Singularity Runner<a class="headerlink" href="#singularity-runner" title="Permanent link">&para;</a></h3>
+<p>Update path to store Singularity image. Open <code>examples/mnist/platforms/singularity.yaml</code> and update the <code>image</code> value
+that is set by default to <code>/opt/singularity/mlperf_mlbox_mnist-0.01.simg</code> (relative paths are supported, they are
+relative to <code>examples/mnist/workspace</code>).  </p>
+<p>Configure MNIST box:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
+</code></pre></div></p>
+<p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
+python -m mlcommons_box_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
+</code></pre></div></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../hello-world/" title="Hello World" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Hello World
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../../runners/" title="Runners" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Runners
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.5eca75d3.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

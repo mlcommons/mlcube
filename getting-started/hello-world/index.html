@@ -1,0 +1,654 @@
+
+
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation site for MLBox">
+      
+      
+      
+        <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
+    
+    
+      
+        <title>Hello World - MLBox</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4dd2dd8d.min.css">
+      
+      
+    
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#hello-world" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            MLBox
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Hello World
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+        
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    MLBox
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." title="Home" class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" checked>
+    
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Hello World
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" title="Hello World" class="md-nav__link md-nav__link--active">
+      Hello World
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#docker-runtime" class="md-nav__link">
+    Docker runtime
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#host-python-environment" class="md-nav__link">
+    Host python environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-hello-world-mlcommons-box" class="md-nav__link">
+    Configuring Hello World MLCommons-Box
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-hello-world-mlcommons-box" class="md-nav__link">
+    Running Hello World MLCommons-Box
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modifying-mlcommons-box" class="md-nav__link">
+    Modifying MLCommons-Box
+  </a>
+  
+    <nav class="md-nav" aria-label="Modifying MLCommons-Box">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-new-user" class="md-nav__link">
+    Adding new user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#providing-a-better-greeting-message" class="md-nav__link">
+    Providing a better greeting message
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../mnist/" title="MNIST" class="md-nav__link">
+      MNIST
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      Runners
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Runners" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Runners
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/" title="Runners" class="md-nav__link">
+      Runners
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/docker-runner/" title="Docker Runner" class="md-nav__link">
+      Docker Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/singularity-runner/" title="Singularity Runner" class="md-nav__link">
+      Singularity Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/ssh-runner/" title="SSH Runner" class="md-nav__link">
+      SSH Runner
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#docker-runtime" class="md-nav__link">
+    Docker runtime
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#host-python-environment" class="md-nav__link">
+    Host python environment
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configuring-hello-world-mlcommons-box" class="md-nav__link">
+    Configuring Hello World MLCommons-Box
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#running-hello-world-mlcommons-box" class="md-nav__link">
+    Running Hello World MLCommons-Box
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modifying-mlcommons-box" class="md-nav__link">
+    Modifying MLCommons-Box
+  </a>
+  
+    <nav class="md-nav" aria-label="Modifying MLCommons-Box">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adding-new-user" class="md-nav__link">
+    Adding new user
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#providing-a-better-greeting-message" class="md-nav__link">
+    Providing a better greeting message
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                  
+                
+                
+                <h1 id="hello-world">Hello World<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h1>
+<h2 id="docker-runtime">Docker runtime<a class="headerlink" href="#docker-runtime" title="Permanent link">&para;</a></h2>
+<p>Hello World MLCommons-Box is an example of a docker-based box. Docker runtime must be installed in a system.
+Installation guides for various operating systems can be found <a href="https://docs.docker.com/engine/install/">here</a>. This
+example was tested on a system where users are in the docker group and run docker without <code>sudo</code>. To add yourself to a
+docker group, run the following:
+<div class="highlight"><pre><span></span><code>sudo groupadd docker             # Add the docker group if it doesn&#39;t already exist.
+sudo gpasswd -a ${USER} docker   # Add the connected user &quot;${USER}&quot; to the docker group. Change the user name to match your preferred user.
+sudo service docker restart      # Restart the Docker daemon.
+newgrp docker                    # Either do aÂ newgrp dockerÂ or log out/in to activate the changes to groups.
+</code></pre></div></p>
+<h2 id="host-python-environment">Host python environment<a class="headerlink" href="#host-python-environment" title="Permanent link">&para;</a></h2>
+<p>Hello World is an example of a simple python program distributed as an MLCommons-Box. This tutorial covers the case
+when the MLCommons-Box library and Hello World box are cloned from the GitHub repository:
+<div class="highlight"><pre><span></span><code>git clone https://github.com/mlperf/mlbox ./mlbox
+cd ./mlbox
+</code></pre></div></p>
+<p>Python &gt;= 3.6 is required together with runners' python dependencies:
+<div class="highlight"><pre><span></span><code>virtualenv -p python3.8 ./env
+source ./env/bin/activate
+pip install typer mlspeclib
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity_run:$(pwd)/runners/mlcommons_box_docker_run:$(pwd)/runners/mlcommons_box_ssh_run
+</code></pre></div></p>
+<p>Optionally, setup host environment by providing the correct <code>http_proxy</code> and <code>https_proxy</code> environmental variables.
+<div class="highlight"><pre><span></span><code>export http_proxy=...
+export https_proxy=...
+</code></pre></div></p>
+<h2 id="configuring-hello-world-mlcommons-box">Configuring Hello World MLCommons-Box<a class="headerlink" href="#configuring-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
+<p>Boxes need to be configured before they can run. To do so, users need to run a MLCommons-Box runner with <code>configure</code> 
+command providing path to a box root directory and path to a platform configuration file. The Hello World box is a 
+docker-based box, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
+parameters, including docker image name:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
+</code></pre></div>
+The Docker runner will build a docker image for the Hello World box.</p>
+<h2 id="running-hello-world-mlcommons-box">Running Hello World MLCommons-Box<a class="headerlink" href="#running-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
+<p>In order to run the Hello World box, users need to provide the path to the root directory of the box, platform
+configuration file and path to a task definition file. Run the following two commands one at a time:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/bye.yaml
+</code></pre></div>
+Hello World creates a file <code>examples/hello_world/workspace/chats/chat_with_alice.txt</code> that contains the following:
+<div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
+[2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
+</code></pre></div></p>
+<h2 id="modifying-mlcommons-box">Modifying MLCommons-Box<a class="headerlink" href="#modifying-mlcommons-box" title="Permanent link">&para;</a></h2>
+<h3 id="adding-new-user">Adding new user<a class="headerlink" href="#adding-new-user" title="Permanent link">&para;</a></h3>
+<p>Create a new file <code>examples/hello_world/workspace/names/donald.txt</code> with the following content: <code>Donald</code>.</p>
+<p>Create a new file <code>examples/hello_world/run/donald/hello.yaml</code> with the following content:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+
+<span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
+
+<span class="nt">input_binding</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/names/donald.txt</span>
+
+<span class="nt">output_binding</span><span class="p">:</span>
+        <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
+</code></pre></div></p>
+<p>Create a new file <code>examples/hello_world/run/donald/bye.yaml</code> with the following content:
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+
+<span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bye</span>
+
+<span class="nt">input_binding</span><span class="p">:</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/names/donald.txt</span>
+
+<span class="nt">output_binding</span><span class="p">:</span>
+        <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
+</code></pre></div></p>
+<p>Run the following two commands one at a time:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/hello.yaml
+python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/bye.yaml
+</code></pre></div>
+The Hello World box creates a file <code>examples/hello_world/workspace/chats/chat_with_donald.txt</code> that contains the
+following:
+<div class="highlight"><pre><span></span><code>[2020-09-03 09:23:09.569558]  Hi, Donald! Nice to meet you.
+[2020-09-03 09:23:20.076845]  Bye, Donald! It was great talking to you.
+</code></pre></div></p>
+<h3 id="providing-a-better-greeting-message">Providing a better greeting message<a class="headerlink" href="#providing-a-better-greeting-message" title="Permanent link">&para;</a></h3>
+<p>Because how Hello World box was implemented, the greeting message is always the following: <code>Nice to meet you.</code>. We will
+update the implementation so that if this is not the first time Alice says <code>hello</code>, the  MLBox will respond: <code>Nice to 
+see you again.</code>.</p>
+<p>Modify the file <code>examples/hello_world/build/hello_world.py</code>. Update the function named <code>get_greeting_message</code> on line
+14. It should have the following implementation:
+<div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_greeting_message</span><span class="p">(</span><span class="n">chat_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="s2">&quot;Nice to meet you.&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">chat_file</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;Nice to see you again.&quot;</span>
+</code></pre></div></p>
+<p>Since we updated a file in the <code>build</code> subdirectory, we need to re-configure the Hello World box:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
+</code></pre></div>
+Now, run two <code>hello</code> task again:
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+</code></pre></div>
+The MLBox recognized it was not the first time it talked to Alice, and changed the greeting:
+<div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
+[2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
+[2020-09-03 09:32:41.369367]  Hi, Alice! Nice to see you again.
+</code></pre></div></p>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../.." title="Home" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../mnist/" title="MNIST" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                MNIST
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.5eca75d3.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>

@@ -14,16 +14,16 @@
       
         <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
       
-      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-5.5.12">
     
     
       
-        <title>Runners - MLBox</title>
+        <title>SSH Runner - MLBox</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.4dd2dd8d.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4dd2dd8d.min.css">
       
       
     
@@ -37,7 +37,7 @@
     
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/circular.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
     
     
       
@@ -55,7 +55,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#runners" class="md-skip">
+        <a href="#ssh-runner" class="md-skip">
           Skip to content
         </a>
       
@@ -66,7 +66,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href=".." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -83,7 +83,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Runners
+              SSH Runner
             
           </span>
         </div>
@@ -140,7 +140,7 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href=".." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -157,7 +157,7 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Home" class="md-nav__link">
+    <a href="../.." title="Home" class="md-nav__link">
       Home
     </a>
   </li>
@@ -190,7 +190,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../getting-started/hello-world/" title="Hello World" class="md-nav__link">
+    <a href="../../getting-started/hello-world/" title="Hello World" class="md-nav__link">
       Hello World
     </a>
   </li>
@@ -202,7 +202,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../getting-started/mnist/" title="MNIST" class="md-nav__link">
+    <a href="../../getting-started/mnist/" title="MNIST" class="md-nav__link">
       MNIST
     </a>
   </li>
@@ -240,6 +240,42 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../" title="Runners" class="md-nav__link">
+      Runners
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docker-runner/" title="Docker Runner" class="md-nav__link">
+      Docker Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../singularity-runner/" title="Singularity Runner" class="md-nav__link">
+      Singularity Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -251,12 +287,12 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Runners
+        SSH Runner
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="Runners" class="md-nav__link md-nav__link--active">
-      Runners
+    <a href="./" title="SSH Runner" class="md-nav__link md-nav__link--active">
+      SSH Runner
     </a>
     
       
@@ -273,22 +309,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reference-mlcommons-box-runners" class="md-nav__link">
-    Reference MLCommons-Box runners
+  <a href="#platform-configuration-file" class="md-nav__link">
+    Platform Configuration File
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#runner-commands" class="md-nav__link">
-    Runner commands
+  <a href="#build-command" class="md-nav__link">
+    Build command
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#command-line-interface" class="md-nav__link">
-    Command line interface
+  <a href="#run-command" class="md-nav__link">
+    Run command
   </a>
   
 </li>
@@ -297,42 +333,6 @@
   
 </nav>
     
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="docker-runner/" title="Docker Runner" class="md-nav__link">
-      Docker Runner
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="singularity-runner/" title="Singularity Runner" class="md-nav__link">
-      Singularity Runner
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="ssh-runner/" title="SSH Runner" class="md-nav__link">
-      SSH Runner
-    </a>
   </li>
 
         
@@ -365,22 +365,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#reference-mlcommons-box-runners" class="md-nav__link">
-    Reference MLCommons-Box runners
+  <a href="#platform-configuration-file" class="md-nav__link">
+    Platform Configuration File
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#runner-commands" class="md-nav__link">
-    Runner commands
+  <a href="#build-command" class="md-nav__link">
+    Build command
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#command-line-interface" class="md-nav__link">
-    Command line interface
+  <a href="#run-command" class="md-nav__link">
+    Run command
   </a>
   
 </li>
@@ -401,47 +401,54 @@
                   
                 
                 
-                <h1 id="runners">Runners<a class="headerlink" href="#runners" title="Permanent link">&para;</a></h1>
-<p>A runner is a tool that runs MLCommons-Box boxes on one or multiple platforms. Examples of platforms are docker and
-singularity containers, remote hosts, virtual machines in the cloud, etc.</p>
-<p>A platform is configured in a platform configuration file. A box can provide reference platform configurations that
-users can modify to meet requirements of their infrastructures.</p>
-<p>MLCommons-Box standard requires that all runners implement mandatory functionality. All reference runners implement it.
-Users can develop their own runners to meet their specific requirements, such as security, authentication and
-authorization policies and others.   </p>
-<h2 id="reference-mlcommons-box-runners">Reference MLCommons-Box runners<a class="headerlink" href="#reference-mlcommons-box-runners" title="Permanent link">&para;</a></h2>
-<p>Reference runners are:<br />
-- <code>Docker Runner</code>: Runs boxes using docker runtime.<br />
-- <code>Singularity Runner</code>: Runs boxes using singularity runtime.<br />
-- <code>SSH Runner</code>: Runs boxes on remote hosts. SSH Runner uses other runners, such as Docker or Singularity runners, to
-  run boxes on remote hosts.  </p>
-<h2 id="runner-commands">Runner commands<a class="headerlink" href="#runner-commands" title="Permanent link">&para;</a></h2>
-<p>Each runner exposes mandatory and optional functionality through a set of commands. This is similar to, for instance,
-how Git implements its CLI (<code>git</code> followed by a specific command such as <code>checkout</code>, <code>pull</code>, <code>push</code> etc). Mandatory
-MLCommons-Box runner commands are <code>configure</code> and <code>run</code>:<br />
-- <code>configure</code>: Configure MLCommons-Box. Exact functionality depends on a runner type, but the goal is to ensure that 
-  a box is ready to run. The following are the examples of what can be done at configure phase: build docker or 
-  singularity container, create python virtual environment, allocate and configure virtual machine in the cloud, copy
-  box to a remote host etc. Once configuration is successfully completed, it is assumed a runner can run that box.<br />
-- <code>run</code>: Run tasks defined in MLCommons-Box.  </p>
-<p>Reference runners recognize three parameters - mlbox, platform and task.<br />
-- <code>mlbox</code>: Path to a box root directory. In future versions, this can be an URI with a specific protocol. Runners
-  could support various MLCommons-Box implementations (excluding reference directory-based) such as docker/singularity 
-  containers, GitHub repositories, compressed archives and others.<br />
-- <code>platform</code>: Path to a YAML-based platform configuration file. If not present, a runner should use the
-  default platforms to run a box, or select the most appropriate or available in a user environment.<br />
-- <code>task</code>: Path to a YAML-based task specification file. If not present, a runner can run the default task.  </p>
-<h2 id="command-line-interface">Command line interface<a class="headerlink" href="#command-line-interface" title="Permanent link">&para;</a></h2>
-<p>One way to run a MLCommons-Box is to follow the following template supported by all reference runners:
-<div class="highlight"><pre><span></span><code>python -m RUNNER_PACKAGE --mlbox=MLCOMMONS_BOX_ROOT_DIRECTORY --platform=PLATFORM_FILE_PATH --task=TASK_FILE_PATH
+                <h1 id="ssh-runner">SSH Runner<a class="headerlink" href="#ssh-runner" title="Permanent link">&para;</a></h1>
+<p>SSH runner uses other runners to run MLCommons-Box boxes on remote hosts. It uses <code>ssh</code> and <code>rsync</code> internally. It
+supports two mandatory commands - <code>configure</code> and <code>run</code> with standard arguments - <code>mlbox</code>, <code>platform</code> and <code>task</code>. SSH
+platform configuration is used to configure SSH runner.</p>
+<blockquote>
+<p>This runner is being actively developed and not all features described on this page may be supported.</p>
+</blockquote>
+<h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
+<p>SSH platform configuration file is a YAML file. The configuration file for the reference MNIST box is the following:
+<div class="highlight"><pre><span></span><code><span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">REMOTE_HOST</span>     <span class="c1"># Remote host IP address.</span>
+<span class="nt">user</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">USER</span>            <span class="c1"># User name, assuming passwordless authentication using keys has been set up.</span>
+<span class="nt">platform</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span> <span class="c1"># How to run this box on a remote host - use Docker Runner</span>
+<span class="nt">env</span><span class="p">:</span>                  <span class="c1"># This is for syncing MLBox library itself (library, runners etc.)</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./mlbox</span>     <span class="c1"># Path on a remote node, this is the default value. Relative paths are relative to use home dir.</span>
+    <span class="nt">sync</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+    <span class="nt">interpreter</span><span class="p">:</span>      <span class="c1"># Host environment for runners, box can have its own interpreter. Dependencies must be installed.</span>
+        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">system</span>
+        <span class="nt">python</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python3.6</span>   <span class="c1"># Can also be an absolute path to user python environment (virtualenv, conda etc.)</span>
+    <span class="nt">variables</span><span class="p">:</span> <span class="p p-Indicator">{}</span>    <span class="c1"># Environmental variables (will be used by docker build/run), remove &#39;{}&#39; if variables present.</span>
+        <span class="c1"># http_proxy:</span>
+        <span class="c1"># https_proxy:</span>
+<span class="nt">mlbox</span><span class="p">:</span>                <span class="c1"># Remote location of the box to run</span>
+    <span class="nt">path</span><span class="p">:</span>             <span class="c1"># Null, the path will be set to ./.mlbox/mlboxes/mnist-${version}</span>
+    <span class="nt">sync</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
 </code></pre></div></p>
-<p>Example command to configure MNIST Docker-based MLCommons-Box:
-<div class="highlight"><pre><span></span><code>python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
-</code></pre></div></p>
-<p>Example command to run two tasks implemented by the MNIST Docker-based MLCommons-Box:
-<div class="highlight"><pre><span></span><code>python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
-</code></pre></div></p>
+<p>SSH runner uses IP or name of a remote host (<code>host</code>) and ssh tool to login and execute shell commands on remote hosts. 
+It uses user name (<code>user</code>) for authentication. If passwordless login is not configured, SSH runner asks for password
+many times during configure and run phases.  </p>
+<p>SSH runner depends on other runners to run MLCommons-Box boxes. The <code>platform</code> field specifies what runner should be
+used on a remote host. This is a file name relative to <code>{MLCOMMONS_BOX_ROOT}/platforms</code>.  </p>
+<p>In current implementation, SSH runner synchronizes both MLCommons-Box library and a box workload between local and
+remote hosts. This is optional, and in the future versions, when the library and runners are installed using pip, this
+will not be required.</p>
+<h2 id="build-command">Build command<a class="headerlink" href="#build-command" title="Permanent link">&para;</a></h2>
+<p>During the <code>build</code> phase, the following steps are performed.<br />
+1. If MLCommons-Box library (source tree) needs to be synchronized, SSH runner:<br />
+   - Uses <code>ssh</code> to create root directory for the library.<br />
+   - <code>Uses</code> <code>rsync</code> to synchronize the following library directories: <code>mlcommons_box</code> and <code>runners</code>.<br />
+2. If MLCommons-Box box needs to be synchronized, SSH runner:<br />
+   - Uses <code>ssh</code> to create root directory for the box on a remote host.<br />
+   - <code>Uses</code> <code>rsync</code> to synchronize the entire content of the box.<br />
+3. The only supported remote python environment is the <code>system</code>, and SSH runner assumes that all dependencies have been
+   installed. Two required python packages that are not common are <code>click</code> and <code>mlspeclib</code>.<br />
+4. SSH runner uses <code>platform</code> file and runs standard <code>configure</code> command on a remote host. </p>
+<h2 id="run-command">Run command<a class="headerlink" href="#run-command" title="Permanent link">&para;</a></h2>
+<p>During the run phase, the SSH runner performs the following steps:<br />
+1. It uses <code>ssh</code> to run standard <code>run</code> command on a remote host.<br />
+2. It uses <code>rsync</code> to synchronize back the content of the <code>{MLCOMMONS_BOX_ROOT}/workspace</code> directory.   </p>
                 
               
               
@@ -460,7 +467,7 @@ python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../getting-started/mnist/" title="MNIST" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../singularity-runner/" title="Singularity Runner" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -469,25 +476,11 @@ python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                MNIST
+                Singularity Runner
               </div>
             </div>
           </a>
         
-        
-          <a href="docker-runner/" title="Docker Runner" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
-                Docker Runner
-              </div>
-            </div>
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-            </div>
-          </a>
         
       </nav>
     </div>
@@ -508,15 +501,15 @@ python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/
       
     </div>
     
-      <script src="../assets/javascripts/vendor.3636a4ec.min.js"></script>
-      <script src="../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
+      <script src="../../assets/javascripts/vendor.3636a4ec.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e9fe3281.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents"}</script>
       
       <script>
         app = initialize({
-          base: "..",
+          base: "../..",
           features: [],
           search: Object.assign({
-            worker: "../assets/javascripts/worker/search.5eca75d3.min.js"
+            worker: "../../assets/javascripts/worker/search.5eca75d3.min.js"
           }, typeof search !== "undefined" && search)
         })
       </script>
