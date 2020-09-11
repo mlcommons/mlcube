@@ -436,11 +436,11 @@ MLCommons-Box runner commands are <code>configure</code> and <code>run</code>:<b
 <div class="highlight"><pre><span></span><code>python -m RUNNER_PACKAGE --mlbox=MLCOMMONS_BOX_ROOT_DIRECTORY --platform=PLATFORM_FILE_PATH --task=TASK_FILE_PATH
 </code></pre></div></p>
 <p>Example command to configure MNIST Docker-based MLCommons-Box:
-<div class="highlight"><pre><span></span><code>python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
+<div class="highlight"><pre><span></span><code>python -m mlbox_docker configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
 </code></pre></div></p>
 <p>Example command to run two tasks implemented by the MNIST Docker-based MLCommons-Box:
-<div class="highlight"><pre><span></span><code>python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
+<div class="highlight"><pre><span></span><code>python -m mlbox_docker run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlbox_docker run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
 </code></pre></div></p>
                 
               

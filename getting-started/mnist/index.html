@@ -815,7 +815,7 @@ cd ./mlbox
 <div class="highlight"><pre><span></span><code>virtualenv -p python3.8 ./env
 source ./env/bin/activate
 pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity_run:$(pwd)/runners/mlcommons_box_docker_run:$(pwd)/runners/mlcommons_box_ssh_run
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity:$(pwd)/runners/mlcommons_box_docker:$(pwd)/runners/mlcommons_box_ssh
 </code></pre></div></p>
 <p>Optionally, setup host environment by providing the correct <code>http_proxy</code> and <code>https_proxy</code> environmental variables.
 <div class="highlight"><pre><span></span><code>export http_proxy=...
@@ -827,22 +827,22 @@ located in <code>examples/mnist/workspace</code>. All directories except <code>p
 </blockquote>
 <h3 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h3>
 <p>Configure MNIST box:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
 </code></pre></div></p>
 <h3 id="singularity-runner">Singularity Runner<a class="headerlink" href="#singularity-runner" title="Permanent link">&para;</a></h3>
 <p>Update path to store Singularity image. Open <code>examples/mnist/platforms/singularity.yaml</code> and update the <code>image</code> value
 that is set by default to <code>/opt/singularity/mlperf_mlbox_mnist-0.01.simg</code> (relative paths are supported, they are
 relative to <code>examples/mnist/workspace</code>).  </p>
 <p>Configure MNIST box:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
+<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
+python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
 </code></pre></div></p>
                 
               
