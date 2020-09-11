@@ -311,7 +311,7 @@ Python >= 3.6 is required together with runners' python dependencies:
 virtualenv -p python3.8 ./env
 source ./env/bin/activate
 pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity_run:$(pwd)/runners/mlcommons_box_docker_run:$(pwd)/runners/mlcommons_box_ssh_run
+export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity:$(pwd)/runners/mlcommons_box_docker:$(pwd)/runners/mlcommons_box_ssh
 ```
 
 Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
@@ -327,13 +327,13 @@ export https_proxy=...
 ### Docker Runner
 Configure MNIST box:
 ```
-python -m mlcommons_box_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
+python -m mlcommons_box_docker configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
 ```
-python -m mlcommons_box_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
+python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
 ```
 
 
@@ -345,11 +345,11 @@ relative to `examples/mnist/workspace`).
 
 Configure MNIST box:
 ```
-python -m mlcommons_box_singularity_run configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
+python -m mlcommons_box_singularity configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
 ```
-python -m mlcommons_box_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_singularity_run run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
+python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
+python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
 ```

@@ -26,7 +26,7 @@ class Clean(Command):
 
 def schemas():
     paths = []
-    for (path, _, filenames) in os.walk("mlcommons_box_docker_run/"):
+    for (path, _, filenames) in os.walk("mlcommons_box_docker/"):
         for filename in filenames:
             if filename.endswith(".yaml"):
                 paths.append(os.path.join("..", path, filename))
@@ -37,13 +37,13 @@ extra_files = schemas()
 
 
 setup(
-    name="mlcommons_box_docker_run",
+    name="mlcommons_box_docker",
     version="0.1",
     packages=find_packages(exclude=["tests"]),
     license="Apache 2.0",
     entry_points='''
         [console_scripts]
-        mlcommons_box_docker_run=mlcommons_box_docker_run.__main__:cli
+        mlcommons_box_docker=mlcommons_box_docker.__main__:cli
     ''',
     install_requires=requires,
     python_requires='>=3.6',
