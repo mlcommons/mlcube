@@ -21,9 +21,9 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r mlcommons_box/requirements.txt
-          pip install -r runners/mlcommons_box_docker_run/requirements.txt
-          pip install -r runners/mlcommons_box_singularity_run/requirements.txt
-          pip install -r runners/mlcommons_box_ssh_run/requirements.txt
+          pip install -r runners/mlcommons_box_docker/requirements.txt
+          pip install -r runners/mlcommons_box_singularity/requirements.txt
+          pip install -r runners/mlcommons_box_ssh/requirements.txt
       - name: Install MLCommons Box
         run: |
           cd mlcommons_box
@@ -34,25 +34,25 @@ jobs:
           pytest
       - name: Install MLCommons Box Docker Runner
         run: |
-          cd runners/mlcommons_box_docker_run
+          cd runners/mlcommons_box_docker
           python setup.py install
       - name: Test MLCommons Box Docker CLI
         run: |
-          cd runners/mlcommons_box_docker_run
+          cd runners/mlcommons_box_docker
           pytest
       - name: Install MLCommons Box Singularity Runner
         run: |
-          cd runners/mlcommons_box_singularity_run
+          cd runners/mlcommons_box_singularity
           python setup.py install
       - name: Test MLCommons Box Singularity CLI
         run: |
-          cd runners/mlcommons_box_singularity_run
+          cd runners/mlcommons_box_singularity
           pytest
       - name: Install MLCommons Box SSH Runner
         run: |
-          cd runners/mlcommons_box_ssh_run
+          cd runners/mlcommons_box_ssh
           python setup.py install
       - name: Test MLCommons Box SSH CLI
         run: |
-          cd runners/mlcommons_box_ssh_run
+          cd runners/mlcommons_box_ssh
           pytest

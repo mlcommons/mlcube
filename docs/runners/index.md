@@ -45,11 +45,11 @@ python -m RUNNER_PACKAGE --mlbox=MLCOMMONS_BOX_ROOT_DIRECTORY --platform=PLATFOR
 
 Example command to configure MNIST Docker-based MLCommons-Box:
 ```
-python -m mlbox_docker_run configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
+python -m mlbox_docker configure --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml
 ```
 
 Example command to run two tasks implemented by the MNIST Docker-based MLCommons-Box:
 ```
-python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlbox_docker_run run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
+python -m mlbox_docker run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/download.yaml
+python -m mlbox_docker run --mlbox=examples/mnist --platform=examples/mnist/platform/docker.yaml --task=examples/mnist/run/train.yaml
 ```

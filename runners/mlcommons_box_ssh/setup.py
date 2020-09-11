@@ -26,7 +26,7 @@ class Clean(Command):
 
 def schemas():
     paths = []
-    for (path, _, filenames) in os.walk("mlcommons_box_ssh_run/"):
+    for (path, _, filenames) in os.walk("mlcommons_box_ssh/"):
         for filename in filenames:
             if filename.endswith(".yaml") or filename.endswith(".template"):
                 paths.append(os.path.join("..", path, filename))
@@ -37,13 +37,13 @@ extra_files = schemas()
 
 
 setup(
-    name="mlcommons_box_ssh_run",
+    name="mlcommons_box_ssh",
     version="0.1",
     packages=find_packages(exclude=["tests"]),
     license="Apache 2.0",
     entry_points='''
         [console_scripts]
-        mlcommons_box_ssh_run=mlcommons_box_ssh_run.__main__:cli
+        mlcommons_box_ssh=mlcommons_box_ssh.__main__:cli
     ''',
     install_requires=requires,
     python_requires='>=3.6',
