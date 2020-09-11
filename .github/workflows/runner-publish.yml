@@ -4,11 +4,11 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [created]
+  repository_dispatch:
+    types: publish-runners
 
 jobs:
-  deploy:
+  ssh_deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -22,21 +22,32 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd mlcommons_box
+        cd runners/mlcommons_box_ssh
         python setup.py sdist bdist_wheel
-        cp -avr dist ../
+        cp -avr dist ../../
     - name: Publish
       uses: pypa/gh-action-pypi-publish@master
       with:
-        password: ${{ secrets.PYPI_PASSWORD }}
+        password: ${{ secrets.MLCOMMONS_SSH_PYPI_TOKEN }}
 
-  dispatch:
-    needs: deploy
+  docker_deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
-        with:
-          token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
-          repository: sub-mod/mlbox
-          event-type: publish-runners
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcommons_box_docker
+        python setup.py sdist bdist_wheel
+        cp -avr dist ../../
+    - name: Publish
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        password: ${{ secrets.MLCOMMONS_DOCKER_PYPI_TOKEN }}
