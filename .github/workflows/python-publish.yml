@@ -24,11 +24,17 @@ jobs:
       run: |
         cd mlcommons_box
         python setup.py sdist bdist_wheel
-        cp -avr dist ../
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@master
+      uses: sub-mod/gh-action-pypi-publish@master
       with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: mlcommons_box/dist/
+        repository_url: https://upload.pypi.org/legacy/
+      env:
+        LOGLEVEL: DEBUG
 
   dispatch:
     needs: deploy
@@ -38,5 +44,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
-          repository: mlperf/mlbox
+          repository: sub-mod/mlbox
           event-type: publish-runners
