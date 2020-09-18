@@ -2,7 +2,7 @@ mlspec_schema_version:
   meta: 1.0.0
 
 mlspec_schema_type: 
-  meta: mlcommons_box_platform
+  meta: mlcommons_box_platform_metadata
 
 schema_version:
   # User previded: Identifies version of mlbox_input to use
@@ -14,10 +14,10 @@ schema_type:
   type: string
   required: True
 
-platform:
-  type: dict
+name:
+  type: string
   required: True
 
-container:
-  type: dict
+version:
+  type: string
   required: True
