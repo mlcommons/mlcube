@@ -1,5 +1,8 @@
-schema_version: 1.0.0
-schema_type: mlbox_docker
+schema_type: mlcommons_box_platform
+schema_version: 0.1.0
 
-image: mlperf/mlbox:hello-world
-docker_runtime: docker # nvidia-docker # OR docker
+platform:
+  name: "docker"
+  version: ">=18.01"
+container:
+  image: "mlperf/mlbox:hello_world"
