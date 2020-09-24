@@ -33,12 +33,10 @@ class DockerRun(object):
         build_path: str = self.mlbox.build_path
         docker_file: str = os.path.join(build_path, 'Dockerfile')
         if not os.path.exists(docker_file):
-            raise RuntimeError(f"Docker file not found: {docker_file}")
-
-        # This is probably a workaround for now.
-        env_args = ' '.join([f"--build-arg {var}={name}" for var, name in DockerRun.get_env_variables().items()])
-
-        cmd: str = f"cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile ."
+            cmd: str = f"docker pull {image_name}"
+        else:
+            env_args = ' '.join([f"--build-arg {var}={name}" for var, name in DockerRun.get_env_variables().items()])
+            cmd: str = f"cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile ."
         logger.info(cmd)
         self._run_or_die(cmd)
 
