@@ -1,0 +1,6 @@
+schema_type: mlcommons_box_runner
+schema_version: 0.1.0
+
+platform:
+  name: "docker"
+  version: ">=18.01"
