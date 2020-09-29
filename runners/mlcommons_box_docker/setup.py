@@ -38,7 +38,7 @@ extra_files = schemas()
 
 setup(
     name="mlcommons_box_docker",
-    version="0.2",
+    version="0.2.1",
     packages=find_packages(exclude=["tests"]),
     license="Apache 2.0",
     entry_points='''
