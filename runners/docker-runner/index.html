@@ -13,7 +13,7 @@
         <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.2">
     
     
       
@@ -162,7 +162,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href="../.." class="md-nav__link">
       Home
     </a>
   </li>
@@ -195,7 +195,19 @@
 
 
   <li class="md-nav__item">
-    <a href="../../getting-started/hello-world/" title="Hello World" class="md-nav__link">
+    <a href="../../getting-started/" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/hello-world/" class="md-nav__link">
       Hello World
     </a>
   </li>
@@ -207,7 +219,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../getting-started/mnist/" title="MNIST" class="md-nav__link">
+    <a href="../../getting-started/mnist/" class="md-nav__link">
       MNIST
     </a>
   </li>
@@ -247,7 +259,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../" title="Runners" class="md-nav__link">
+    <a href="../" class="md-nav__link">
       Runners
     </a>
   </li>
@@ -272,7 +284,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="Docker Runner" class="md-nav__link md-nav__link--active">
+    <a href="./" class="md-nav__link md-nav__link--active">
       Docker Runner
     </a>
     
@@ -304,15 +316,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#build-command" class="md-nav__link">
-    Build command
+  <a href="#configuring-mlboxes" class="md-nav__link">
+    Configuring MLBoxes
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#run-command" class="md-nav__link">
-    Run command
+  <a href="#running-mlboxes" class="md-nav__link">
+    Running MLBoxes
   </a>
   
 </li>
@@ -330,7 +342,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../singularity-runner/" title="Singularity Runner" class="md-nav__link">
+    <a href="../singularity-runner/" class="md-nav__link">
       Singularity Runner
     </a>
   </li>
@@ -342,7 +354,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../ssh-runner/" title="SSH Runner" class="md-nav__link">
+    <a href="../ssh-runner/" class="md-nav__link">
       SSH Runner
     </a>
   </li>
@@ -391,15 +403,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#build-command" class="md-nav__link">
-    Build command
+  <a href="#configuring-mlboxes" class="md-nav__link">
+    Configuring MLBoxes
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#run-command" class="md-nav__link">
-    Run command
+  <a href="#running-mlboxes" class="md-nav__link">
+    Running MLBoxes
   </a>
   
 </li>
@@ -435,12 +447,12 @@ reference MNIST box is the following:
 configure and run phases:<br />
 - <strong>configure</strong>: <code>docker build ... --build-args http_proxy=${http_proxy} --build-args https_proxy=${https_proxy} ...</code><br />
 - <strong>run</strong>: <code>docker run ... -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ...</code>  </p>
-<h2 id="build-command">Build command<a class="headerlink" href="#build-command" title="Permanent link">&para;</a></h2>
+<h2 id="configuring-mlboxes">Configuring MLBoxes<a class="headerlink" href="#configuring-mlboxes" title="Permanent link">&para;</a></h2>
 <p>Docker runner uses <code>{MLCOMMONS_BOX_ROOT}/build</code> directory as the build context directory. This implies that all files
 that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
 resource files, ML models etc. The docker recipe must have the standard name <code>Dockerfile</code>.</p>
-<p>In current implementation, only docker <code>build</code> is supported (i.e., Dockerfile must present). In future releases, Docker
-runner will support docker <code>pull</code> as well.</p>
+<p>If <code>Dockerfile</code> file exists in <code>{MLCOMMONS_BOX_ROOT}/build</code>, the Docker runner assumes that it needs to <code>build</code> a docker
+image. If that file does not exists, the Docker runner will try to <code>pull</code> image with the specified name.</p>
 <p>Docker runner under the hood runs the following command line:<br />
 <div class="highlight"><pre><span></span><code>cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile .
 </code></pre></div>
@@ -449,7 +461,14 @@ where:<br />
 - <code>{env_args}</code> is the arguments retrieved from user environment. Currently, only <code>http_proxy</code> and <code>https_proxy</code> are
   supported.<br />
 -  <code>{image_name}</code> is the image name defined in the platform configuration file.  </p>
-<h2 id="run-command">Run command<a class="headerlink" href="#run-command" title="Permanent link">&para;</a></h2>
+<blockquote>
+<p>The <code>configure</code> command is optional and users do not necessarily need to be aware about it. The Docker runner
+auto-detects if docker image exists before running a task, and if it does not exist, the docker runner runs the 
+<code>configure</code> command. During the <code>configure</code> phase, docker runner does not check if docker image exists. This means the
+following. If some of the implementation files have been modified, to rebuild the docker image users need to run
+the <code>configure</code> command explicitly.</p>
+</blockquote>
+<h2 id="running-mlboxes">Running MLBoxes<a class="headerlink" href="#running-mlboxes" title="Permanent link">&para;</a></h2>
 <p>Docker runner runs the following command:  <br />
 <div class="highlight"><pre><span></span><code>{docker_runtime} run --rm --net=host --privileged=true {volumes} {env_args} {image_name} {args}
 </code></pre></div>
@@ -479,7 +498,7 @@ where:  <br />
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../" title="Runners" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -494,7 +513,7 @@ where:  <br />
           </a>
         
         
-          <a href="../singularity-runner/" title="Singularity Runner" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../singularity-runner/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -528,7 +547,7 @@ where:  <br />
     </div>
     
       <script src="../../assets/javascripts/vendor.77e55a48.min.js"></script>
-      <script src="../../assets/javascripts/bundle.aa3f9871.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/bundle.9554a270.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({

@@ -13,7 +13,7 @@
         <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.2">
     
     
       
@@ -162,7 +162,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href="../.." class="md-nav__link">
       Home
     </a>
   </li>
@@ -197,7 +197,19 @@
 
 
   <li class="md-nav__item">
-    <a href="../hello-world/" title="Hello World" class="md-nav__link">
+    <a href="../" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../hello-world/" class="md-nav__link">
       Hello World
     </a>
   </li>
@@ -222,7 +234,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="MNIST" class="md-nav__link md-nav__link--active">
+    <a href="./" class="md-nav__link md-nav__link--active">
       MNIST
     </a>
     
@@ -374,7 +386,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/" title="Runners" class="md-nav__link">
+    <a href="../../runners/" class="md-nav__link">
       Runners
     </a>
   </li>
@@ -386,7 +398,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/docker-runner/" title="Docker Runner" class="md-nav__link">
+    <a href="../../runners/docker-runner/" class="md-nav__link">
       Docker Runner
     </a>
   </li>
@@ -398,7 +410,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/singularity-runner/" title="Singularity Runner" class="md-nav__link">
+    <a href="../../runners/singularity-runner/" class="md-nav__link">
       Singularity Runner
     </a>
   </li>
@@ -410,7 +422,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/ssh-runner/" title="SSH Runner" class="md-nav__link">
+    <a href="../../runners/ssh-runner/" class="md-nav__link">
       SSH Runner
     </a>
   </li>
@@ -807,44 +819,41 @@ At this point, the box directory looks like:
         <span class="l l-Scalar l-Scalar-Plain">singularity.yaml</span>                 <span class="c1">#    Singularity runtime definition. </span>
   <span class="l l-Scalar l-Scalar-Plain">mlbox.yaml</span>                             <span class="c1"># MLBox definition file.</span>
 </code></pre></div>
-
 <h2 id="running-mnist-mlcommons-box">Running MNIST MLCommons-Box<a class="headerlink" href="#running-mnist-mlcommons-box" title="Permanent link">&para;</a></h2>
-<p>This tutorial covers the case when both MLCommons-Box library and the MNIST box are cloned from the GitHub repository:
-<div class="highlight"><pre><span></span><code>git clone https://github.com/mlperf/mlbox ./mlbox
-cd ./mlbox
-</code></pre></div></p>
-<p>Python &gt;= 3.6 is required together with runners' python dependencies:
-<div class="highlight"><pre><span></span><code>virtualenv -p python3.8 ./env
-source ./env/bin/activate
-pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity:$(pwd)/runners/mlcommons_box_docker:$(pwd)/runners/mlcommons_box_ssh
-</code></pre></div></p>
-<p>Optionally, setup host environment by providing the correct <code>http_proxy</code> and <code>https_proxy</code> environmental variables.
-<div class="highlight"><pre><span></span><code>export http_proxy=...
-export https_proxy=...
+<p>We need to setup the Python virtual environment. These are the steps outlined in the <code>Introduction</code> section except we do
+not clone GitHub repository with the example MLCommons-Box boxes. 
+<div class="highlight"><pre><span></span><code># Create Python Virtual Environment
+virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
+
+# Install MLCommons-Box Docker and Singularity runners 
+pip install mlcommons-box-docker mlcommons-box-singularity
+
+# Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
+# export http_proxy=...
+# export https_proxy=..
 </code></pre></div></p>
 <blockquote>
 <p>Before running MNIST box below, it is probably a good idea to remove tasks' outputs from previous runs that are
-located in <code>examples/mnist/workspace</code>. All directories except <code>parameters</code> can be removed.</p>
+located in the <code>workspace</code> directory. All directories except <code>parameters</code> can be removed.</p>
 </blockquote>
 <h3 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h3>
 <p>Configure MNIST box:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/download.yaml
+mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/train.yaml
 </code></pre></div></p>
 <h3 id="singularity-runner">Singularity Runner<a class="headerlink" href="#singularity-runner" title="Permanent link">&para;</a></h3>
-<p>Update path to store Singularity image. Open <code>examples/mnist/platforms/singularity.yaml</code> and update the <code>image</code> value
+<p>Update path to store Singularity image. Open <code>platforms/singularity.yaml</code> and update the <code>image</code> value
 that is set by default to <code>/opt/singularity/mlperf_mlbox_mnist-0.01.simg</code> (relative paths are supported, they are
-relative to <code>examples/mnist/workspace</code>).  </p>
+relative to <code>workspace</code>).  </p>
 <p>Configure MNIST box:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_singularity configure --mlbox=. --platform=platforms/singularity.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_singularity run --mlbox=. --platform=platforms/singularity.yaml --task=run/download.yaml
+mlcommons_box_singularity run --mlbox=. --platform=platforms/singularity.yaml --task=run/train.yaml
 </code></pre></div></p>
                 
               
@@ -864,7 +873,7 @@ python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=exampl
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../hello-world/" title="Hello World" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../hello-world/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -879,7 +888,7 @@ python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=exampl
           </a>
         
         
-          <a href="../../runners/" title="Runners" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../../runners/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -913,7 +922,7 @@ python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=exampl
     </div>
     
       <script src="../../assets/javascripts/vendor.77e55a48.min.js"></script>
-      <script src="../../assets/javascripts/bundle.aa3f9871.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/bundle.9554a270.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({

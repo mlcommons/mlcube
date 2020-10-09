@@ -13,7 +13,7 @@
         <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.1">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.0.2">
     
     
       
@@ -162,7 +162,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../.." title="Home" class="md-nav__link">
+    <a href="../.." class="md-nav__link">
       Home
     </a>
   </li>
@@ -195,6 +195,18 @@
           
           
 
+
+  <li class="md-nav__item">
+    <a href="../" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
   
 
 
@@ -210,7 +222,7 @@
         <span class="md-nav__icon md-icon"></span>
       </label>
     
-    <a href="./" title="Hello World" class="md-nav__link md-nav__link--active">
+    <a href="./" class="md-nav__link md-nav__link--active">
       Hello World
     </a>
     
@@ -295,7 +307,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../mnist/" title="MNIST" class="md-nav__link">
+    <a href="../mnist/" class="md-nav__link">
       MNIST
     </a>
   </li>
@@ -333,7 +345,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/" title="Runners" class="md-nav__link">
+    <a href="../../runners/" class="md-nav__link">
       Runners
     </a>
   </li>
@@ -345,7 +357,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/docker-runner/" title="Docker Runner" class="md-nav__link">
+    <a href="../../runners/docker-runner/" class="md-nav__link">
       Docker Runner
     </a>
   </li>
@@ -357,7 +369,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/singularity-runner/" title="Singularity Runner" class="md-nav__link">
+    <a href="../../runners/singularity-runner/" class="md-nav__link">
       Singularity Runner
     </a>
   </li>
@@ -369,7 +381,7 @@
 
 
   <li class="md-nav__item">
-    <a href="../../runners/ssh-runner/" title="SSH Runner" class="md-nav__link">
+    <a href="../../runners/ssh-runner/" class="md-nav__link">
       SSH Runner
     </a>
   </li>
@@ -480,46 +492,40 @@ docker group, run the following:
 <div class="highlight"><pre><span></span><code>sudo groupadd docker             # Add the docker group if it doesn&#39;t already exist.
 sudo gpasswd -a ${USER} docker   # Add the connected user &quot;${USER}&quot; to the docker group. Change the user name to match your preferred user.
 sudo service docker restart      # Restart the Docker daemon.
-newgrp docker                    # Either do aÂ newgrp dockerÂ or log out/in to activate the changes to groups.
+newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the changes to groups.
 </code></pre></div></p>
 <h2 id="host-python-environment">Host python environment<a class="headerlink" href="#host-python-environment" title="Permanent link">&para;</a></h2>
-<p>Hello World is an example of a simple python program distributed as an MLCommons-Box. This tutorial covers the case
-when the MLCommons-Box library and Hello World box are cloned from the GitHub repository:
-<div class="highlight"><pre><span></span><code>git clone https://github.com/mlperf/mlbox ./mlbox
-cd ./mlbox
-</code></pre></div></p>
-<p>Python &gt;= 3.6 is required together with runners' python dependencies:
-<div class="highlight"><pre><span></span><code>virtualenv -p python3.8 ./env
-source ./env/bin/activate
-pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity:$(pwd)/runners/mlcommons_box_docker:$(pwd)/runners/mlcommons_box_ssh
-</code></pre></div></p>
-<p>Optionally, setup host environment by providing the correct <code>http_proxy</code> and <code>https_proxy</code> environmental variables.
-<div class="highlight"><pre><span></span><code>export http_proxy=...
-export https_proxy=...
+<p>Hello World is an example of a simple python program distributed as an MLCommons-Box docker-based box. Follow the steps
+outlined in the <code>Introduction</code> section to create your Python virtual environment, download example MLCommons-Box boxes
+and install standard MLCommons-Box runners. Go to the folder containing MLCommons-Box example boxes and change directory
+to Hello World Box:
+<div class="highlight"><pre><span></span><code>cd ./hello_world
 </code></pre></div></p>
 <h2 id="configuring-hello-world-mlcommons-box">Configuring Hello World MLCommons-Box<a class="headerlink" href="#configuring-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
 <p>Boxes need to be configured before they can run. To do so, users need to run a MLCommons-Box runner with <code>configure</code> 
 command providing path to a box root directory and path to a platform configuration file. The Hello World box is a 
 docker-based box, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
 parameters, including docker image name:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
 </code></pre></div>
-The Docker runner will build a docker image for the Hello World box.</p>
+The Docker runner will build a docker image for the Hello World box. In general, this step is optional and is only
+required when MLCommons-Box needs to be rebuild. This can happen when users change implementation files and want to
+re-package their ML project into MLCommons-Box. In other situations, MLCommons-Box runners can auto-detect if
+<code>configure</code> command needs to be run before running a MLBox task.</p>
 <h2 id="running-hello-world-mlcommons-box">Running Hello World MLCommons-Box<a class="headerlink" href="#running-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
 <p>In order to run the Hello World box, users need to provide the path to the root directory of the box, platform
 configuration file and path to a task definition file. Run the following two commands one at a time:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
-python -m mlcommons_box_docker run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/bye.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
+mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/alice/bye.yaml
 </code></pre></div>
-Hello World creates a file <code>examples/hello_world/workspace/chats/chat_with_alice.txt</code> that contains the following:
+Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that contains the following:
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 </code></pre></div></p>
 <h2 id="modifying-mlcommons-box">Modifying MLCommons-Box<a class="headerlink" href="#modifying-mlcommons-box" title="Permanent link">&para;</a></h2>
 <h3 id="adding-new-user">Adding new user<a class="headerlink" href="#adding-new-user" title="Permanent link">&para;</a></h3>
-<p>Create a new file <code>examples/hello_world/workspace/names/donald.txt</code> with the following content: <code>Donald</code>.</p>
-<p>Create a new file <code>examples/hello_world/run/donald/hello.yaml</code> with the following content:
+<p>Create a new file <code>workspace/names/donald.txt</code> with the following content: <code>Donald</code>.</p>
+<p>Create a new file <code>run/donald/hello.yaml</code> with the following content:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
@@ -531,7 +537,7 @@ Hello World creates a file <code>examples/hello_world/workspace/chats/chat_with_
 <span class="nt">output_binding</span><span class="p">:</span>
         <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
 </code></pre></div></p>
-<p>Create a new file <code>examples/hello_world/run/donald/bye.yaml</code> with the following content:
+<p>Create a new file <code>run/donald/bye.yaml</code> with the following content:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
@@ -544,10 +550,10 @@ Hello World creates a file <code>examples/hello_world/workspace/chats/chat_with_
         <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
 </code></pre></div></p>
 <p>Run the following two commands one at a time:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/hello.yaml
-python -m mlcommons_box_docker run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/donald/bye.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/donald/hello.yaml
+mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/donald/bye.yaml
 </code></pre></div>
-The Hello World box creates a file <code>examples/hello_world/workspace/chats/chat_with_donald.txt</code> that contains the
+The Hello World box creates a file <code>workspace/chats/chat_with_donald.txt</code> that contains the
 following:
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:23:09.569558]  Hi, Donald! Nice to meet you.
 [2020-09-03 09:23:20.076845]  Bye, Donald! It was great talking to you.
@@ -556,16 +562,16 @@ following:
 <p>Because how Hello World box was implemented, the greeting message is always the following: <code>Nice to meet you.</code>. We will
 update the implementation so that if this is not the first time Alice says <code>hello</code>, the  MLBox will respond: <code>Nice to 
 see you again.</code>.</p>
-<p>Modify the file <code>examples/hello_world/build/hello_world.py</code>. Update the function named <code>get_greeting_message</code> on line
+<p>Modify the file <code>build/hello_world.py</code>. Update the function named <code>get_greeting_message</code> on line
 14. It should have the following implementation:
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_greeting_message</span><span class="p">(</span><span class="n">chat_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;Nice to meet you.&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">chat_file</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;Nice to see you again.&quot;</span>
 </code></pre></div></p>
 <p>Since we updated a file in the <code>build</code> subdirectory, we need to re-configure the Hello World box:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker configure --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
 </code></pre></div>
 Now, run two <code>hello</code> task again:
-<div class="highlight"><pre><span></span><code>python -m mlcommons_box_docker run --mlbox=examples/hello_world --platform=examples/hello_world/platforms/docker.yaml --task=examples/hello_world/run/alice/hello.yaml
+<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
 </code></pre></div>
 The MLBox recognized it was not the first time it talked to Alice, and changed the greeting:
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
@@ -590,7 +596,7 @@ The MLBox recognized it was not the first time it talked to Alice, and changed t
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../.." title="Home" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -599,13 +605,13 @@ The MLBox recognized it was not the first time it talked to Alice, and changed t
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Home
+                Introduction
               </div>
             </div>
           </a>
         
         
-          <a href="../mnist/" title="MNIST" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../mnist/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-footer-nav__title">
               <div class="md-ellipsis">
                 <span class="md-footer-nav__direction">
@@ -639,7 +645,7 @@ The MLBox recognized it was not the first time it talked to Alice, and changed t
     </div>
     
       <script src="../../assets/javascripts/vendor.77e55a48.min.js"></script>
-      <script src="../../assets/javascripts/bundle.aa3f9871.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/bundle.9554a270.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
