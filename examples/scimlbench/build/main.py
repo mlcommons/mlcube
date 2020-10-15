@@ -1,6 +1,7 @@
 # Height and Width of a single EM Graphene Image
 IMG_SIZE = 256
 
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 from abc import abstractmethod, ABCMeta
 import time
 import h5py
@@ -9,6 +10,20 @@ import numpy as np
 from pathlib import Path
 import horovod.tensorflow.keras as hvd
 from tinydb import TinyDB, Query
+import yaml
+import os
+import logging
+import logging.config
+import argparse
+from enum import Enum
+from typing import List
+
+
+logger = logging.getLogger(__name__)
+
+class Task(str, Enum):
+    DownloadData = 'download'
+    Train = 'train'
 
 
 class DataLoader():
@@ -344,7 +359,8 @@ beta_2 = 0.999
 epsilon = 1e-07
 
 
-def train(data_dir=None, output_dir=None, epochs=1, learning_rate=0.01, beta_1=0.9, beta_2=0.99,
+def train(data_dir=None, output_dir=None, epochs=1, learning_rate=0.01, beta_1=0.9,
+               beta_2=0.99,
           epsilon=1e-07):
     dataset = EMGrapheneDataset(data_dir=data_dir)
 
@@ -383,7 +399,8 @@ def train(data_dir=None, output_dir=None, epochs=1, learning_rate=0.01, beta_1=0
         model.save_weights(weights_file)
 
 
-def predict(model=None, data_dir=None, output_dir=None, global_batch_size=256, log_batch=False):
+def predict(model=None, data_dir=None, output_dir=None, global_batch_size=256,
+                 log_batch=False):
     hooks = [
         hvd.callbacks.BroadcastGlobalVariablesCallback(0),
         hvd.callbacks.MetricAverageCallback(),
@@ -422,6 +439,67 @@ def predict(model=None, data_dir=None, output_dir=None, global_batch_size=256, l
     return model
 
 
-model = train(data_dir=train_data_dir, output_dir=output_dir)
+def train_task(task_args: List[str]) -> None:
+    """ Task: train.
+    Input parameters:
+        --data_dir, --log_dir, --model_dir, --parameters_file
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Dataset path.")
+    parser.add_argument('--model_dir', '--model-dir', type=str, default=None, help="Model output directory.")
+    parser.add_argument('--parameters_file', '--parameters-file', type=str, default=None,
+                        help="Parameters default values.")
+    args = parser.parse_args(args=task_args)
 
-predict(data_dir=test_data_dir, output_dir=output_dir, model=model)
+    print(args)
+
+#model = train_task(data_dir=train_data_dir, output_dir=output_dir)
+
+#predict_task(data_dir=test_data_dir, output_dir=output_dir, model=model)
+
+
+def main():
+    """
+    mnist.py task task_specific_parameters...
+    """
+    # noinspection PyBroadException
+    try:
+        parser = argparse.ArgumentParser()
+        parser.add_argument('mlbox_task', type=str, help="Task for this MLBOX.")
+        parser.add_argument('--log_dir', '--log-dir', type=str, required=True, help="Logging directory.")
+        ml_box_args, task_args = parser.parse_known_args()
+
+        logger_config = {
+            "version": 1,
+            "disable_existing_loggers": True,
+            "formatters": {
+                "standard": {"format": "%(asctime)s - %(name)s - %(threadName)s - %(levelname)s - %(message)s"},
+            },
+            "handlers": {
+                "file_handler": {
+                    "class": "logging.FileHandler",
+                    "level": "INFO",
+                    "formatter": "standard",
+                    "filename": os.path.join(ml_box_args.log_dir, f"mlbox_mnist_{ml_box_args.mlbox_task}.log")
+                }
+            },
+            "loggers": {
+                "": {"level": "INFO", "handlers": ["file_handler"]},
+                "__main__": {"level": "NOTSET", "propagate": "yes"},
+                "tensorflow": {"level": "NOTSET", "propagate": "yes"}
+            }
+        }
+        logging.config.dictConfig(logger_config)
+
+        if ml_box_args.mlbox_task == Task.DownloadData:
+            pass
+        elif ml_box_args.mlbox_task == Task.Train:
+            train_task(task_args)
+        else:
+            raise ValueError(f"Unknown task: {task_args}")
+    except Exception as err:
+        logger.exception(err)
+
+
+if __name__ == '__main__':
+    main()
