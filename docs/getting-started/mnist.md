@@ -300,56 +300,50 @@ mnist/                                   # MLBox root directory.
 
 
 ## Running MNIST MLCommons-Box
-This tutorial covers the case when both MLCommons-Box library and the MNIST box are cloned from the GitHub repository:
+We need to setup the Python virtual environment. These are the steps outlined in the `Introduction` section except we do
+not clone GitHub repository with the example MLCommons-Box boxes. 
 ```
-git clone https://github.com/mlperf/mlbox ./mlbox
-cd ./mlbox
-```
+# Create Python Virtual Environment
+virtualenv -p python3 ./env && source ./env/bin/activate
 
-Python >= 3.6 is required together with runners' python dependencies:
-```
-virtualenv -p python3.8 ./env
-source ./env/bin/activate
-pip install typer mlspeclib
-export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/mlcommons_box_singularity:$(pwd)/runners/mlcommons_box_docker:$(pwd)/runners/mlcommons_box_ssh
-```
+# Install MLCommons-Box Docker and Singularity runners 
+pip install mlcommons-box-docker mlcommons-box-singularity
 
-Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
-```
-export http_proxy=...
-export https_proxy=...
-```
+# Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
+# export http_proxy=...
+# export https_proxy=..
+``` 
 
 > Before running MNIST box below, it is probably a good idea to remove tasks' outputs from previous runs that are
-> located in `examples/mnist/workspace`. All directories except `parameters` can be removed.
+> located in the `workspace` directory. All directories except `parameters` can be removed.
 
 
 ### Docker Runner
 Configure MNIST box:
 ```
-python -m mlcommons_box_docker configure --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml
+mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
 ```
-python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_docker run --mlbox=examples/mnist --platform=examples/mnist/platforms/docker.yaml --task=examples/mnist/run/train.yaml
+mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/download.yaml
+mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/train.yaml
 ```
 
 
 ### Singularity Runner
-Update path to store Singularity image. Open `examples/mnist/platforms/singularity.yaml` and update the `image` value
+Update path to store Singularity image. Open `platforms/singularity.yaml` and update the `image` value
 that is set by default to `/opt/singularity/mlperf_mlbox_mnist-0.01.simg` (relative paths are supported, they are
-relative to `examples/mnist/workspace`).  
+relative to `workspace`).  
 
 
 Configure MNIST box:
 ```
-python -m mlcommons_box_singularity configure --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml
+mlcommons_box_singularity configure --mlbox=. --platform=platforms/singularity.yaml
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
 ```
-python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/download.yaml
-python -m mlcommons_box_singularity run --mlbox=examples/mnist --platform=examples/mnist/platforms/singularity.yaml --task=examples/mnist/run/train.yaml
+mlcommons_box_singularity run --mlbox=. --platform=platforms/singularity.yaml --task=run/download.yaml
+mlcommons_box_singularity run --mlbox=. --platform=platforms/singularity.yaml --task=run/train.yaml
 ```
