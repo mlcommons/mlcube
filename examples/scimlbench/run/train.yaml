@@ -1,0 +1,13 @@
+schema_type: mlbox_invoke
+schema_version: 1.0.0
+
+task_name: train
+
+input_binding:
+        data_dir: $WORKSPACE/data
+        parameters_file: $WORKSPACE/parameters/default.parameters.yaml
+
+output_binding:
+        log_dir: $WORKSPACE/train_logs
+        output_dir: $WORKSPACE/output
+        model_dir: $WORKSPACE/model

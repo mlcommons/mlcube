@@ -419,8 +419,9 @@ def predict(model=None, data_dir=None, output_dir=None, global_batch_size=256, l
     dataset = EMGrapheneDataset(data_dir=data_dir).to_dataset()
 
     model.evaluate(dataset, callbacks=hooks)
+    return model
 
 
-train(data_dir=train_data_dir, output_dir=output_dir)
+model = train(data_dir=train_data_dir, output_dir=output_dir)
 
-predict(data_dir=test_data_dir, output_dir=output_dir)
+predict(data_dir=test_data_dir, output_dir=output_dir, model=model)

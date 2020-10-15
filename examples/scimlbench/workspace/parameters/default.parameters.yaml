@@ -1,0 +1,8 @@
+optimizer: "adam"
+train_epochs: 5
+batch_size: 32
+beta_1: 0.9
+beta_2: 0.999
+epsilon: 1e-07
+
+
