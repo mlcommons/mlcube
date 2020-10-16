@@ -10,52 +10,19 @@ You can get the MLBox project as a zip file for direct download from https://git
 
 Expand this locally on the filesystem in your location of choice.
 
-### Git Clone
-
-You can clone the MLBox project using Git from https://github.com/mlperf/mlbox.git
-
-```git clone https://github.com/mlperf/mlbox.git```
-
 ## Installing
 
-After downloading or cloning, you can install:
-
+Install from PyPI:  
 ```sh
-python setup.py bdist_wheel sdist
-pip install dist/mlbox-0.0.1-py3-none-any.whl
+pip install mlcommons-box
 ```
 
 To uninstall:
 
 ```sh
-pip uninstall mlbox
+pip uninstall mlcommons_box
 ```
 
-## Running Locally
-
-### Toy Implementation
-
-To run the toy implementation (aka "fake model"): 
-
-```# NOTICE: This is not yet fully implemented. This will print a docker command simliar to what will be run.
-cd mlbox
-python mlbox_run.py ../examples/fake_model:train/small_batch
-```
-
-```# To override and specify different files, 
---log_file=/tmp/my_log_file
-```
-
-### Transformer Implementation
-
-To run the transformer implementation: 
-
-```
-cd mlbox/
-python mlbox_local_run.py ../examples/transformer:downloaddata/default
-python mlbox_local_run.py ../examples/transformer:preprocess/default
-python mlbox_local_run.py ../examples/transformer:train/default
-```
 
 ## Usage Examples
 
