@@ -1,6 +1,3 @@
-# Height and Width of a single EM Graphene Image
-IMG_SIZE = 256
-
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 from abc import abstractmethod, ABCMeta
 import time
@@ -18,6 +15,8 @@ import argparse
 from enum import Enum
 from typing import List
 
+# Height and Width of a single EM Graphene Image
+IMG_SIZE = 256
 
 logger = logging.getLogger(__name__)
 
@@ -447,6 +446,8 @@ def train_task(task_args: List[str]) -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Dataset path.")
     parser.add_argument('--model_dir', '--model-dir', type=str, default=None, help="Model output directory.")
+    parser.add_argument('--output_dir', '--output-dir', type=str, default=None,
+                        help="Output directory.")
     parser.add_argument('--parameters_file', '--parameters-file', type=str, default=None,
                         help="Parameters default values.")
     args = parser.parse_args(args=task_args)

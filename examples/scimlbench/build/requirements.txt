@@ -14,9 +14,9 @@ beautifulsoup4
 psutil
 py-cpuinfo
 pytest-mock
-horovod
 mpi4py
 bokeh
 tinydb
 importlib_resources
 lxml
+tensorflow==2.3.0
