@@ -51,5 +51,7 @@ RUN cat /etc/ssh/ssh_config | grep -v StrictHostKeyChecking > /etc/ssh/ssh_confi
     echo "    StrictHostKeyChecking no" >> /etc/ssh/ssh_config.new && \
     mv /etc/ssh/ssh_config.new /etc/ssh/ssh_config
 
+COPY em_denoise_data.zip /workspace/data/em_denoise_data.zip
+#RUN apt-get update && apt-get install zip unzip
 COPY main.py /workspace/main.py
 ENTRYPOINT ["python3", "/workspace/main.py"]

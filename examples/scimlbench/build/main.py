@@ -20,9 +20,12 @@ IMG_SIZE = 256
 
 logger = logging.getLogger(__name__)
 
+
 class Task(str, Enum):
     DownloadData = 'download'
+    PreProcess = 'preprocess'
     Train = 'train'
+    Test = 'test'
 
 
 class DataLoader():
@@ -348,23 +351,13 @@ class TrackingCallback(tf.keras.callbacks.Callback):
 
 hvd.init()
 
-train_data_dir = '/N/u2/v/vlabeyko/sandbox/sciml/em_denoise/em_denoise/train'
-test_data_dir = '/N/u2/v/vlabeyko/sandbox/sciml/em_denoise/em_denoise/test'
-output_dir = '/tmp/sciml'
-epochs = 1
-learning_rate = 0.01
-beta_1 = 0.9
-beta_2 = 0.999
-epsilon = 1e-07
 
-
-def train(data_dir=None, output_dir=None, epochs=1, learning_rate=0.01, beta_1=0.9,
-               beta_2=0.99,
-          epsilon=1e-07):
+def train(data_dir=None, output_dir=None, model_dir=None, epochs=1, learning_rate=0.01, beta_1=0.9,
+          beta_2=0.99, epsilon=1e-07, optimizer='Adam'):
     dataset = EMGrapheneDataset(data_dir=data_dir)
 
     opt = tf.keras.optimizers.Adam(learning_rate=learning_rate, beta_1=beta_1, beta_2=beta_2,
-                                   epsilon=epsilon, amsgrad=False, name='Adam')
+                                   epsilon=epsilon, amsgrad=False, name=optimizer)
 
     opt = hvd.DistributedOptimizer(opt)
 
@@ -387,23 +380,29 @@ def train(data_dir=None, output_dir=None, epochs=1, learning_rate=0.01, beta_1=0
         tracker_hook = TrackingCallback(output_dir, 256, False)
         hooks.append(tracker_hook)
 
-    model_dir = Path(output_dir)
-    weights_file = model_dir / 'final_weights.h5'
-
     model.fit(dataset.to_dataset(), epochs=epochs, callbacks=hooks)
 
     if hvd.rank() == 0:
-        model_dir = Path(output_dir)
-        weights_file = str(model_dir / 'final_weights.h5')
+        model_dir = Path(model_dir)
+        weight_path = str(model_dir / 'weights')
+        os.mkdir(weight_path)
+        weights_file = str(model_dir / 'weights/final_weights.h5')
         model.save_weights(weights_file)
+        os.mkdir(model_dir / 'models')
+        model_path = str(model_dir / "models")
+        model.save(model_path)
+        print("weight path: ", os.listdir(weight_path))
+        print("models path: ", os.listdir(model_path))
 
 
-def predict(model=None, data_dir=None, output_dir=None, global_batch_size=256,
-                 log_batch=False):
+def predict(data_dir=None, output_dir=None, model_dir=None, global_batch_size=256,
+            log_batch=False):
     hooks = [
         hvd.callbacks.BroadcastGlobalVariablesCallback(0),
         hvd.callbacks.MetricAverageCallback(),
     ]
+
+    model = tf.keras.models.load_model(model_dir)
 
     if hvd.rank() == 0:
         # These hooks only need to be called by one instance.
@@ -438,6 +437,31 @@ def predict(model=None, data_dir=None, output_dir=None, global_batch_size=256,
     return model
 
 
+def data_process(data_source_dir: str = None, data_dest_dir: str = None) -> None:
+    import zipfile
+    assert len(os.listdir(data_source_dir)) > 0
+    file = os.listdir(data_source_dir)[0]
+    with zipfile.ZipFile(os.path.join(data_source_dir, file), "r") as zip_ref:
+        zip_ref.extractall(data_dest_dir)
+    assert len(os.listdir(data_dest_dir)) > 0
+
+
+def preprocess_task(task_args: List[str]) -> None:
+    """ Task: preprocess.
+        Input parameters:
+            --data_dir, --log_dir, --model_dir, --parameters_file
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Dataset path.")
+    parser.add_argument('--output_dir', '--output-dir', type=str, default=None,
+                        help="Output directory.")
+    args = parser.parse_args(args=task_args)
+
+    data_source_dir = '/workspace/data'
+
+    data_process(data_source_dir=data_source_dir, data_dest_dir=args.data_dir)
+
+
 def train_task(task_args: List[str]) -> None:
     """ Task: train.
     Input parameters:
@@ -445,18 +469,40 @@ def train_task(task_args: List[str]) -> None:
     """
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Dataset path.")
-    parser.add_argument('--model_dir', '--model-dir', type=str, default=None, help="Model output directory.")
+    parser.add_argument('--model_dir', '--model-dir', type=str, default=None,
+                        help="Model output directory.")
     parser.add_argument('--output_dir', '--output-dir', type=str, default=None,
                         help="Output directory.")
     parser.add_argument('--parameters_file', '--parameters-file', type=str, default=None,
                         help="Parameters default values.")
     args = parser.parse_args(args=task_args)
 
-    print(args)
+    print("Data Dir : ", args.data_dir)
+    print("Model Dir : ", args.model_dir)
+    print("Output Dir : ", args.output_dir)
 
-#model = train_task(data_dir=train_data_dir, output_dir=output_dir)
+    print("Data Dir files: ", os.listdir(args.data_dir))
+    # print("Workspace dir : ", os.listdir(data_source_dir))
 
-#predict_task(data_dir=test_data_dir, output_dir=output_dir, model=model)
+    train_path = os.path.join(args.data_dir, "small_batch", "train")
+    test_path = os.path.join(args.data_dir, "small_batch", "test")
+
+    assert os.path.exists(train_path)
+    assert os.path.exists(test_path)
+
+    with open(args.parameters_file, 'r') as stream:
+        parameters = yaml.load(stream, Loader=yaml.FullLoader)
+
+    epochs = int(parameters.get('epochs', 1))
+    learning_rate = float(parameters.get('learning_rate', 0.01))
+    beta_1 = float(parameters.get('beta_1', 0.9))
+    beta_2 = float(parameters.get('beta_2', 0.999))
+    epsilon = float(parameters.get('epsilon', 1e-07))
+    optimizer = parameters.get('optimizer', 'Adam')
+
+    train(data_dir=train_path, output_dir=args.output_dir, model_dir=args.model_dir, epochs=epochs,
+          learning_rate=learning_rate, beta_1=beta_1, beta_2=beta_2, epsilon=epsilon,
+          optimizer=optimizer)
 
 
 def main():
@@ -467,21 +513,24 @@ def main():
     try:
         parser = argparse.ArgumentParser()
         parser.add_argument('mlbox_task', type=str, help="Task for this MLBOX.")
-        parser.add_argument('--log_dir', '--log-dir', type=str, required=True, help="Logging directory.")
+        parser.add_argument('--log_dir', '--log-dir', type=str, required=True,
+                            help="Logging directory.")
         ml_box_args, task_args = parser.parse_known_args()
 
         logger_config = {
             "version": 1,
             "disable_existing_loggers": True,
             "formatters": {
-                "standard": {"format": "%(asctime)s - %(name)s - %(threadName)s - %(levelname)s - %(message)s"},
+                "standard": {
+                    "format": "%(asctime)s - %(name)s - %(threadName)s - %(levelname)s - %(message)s"},
             },
             "handlers": {
                 "file_handler": {
                     "class": "logging.FileHandler",
                     "level": "INFO",
                     "formatter": "standard",
-                    "filename": os.path.join(ml_box_args.log_dir, f"mlbox_mnist_{ml_box_args.mlbox_task}.log")
+                    "filename": os.path.join(ml_box_args.log_dir,
+                                             f"mlbox_mnist_{ml_box_args.mlbox_task}.log")
                 }
             },
             "loggers": {
@@ -494,8 +543,12 @@ def main():
 
         if ml_box_args.mlbox_task == Task.DownloadData:
             pass
+        elif ml_box_args.mlbox_task == Task.PreProcess:
+            preprocess_task(task_args)
         elif ml_box_args.mlbox_task == Task.Train:
             train_task(task_args)
+        elif ml_box_args.mlbox_task == Task.Test:
+            pass
         else:
             raise ValueError(f"Unknown task: {task_args}")
     except Exception as err:
