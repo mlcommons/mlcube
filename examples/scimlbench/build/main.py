@@ -395,14 +395,15 @@ def train(data_dir=None, output_dir=None, model_dir=None, epochs=1, learning_rat
         print("models path: ", os.listdir(model_path))
 
 
-def predict(data_dir=None, output_dir=None, model_dir=None, global_batch_size=256,
+def test(data_dir=None, output_dir=None, model_dir=None, global_batch_size=256,
             log_batch=False):
     hooks = [
         hvd.callbacks.BroadcastGlobalVariablesCallback(0),
         hvd.callbacks.MetricAverageCallback(),
     ]
-
-    model = tf.keras.models.load_model(model_dir)
+    model_path = Path(model_dir)
+    model_path = str(model_path / "models")
+    model = tf.keras.models.load_model(model_path)
 
     if hvd.rank() == 0:
         # These hooks only need to be called by one instance.
@@ -412,8 +413,9 @@ def predict(data_dir=None, output_dir=None, model_dir=None, global_batch_size=25
 
     print('Begin Predict...')
 
-    model_dir = Path(output_dir)
-    weights_file = model_dir / 'final_weights.h5'
+    weight_dir = Path(model_dir)
+    weight_dir = weight_dir / 'weights'
+    weights_file = weight_dir / 'final_weights.h5'
 
     # Edge case: user is trying to run inference but not training
     # See if we can find a pre-trained model from another run
@@ -421,7 +423,7 @@ def predict(data_dir=None, output_dir=None, model_dir=None, global_batch_size=25
     if not weights_file.exists():
         print('Searching for pre-trained models')
 
-        weight_files = model_dir.parent.glob('**/*final_weights.h5')
+        weight_files = weight_dir.parent.glob('**/*final_weights.h5')
         weight_files = list(sorted(weight_files))
         if len(weight_files) == 0:
             raise RuntimeError(
@@ -434,7 +436,6 @@ def predict(data_dir=None, output_dir=None, model_dir=None, global_batch_size=25
     dataset = EMGrapheneDataset(data_dir=data_dir).to_dataset()
 
     model.evaluate(dataset, callbacks=hooks)
-    return model
 
 
 def data_process(data_source_dir: str = None, data_dest_dir: str = None) -> None:
@@ -485,10 +486,8 @@ def train_task(task_args: List[str]) -> None:
     # print("Workspace dir : ", os.listdir(data_source_dir))
 
     train_path = os.path.join(args.data_dir, "small_batch", "train")
-    test_path = os.path.join(args.data_dir, "small_batch", "test")
 
     assert os.path.exists(train_path)
-    assert os.path.exists(test_path)
 
     with open(args.parameters_file, 'r') as stream:
         parameters = yaml.load(stream, Loader=yaml.FullLoader)
@@ -503,6 +502,42 @@ def train_task(task_args: List[str]) -> None:
     train(data_dir=train_path, output_dir=args.output_dir, model_dir=args.model_dir, epochs=epochs,
           learning_rate=learning_rate, beta_1=beta_1, beta_2=beta_2, epsilon=epsilon,
           optimizer=optimizer)
+
+
+def test_task(task_args: List[str]) -> None:
+    """ Task: train.
+    Input parameters:
+        --data_dir, --log_dir, --model_dir, --parameters_file
+    """
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Dataset path.")
+    parser.add_argument('--model_dir', '--model-dir', type=str, default=None,
+                        help="Model output directory.")
+    parser.add_argument('--output_dir', '--output-dir', type=str, default=None,
+                        help="Output directory.")
+    parser.add_argument('--parameters_file', '--parameters-file', type=str, default=None,
+                        help="Parameters default values.")
+    args = parser.parse_args(args=task_args)
+
+    print("Data Dir : ", args.data_dir)
+    print("Model Dir : ", args.model_dir)
+    print("Output Dir : ", args.output_dir)
+
+    print("Data Dir files: ", os.listdir(args.data_dir))
+    # print("Workspace dir : ", os.listdir(data_source_dir))
+
+    test_path = os.path.join(args.data_dir, "small_batch", "test")
+
+    assert os.path.exists(test_path)
+
+    with open(args.parameters_file, 'r') as stream:
+        parameters = yaml.load(stream, Loader=yaml.FullLoader)
+
+
+    global_batch_size = int(parameters.get('global_batch_size', 256))
+
+    test(data_dir=test_path, output_dir=args.output_dir, model_dir=args.model_dir,
+         global_batch_size=global_batch_size, log_batch=True)
 
 
 def main():
@@ -530,7 +565,7 @@ def main():
                     "level": "INFO",
                     "formatter": "standard",
                     "filename": os.path.join(ml_box_args.log_dir,
-                                             f"mlbox_mnist_{ml_box_args.mlbox_task}.log")
+                                             f"mlbox_sciml_{ml_box_args.mlbox_task}.log")
                 }
             },
             "loggers": {
@@ -548,7 +583,7 @@ def main():
         elif ml_box_args.mlbox_task == Task.Train:
             train_task(task_args)
         elif ml_box_args.mlbox_task == Task.Test:
-            pass
+            test_task(task_args)
         else:
             raise ValueError(f"Unknown task: {task_args}")
     except Exception as err:

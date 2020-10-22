@@ -4,5 +4,5 @@ batch_size: 32
 beta_1: 0.9
 beta_2: 0.999
 epsilon: 1e-07
-
+global_batch_size: 256
 
