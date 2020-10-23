@@ -31,10 +31,10 @@ pip uninstall mlcommons_box
 Check out the [examples directory](examples) for detailed examples.
 
 ## License
-mlperf/mlbox is licensed under the Apache License 2.0. 
+[MLBox](https://github.com/mlperf/mlbox/) is licensed under the Apache License 2.0. 
 
-See https://github.com/mlperf/mlbox/blob/master/LICENSE for more information
+See [LICENSE](https://github.com/mlperf/mlbox/blob/master/LICENSE) for more information.
 
 ## Support
 
-Create an issue https://github.com/mlperf/mlbox/issues/new/choose
+[Create a GitHub issue](https://github.com/mlperf/mlbox/issues/new/choose)
