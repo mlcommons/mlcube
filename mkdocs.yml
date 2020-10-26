@@ -14,6 +14,7 @@ nav:
     - Docker Runner: runners/docker-runner.md
     - Singularity Runner: runners/singularity-runner.md
     - SSH Runner: runners/ssh-runner.md
+    - Kubernetes Runner: runners/kubernetes.md
 
 theme:
   name: 'material'
@@ -34,8 +35,7 @@ extra_css:
 
 markdown_extensions:
   - admonition
-  - codehilite:
-      linenums: true
+  - codehilite
   - pymdownx.tasklist
   - pymdownx.details
   - pymdownx.superfences

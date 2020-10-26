@@ -1,0 +1,24 @@
+schema_type: mlbox_invoke
+schema_version: 1.0.0
+
+task_name: kubernetes
+
+input_binding:
+  data_dir:
+    path: workspace/data
+    k8s:
+      pvc: mlbox-input
+  parameters_file:
+    path: workspace/parameters/default.parameters.yaml
+    k8s:
+      pvc: mlbox-input
+
+output_binding:
+  log_dir:
+    path: workspace/train_logs
+    k8s:
+      pvc: mlbox-output
+  model_dir:
+    path: workspace/model
+    k8s:
+      pvc: mlbox-output
