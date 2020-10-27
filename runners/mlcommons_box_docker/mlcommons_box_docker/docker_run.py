@@ -1,7 +1,6 @@
 import logging
 import os
-import typing
-
+from typing import Tuple
 from mlcommons_box.common import mlbox_metadata
 
 
@@ -9,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class DockerRun(object):
-    def __init__(self, mlbox: mlbox_metadata.MLBox):
+    def __init__(self, mlbox: mlbox_metadata.MLBox) -> None:
         """Docker Runner.
         Args:
             mlbox (mlbox_metadata.MLBox): MLBox specification including platform configuration for Docker.
@@ -24,7 +23,7 @@ class DockerRun(object):
                 env_vars[proxy_var] = os.environ[proxy_var]
         return env_vars
 
-    def configure(self):
+    def configure(self) -> None:
         """Build Docker Image on a current host."""
         image_name: str = self.mlbox.platform.container.image
 
@@ -38,9 +37,9 @@ class DockerRun(object):
             env_args = ' '.join([f"--build-arg {var}={name}" for var, name in DockerRun.get_env_variables().items()])
             cmd: str = f"cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile ."
         logger.info(cmd)
-        self._run_or_die(cmd)
+        DockerRun.run_or_die(cmd)
 
-    def run(self):
+    def run(self) -> None:
         """Run a box."""
         # The 'mounts' dictionary maps host path to container path
         mounts, args = self._generate_mounts_and_args()
@@ -48,17 +47,17 @@ class DockerRun(object):
 
         volumes_str = ' '.join(['--volume {}:{}'.format(t[0], t[1]) for t in mounts.items()])
         image_name: str = self.mlbox.platform.container.image
-        runtime: str = self.mlbox.platform.container.runtime
-        runtime_arg = "--runtime=" + runtime if runtime is not None else ""
+        container_params: str = self.mlbox.platform.container.parameters
+        if container_params is None or container_params == '':
+            container_params = "--rm --net=host --privileged=true"
         env_args = ' '.join([f"-e {var}={name}" for var, name in DockerRun.get_env_variables().items()])
 
         # Let's assume singularity containers provide entry point in the right way.
-        args = ' '.join(args)
-        cmd = f"docker run --rm {runtime_arg} --net=host --privileged=true {volumes_str} {env_args} {image_name} {args}"
+        cmd = f"docker run {container_params} {volumes_str} {env_args} {image_name} {' '.join(args)}"
         logger.info(cmd)
-        self._run_or_die(cmd)
+        DockerRun.run_or_die(cmd)
 
-    def _generate_mounts_and_args(self) -> typing.Tuple[dict, list]:
+    def _generate_mounts_and_args(self) -> Tuple[dict, list]:
         mounts, args = {}, [self.mlbox.invoke.task_name]
 
         def _create(binding_: dict, input_specs_: dict):
@@ -90,7 +89,8 @@ class DockerRun(object):
 
         return mounts, args
 
-    def _run_or_die(self, cmd):
+    @staticmethod
+    def run_or_die(cmd) -> None:
         print(cmd)
         if os.system(cmd) != 0:
             raise RuntimeError('Command failed: {}'.format(cmd))

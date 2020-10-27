@@ -6,8 +6,8 @@ class Container(base.StandardObject):
     SCHEMA_TYPE = "mlcommons_box_platform_container"
     SCHEMA_VERSION = "0.1.0"
     fields = {
-        "runtime": base.PrimitiveField(),
-        "image": base.PrimitiveField()
+        "image": base.PrimitiveField(),
+        "parameters": base.PrimitiveField()
     }
 
 

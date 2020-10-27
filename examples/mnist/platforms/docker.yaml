@@ -6,3 +6,4 @@ platform:
   version: ">=18.01"
 container:
   image: "mlperf/mlbox:mnist"
+  parameters: "--rm --net=host --privileged=true"
