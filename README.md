@@ -1,6 +1,6 @@
 # MLBox
 
-MLBox is a project that reduces friction for machine learning by ensuring that models are easily portable and reproducible.
+MLBox is a project that reduces friction for machine learning by ensuring that models are easily portable and reproducible, e.g., between different stacks such as different clouds, between cloud and on-prem, etc.
 
 This is the MLBox Prototype. This is  still under construction, some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
 
