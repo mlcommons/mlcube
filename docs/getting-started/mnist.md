@@ -246,11 +246,15 @@ Since we wanted to support Docker and Singularity runtimes, we provide `docker.y
 the `platforms` subdirectory that is default location to store these types of files. Docker platform configuration is
 the following:
 ```yaml
-schema_version: 1.0.0
-schema_type: mlbox_docker
+schema_type: mlcommons_box_platform
+schema_version: 0.1.0
 
-image: mlperf/mlbox:mnist   # Docker image name
-docker_runtime: docker      # Docker executable: docker or nvidia-docker
+platform:
+  name: "docker"
+  version: ">=18.01"
+configuration:
+  image: "mlperf/mlbox:mnist"
+  parameters: "--rm --net=host --privileged=true"
 
 ```
 

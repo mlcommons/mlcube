@@ -25,7 +25,7 @@ class DockerRun(object):
 
     def configure(self) -> None:
         """Build Docker Image on a current host."""
-        image_name: str = self.mlbox.platform.container.image
+        image_name: str = self.mlbox.platform.configuration.image
 
         # According to MLBox specs (?), build directory is {mlbox.root}/build that contains all files to build MLBox.
         # Dockerfiles are built taking into account that {mlbox.root}/build is the context (build) directory.
@@ -46,14 +46,15 @@ class DockerRun(object):
         print(f"mounts={mounts}, args={args}")
 
         volumes_str = ' '.join(['--volume {}:{}'.format(t[0], t[1]) for t in mounts.items()])
-        image_name: str = self.mlbox.platform.container.image
-        container_params: str = self.mlbox.platform.container.parameters
+        image_name: str = self.mlbox.platform.configuration.image
+        container_params: str = self.mlbox.platform.configuration.parameters
         if container_params is None or container_params == '':
             container_params = "--rm --net=host --privileged=true"
         env_args = ' '.join([f"-e {var}={name}" for var, name in DockerRun.get_env_variables().items()])
 
         # Let's assume singularity containers provide entry point in the right way.
-        cmd = f"docker run {container_params} {volumes_str} {env_args} {image_name} {' '.join(args)}"
+        docker_runner = self.mlbox.platform.platform.name
+        cmd = f"{docker_runner} run {container_params} {volumes_str} {env_args} {image_name} {' '.join(args)}"
         logger.info(cmd)
         DockerRun.run_or_die(cmd)
 

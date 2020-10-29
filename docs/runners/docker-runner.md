@@ -1,17 +1,21 @@
 # Docker Runner
 Docker runner uses docker/nvidia-docker to run MLCommons-Box boxes. It supports two mandatory commands - `configure` and
 `run` with standard arguments - `mlbox`, `platform` and `task`. Docker platform configuration is used to configure
-docker runner.
+docker runners.
 
 ## Platform Configuration File
-Docker platform configuration file is a YAML file that follows `mlbox_docker` ML schema. The configuration file for the
+Docker platform configuration file is a YAML file that follows `mlcommons_box_platform` ML schema. The configuration file for the
 reference MNIST box is the following:
 ```yaml
-schema_version: 1.0.0
-schema_type: mlbox_docker
+schema_type: mlcommons_box_platform
+schema_version: 0.1.0
 
-image: mlperf/mlbox:mnist   # Docker image name
-docker_runtime: docker      # Docker executable: docker or nvidia-docker
+platform:
+  name: "docker"                                       # 'docker' or 'nvidia-docker'.
+  version: ">=18.01"                                   # Reserved for future use.
+configuration:
+  image: "mlperf/mlbox:mnist"                          # Docker image name.
+  parameters: "--rm --net=host --privileged=true"      # Docker 'run' parameters.
 ```
 
 ## Additional configuration
@@ -27,7 +31,7 @@ that must be packaged in a docker image, must be located in that directory, incl
 resource files, ML models etc. The docker recipe must have the standard name `Dockerfile`.
 
 If `Dockerfile` file exists in `{MLCOMMONS_BOX_ROOT}/build`, the Docker runner assumes that it needs to `build` a docker
-image. If that file does not exists, the Docker runner will try to `pull` image with the specified name.
+image. If that file does not exist, the Docker runner will `pull` the docker image with the specified name.
 
 Docker runner under the hood runs the following command line:  
 ```
@@ -39,6 +43,8 @@ where:
   supported.  
 -  `{image_name}` is the image name defined in the platform configuration file.  
 
+When pulling and image, the command is the following: `docker pull {image_name}`. 
+
 > The `configure` command is optional and users do not necessarily need to be aware about it. The Docker runner
 > auto-detects if docker image exists before running a task, and if it does not exist, the docker runner runs the 
 > `configure` command. During the `configure` phase, docker runner does not check if docker image exists. This means the
@@ -46,18 +52,20 @@ where:
 > the `configure` command explicitly.
 
 
-
 ## Running MLBoxes
 Docker runner runs the following command:    
 ```
-{docker_runtime} run --rm --net=host --privileged=true {volumes} {env_args} {image_name} {args}
+{docker_runner} run {container_params} {volumes} {env_args} {image_name} {args}
 ```  
 where:    
-- `{docker_exec}` is the docker_runtime value from the Docker platform configuration file.  
+- `{docker_runner}` is either docker or nvidia-docker, it is specified in the docker platform configuration file 
+  (platform -> name).  
+- `{container_params}` are the container parameters specified in the docker platform configuration file (configuration
+  -> parameters). If they are not definem, the default parameters are used (`--rm --net=host --privileged=true`).
 - `{volumes}` are the mount points that the runner automatically constructs based upon the task input/output
   specifications.  
 - `{env_args}` is the arguments retrieved from user environment, currently, only `http_proxy` and `https_proxy` are
   supported.  
-- `{image_name}` is the image name from the platform configuration file.  
+- `{image_name}` is the image name from the platform configuration file (configuration -> image).  
 - `{args}` is the task command line arguments, constructed automatically by the runner.  
  

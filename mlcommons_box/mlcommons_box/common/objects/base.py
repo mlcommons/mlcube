@@ -1,10 +1,8 @@
 import abc
-import collections
 import logging
-import os
-import typing
-
+from typing import (Any)
 import mlspeclib
+
 
 logger = logging.getLogger(__name__)
 
@@ -12,26 +10,24 @@ logger = logging.getLogger(__name__)
 class BaseField(abc.ABC):
 
     @abc.abstractmethod
-    def get_default_value(self):
+    def get_default_value(self) -> Any:
         raise NotImplementedError
 
     @abc.abstractmethod
-    def get_value_from_primitive(self,
-            primitive: typing.Any=None) -> typing.Any:
+    def get_value_from_primitive(self, primitive: Any = None) -> Any:
         raise NotImplementedError
 
 
 class ObjectField(BaseField):
 
-    def __init__(self, obj_class: 'BaseObject'):
+    def __init__(self, obj_class: callable) -> None:
         self.object_class = obj_class
 
     def get_default_value(self) -> 'BaseObject':
         instance = self.object_class().default()
         return instance
 
-    def get_value_from_primitive(self,
-            primitive: typing.Any=None) -> 'BaseObject':
+    def get_value_from_primitive(self, primitive: Any = None) -> 'BaseObject':
         instance = self.object_class()
         instance.from_primitive(primitive=primitive)
         return instance
@@ -39,14 +35,13 @@ class ObjectField(BaseField):
 
 class PrimitiveField(BaseField):
 
-    def __init__(self, default: typing.Any=None):
+    def __init__(self, default: Any = None) -> None:
         self.default_value = default
 
-    def get_default_value(self) -> typing.Any:
+    def get_default_value(self) -> Any:
         return self.default_value
 
-    def get_value_from_primitive(self,
-            primitive: typing.Any=None) -> typing.Any:
+    def get_value_from_primitive(self, primitive: Any = None) -> Any:
         instance = self.get_default_value()
         if primitive is not None:
             instance = primitive
@@ -57,7 +52,7 @@ class BaseObject(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def validate(cls, primitive: typing.Any) -> bool:
+    def validate(cls, primitive: Any) -> bool:
         raise NotImplementedError
 
     @abc.abstractmethod
@@ -65,8 +60,7 @@ class BaseObject(abc.ABC):
         raise NotImplementedError
 
     @abc.abstractmethod
-    def from_primitive(self,
-            primitive: typing.Any) -> 'BaseObject':
+    def from_primitive(self, primitive: Any) -> 'BaseObject':
         raise NotImplementedError
 
 
@@ -79,14 +73,15 @@ class StandardObject(BaseObject):
     schema = {}
 
     @classmethod
-    def validate(cls, primitive: typing.Any) -> bool:
+    def validate(cls, primitive: Any) -> bool:
         if not isinstance(primitive, dict):
             return False
         mlobject = mlspeclib.MLObject()
         mlobject.set_type(
             schema_type=cls.SCHEMA_TYPE,
-            schema_version="1.0.0") # this is the mlspec-schema version and
-                                    # not this object's schema version
+            # This is the mlspec-schema version and not this object's schema version
+            schema_version="1.0.0"
+        )
         mlspeclib.MLObject.update_tree(mlobject, primitive)
         errors = mlobject.validate()
         if errors:
@@ -102,7 +97,7 @@ class StandardObject(BaseObject):
             setattr(self, fld_name, attr)
         return self
 
-    def from_primitive(self, primitive: typing.Any) -> 'StandardObject':
+    def from_primitive(self, primitive: Any) -> 'StandardObject':
         if not self.validate(primitive):
             raise ValueError("Validation failed for {}".format(
                     self.__class__.__name__))
@@ -124,7 +119,9 @@ class ListOfObject(BaseObject):
         super(ListOfObject, self).__init__()
 
     def __repr__(self): return repr(self._data)
+
     def __len__(self): return len(self._data)
+
     def __getitem__(self, i):
         if isinstance(i, slice):
             return self.__class__(self._data[i])
@@ -132,7 +129,7 @@ class ListOfObject(BaseObject):
             return self._data[i]
 
     @classmethod
-    def validate(cls, primitive: typing.Any) -> bool:
+    def validate(cls, primitive: Any) -> bool:
         if not isinstance(primitive, list):
             return False
         for item in primitive:
@@ -145,7 +142,7 @@ class ListOfObject(BaseObject):
         self._data = []
         return self
 
-    def from_primitive(self, primitive: typing.Any) -> 'ListOfObject':
+    def from_primitive(self, primitive: Any) -> 'ListOfObject':
         if not self.validate(primitive):
             raise ValueError("Validation failed for {}".format(
                     self.__class__.__name__))
@@ -165,7 +162,9 @@ class DictOfObject(BaseObject):
         super(DictOfObject, self).__init__()
 
     def __repr__(self): return repr(self._data)
+
     def __len__(self): return len(self._data)
+
     def __getitem__(self, key):
         if key in self._data:
             return self._data[key]
@@ -174,7 +173,7 @@ class DictOfObject(BaseObject):
         raise KeyError(key)
 
     @classmethod
-    def validate(cls, primitive: typing.Any) -> bool:
+    def validate(cls, primitive: Any) -> bool:
         if not isinstance(primitive, dict):
             return False
         for key, value in primitive.items():
@@ -187,7 +186,7 @@ class DictOfObject(BaseObject):
         self._data = {}
         return self
 
-    def from_primitive(self, primitive: typing.Any) -> 'DictOfObject':
+    def from_primitive(self, primitive: Any) -> 'DictOfObject':
         if not self.validate(primitive):
             raise ValueError("Validation failed for {}".format(
                     self.__class__.__name__))

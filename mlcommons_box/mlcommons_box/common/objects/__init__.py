@@ -1,15 +1,12 @@
 import logging
-import os
-
 import yaml
-
 from mlcommons_box.common.objects import base
+
 
 logger = logging.getLogger(__name__)
 
 
-def load_object_from_file(file_path: str,
-                          obj_class: base.BaseObject) -> base.BaseObject:
+def load_object_from_file(file_path: str, obj_class: callable) -> base.BaseObject:
     """Load an object from a yaml file.
 
     Args:

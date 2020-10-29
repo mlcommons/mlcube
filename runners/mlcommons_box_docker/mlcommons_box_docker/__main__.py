@@ -22,7 +22,8 @@ def cli():
 def configure(mlbox: str, platform: str):
     mlbox: mlbox_metadata.MLBox = mlbox_metadata.MLBox(path=mlbox)
     mlbox.platform = objects.load_object_from_file(
-            file_path=platform, obj_class=platform_config.PlatformConfig)
+        file_path=platform, obj_class=platform_config.ContainerPlatformConfig
+    )
     print(mlbox)
 
     runner = DockerRun(mlbox)
@@ -36,7 +37,8 @@ def configure(mlbox: str, platform: str):
 def run(mlbox: str, platform: str, task: str):
     mlbox: mlbox_metadata.MLBox = mlbox_metadata.MLBox(path=mlbox)
     mlbox.platform = objects.load_object_from_file(
-            file_path=platform, obj_class=platform_config.PlatformConfig)
+            file_path=platform, obj_class=platform_config.ContainerPlatformConfig
+    )
     mlbox.invoke = mlbox_metadata.MLBoxInvoke(task)
     mlbox.task = mlbox_metadata.MLBoxTask(os.path.join(mlbox.tasks_path, f'{mlbox.invoke.task_name}.yaml'))
     print(mlbox)

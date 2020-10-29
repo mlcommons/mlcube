@@ -4,6 +4,6 @@ schema_version: 0.1.0
 platform:
   name: "docker"
   version: ">=18.01"
-container:
+configuration:
   image: "mlperf/mlbox:hello_world"
   parameters: "--rm --net=host --privileged=true"
