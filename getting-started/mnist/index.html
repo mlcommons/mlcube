@@ -841,7 +841,8 @@ pip install mlcommons-box-docker mlcommons-box-singularity
 located in the <code>workspace</code> directory. All directories except <code>parameters</code> can be removed.</p>
 </blockquote>
 <h3 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h3>
-<p>Configure MNIST box:
+<p>Configure MNIST box (this is optional step, docker runner checks if image exists, and if does not, runs <code>configure</code>
+phase automatically):
 <div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
