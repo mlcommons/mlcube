@@ -5,4 +5,4 @@ platform:
   name: "docker"
   version: ">=18.01"
 container:
-  image: "mlperf/mlbox:hello_world"
+  image: "mlperf/mlbox_hello_world:0.0.1"
