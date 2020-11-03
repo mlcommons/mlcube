@@ -319,7 +319,8 @@ pip install mlcommons-box-docker mlcommons-box-singularity
 
 
 ### Docker Runner
-Configure MNIST box:
+Configure MNIST box (this is optional step, docker runner checks if image exists, and if does not, runs `configure`
+phase automatically):
 ```
 mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
 ```
