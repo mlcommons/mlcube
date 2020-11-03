@@ -5,4 +5,4 @@ platform:
   name: "docker"
   version: ">=18.01"
 container:
-  image: "mlperf/mlbox:mnist"
+  image: "mlperf/mlbox_mnist:0.0.2"

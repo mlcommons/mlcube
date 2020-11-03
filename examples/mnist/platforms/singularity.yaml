@@ -12,4 +12,4 @@ container:
 
   # Here, I store them in the directory outside of the MLBOX to avoid copying them back to the user host when using
   # runners such as SSH.
-  image: "${HOME}/.mlcommons-box/containers/mlperf_mlbox_mnist-0.0.1.simg"
+  image: "${HOME}/mlcommons-box/containers/mlperf_mlbox_mnist-0.0.2.simg"
