@@ -16,7 +16,7 @@ Expand this locally on the filesystem in your location of choice.
 
 Install from PyPI:  
 ```sh
-pip install mlcommons-box
+pip install mlcommons_box
 ```
 
 To uninstall:
