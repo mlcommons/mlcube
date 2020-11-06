@@ -1,0 +1,6 @@
+host: "gcp-f1-micro"
+platform: "docker.yaml"
+interpreter:
+    type: "system"
+    python: "python3"
+    requirements: "mlcommons-box-docker==0.2.2"
