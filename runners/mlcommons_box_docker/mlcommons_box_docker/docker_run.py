@@ -45,7 +45,7 @@ class DockerRun(object):
             cmd: str = f"docker pull {image_name}"
         else:
             env_args = ' '.join([f"--build-arg {var}={name}" for var, name in DockerRun.get_env_variables().items()])
-            cmd: str = f"cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile ."
+            cmd: str = f"docker build {env_args} -t {image_name} -f {docker_file} {build_path}"
         logger.info(cmd)
         self._run_or_die(cmd)
 
