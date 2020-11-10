@@ -5,5 +5,5 @@ pyyaml==5.3
 scikit-learn==0.20
 scipy==1.4.1
 six==1.11.0
-tensorflow-gpu==1.14.0
+tensorflow-gpu==1.15.4
 urllib3==1.24.2
