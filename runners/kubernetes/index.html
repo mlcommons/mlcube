@@ -1,0 +1,724 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation site for MLBox">
+      
+      
+      
+      
+        <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.4">
+    
+    
+      
+        <title>Kubernetes Runner - MLBox</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.358818c7.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.f0267088.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#kubernetes-runner" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            MLBox
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              Kubernetes Runner
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    MLBox
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/hello-world/" class="md-nav__link">
+      Hello World
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/mnist/" class="md-nav__link">
+      MNIST
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      Runners
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Runners" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Runners
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../" class="md-nav__link">
+      Runners
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../docker-runner/" class="md-nav__link">
+      Docker Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../singularity-runner/" class="md-nav__link">
+      Singularity Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ssh-runner/" class="md-nav__link">
+      SSH Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        Kubernetes Runner
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      Kubernetes Runner
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-kubernetes" class="md-nav__link">
+    Why Kubernetes?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design" class="md-nav__link">
+    Design
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-a-box-for-the-runner" class="md-nav__link">
+    Configure a Box for the runner
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure a Box for the runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-task-file" class="md-nav__link">
+    Create a Task file
+  </a>
+  
+    <nav class="md-nav" aria-label="Create a Task file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-yaml-file-in-the-run-directory" class="md-nav__link">
+    Create a YAML file in the run directory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-schema-for-task" class="md-nav__link">
+    Set Schema for Task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-task-name" class="md-nav__link">
+    Set task name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-input-and-output-bindings" class="md-nav__link">
+    Set input and output bindings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-a-box-with-the-cli" class="md-nav__link">
+    Run a box with the CLI
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#why-kubernetes" class="md-nav__link">
+    Why Kubernetes?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#design" class="md-nav__link">
+    Design
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#configure-a-box-for-the-runner" class="md-nav__link">
+    Configure a Box for the runner
+  </a>
+  
+    <nav class="md-nav" aria-label="Configure a Box for the runner">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-task-file" class="md-nav__link">
+    Create a Task file
+  </a>
+  
+    <nav class="md-nav" aria-label="Create a Task file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-a-yaml-file-in-the-run-directory" class="md-nav__link">
+    Create a YAML file in the run directory
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-schema-for-task" class="md-nav__link">
+    Set Schema for Task
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-task-name" class="md-nav__link">
+    Set task name
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#set-input-and-output-bindings" class="md-nav__link">
+    Set input and output bindings
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#run-a-box-with-the-cli" class="md-nav__link">
+    Run a box with the CLI
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="kubernetes-runner">Kubernetes Runner<a class="headerlink" href="#kubernetes-runner" title="Permanent link">&para;</a></h1>
+<p>The Kubernetes Runner runs a MLCommons-Box on a Kubernetes cluster.</p>
+<p><a href="#prepare-a-kubernetes-cluster">Skip over to the fun part.</a></p>
+<h2 id="why-kubernetes">Why Kubernetes?<a class="headerlink" href="#why-kubernetes" title="Permanent link">&para;</a></h2>
+<p>One of the key goals of the MLCommons-Box project is to enable portability of ML models.
+Kubernetes offers the a good set of abstractions to enable model training to be portable
+across different compute platforms.</p>
+<h2 id="design">Design<a class="headerlink" href="#design" title="Permanent link">&para;</a></h2>
+<p><a href="http://bit.ly/box-k8s-runner">Kubernetes Runner Proposal Doc</a></p>
+<p>The Kubernetes runner takes in a kubernetes specific task file in the <code>run</code> directory and re-uses the Docker runner
+platform config and prepares a Kubernetes Job manifest. The runner then creates the job on the Kubernetes cluster.</p>
+<p><img alt="Design" src="../../assets/mlcommons-box-k8s.png" /></p>
+<p>The Kubernetes Runner takes in a MLBox run configuration file similar to other runners. With clear definitions of input
+and output bindings.
+Here's an example:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+
+<span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes</span>   <span class="c1"># task name set to &#39;kubernetes&#39;</span>
+
+<span class="nt">input_binding</span><span class="p">:</span>  <span class="c1"># input parameters (name: value)</span>
+  <span class="nt">data_dir</span><span class="p">:</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/data</span>
+    <span class="nt">k8s</span><span class="p">:</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+<span class="nn">...</span>
+<span class="nt">output_binding</span><span class="p">:</span> <span class="c1"># output parameters (name: value)</span>
+  <span class="nt">model_dir</span><span class="p">:</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/model</span>
+    <span class="nt">k8s</span><span class="p">:</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+<span class="nn">...</span>
+</code></pre></div>
+<p>The Runner also re-uses the Docker platform config file. So it needs a Docker platform config file in the Box. Let's
+revisit the Docker platform config.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons_box_platform</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
+
+<span class="nt">platform</span><span class="p">:</span>
+  <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;docker&quot;</span>
+  <span class="nt">version</span><span class="p">:</span> <span class="s">&quot;&gt;=18.01&quot;</span>
+<span class="nt">container</span><span class="p">:</span>
+  <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;mlperf/mlbox:mnist&quot;</span>
+</code></pre></div>
+<p>With these two config files, the runner then constructs the following Kubernetes Job manifest. </p>
+<div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
+<span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
+<span class="nt">metadata</span><span class="p">:</span>
+  <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
+  <span class="nt">generateName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons-box-mnist-</span>
+<span class="nt">spec</span><span class="p">:</span>
+  <span class="nt">template</span><span class="p">:</span>
+    <span class="nt">spec</span><span class="p">:</span>
+      <span class="nt">containers</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons-box-container</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlbox:mnist</span>
+        <span class="nt">args</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--data_dir=/mnt/mlbox/mlbox-input/workspace/data</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--model_dir=/mnt/mlbox/mlbox-output/workspace/model</span>
+        <span class="nt">volumeMounts</span><span class="p">:</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt/mlbox/mlbox-input</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt/mlbox/mlbox-output</span>
+      <span class="nt">volumes</span><span class="p">:</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+        <span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+          <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+        <span class="nt">persistentVolumeClaim</span><span class="p">:</span>
+          <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+      <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
+  <span class="nt">backoffLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
+</code></pre></div>
+<h2 id="configure-a-box-for-the-runner">Configure a Box for the runner<a class="headerlink" href="#configure-a-box-for-the-runner" title="Permanent link">&para;</a></h2>
+<p>Prerequisites:</p>
+<ul>
+<li>A Kubernetes cluster</li>
+<li><code>KUBECONFIG</code> for the cluster</li>
+<li>pre-created volumes for the Box</li>
+</ul>
+<h3 id="create-a-task-file">Create a Task file<a class="headerlink" href="#create-a-task-file" title="Permanent link">&para;</a></h3>
+<p>Based on the setup, create a specific task file for the Box.</p>
+<h4 id="create-a-yaml-file-in-the-run-directory">Create a YAML file in the <code>run</code> directory<a class="headerlink" href="#create-a-yaml-file-in-the-run-directory" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>touch run/kubernetes.yaml
+</code></pre></div>
+<h4 id="set-schema-for-task">Set Schema for Task<a class="headerlink" href="#set-schema-for-task" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
+</code></pre></div>
+<h4 id="set-task-name">Set task name<a class="headerlink" href="#set-task-name" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes</span>
+</code></pre></div>
+<h4 id="set-input-and-output-bindings">Set input and output bindings<a class="headerlink" href="#set-input-and-output-bindings" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="nt">input_binding</span><span class="p">:</span>  <span class="c1"># input parameters (name: value)</span>
+  <span class="nt">data_dir</span><span class="p">:</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/data</span>
+    <span class="nt">k8s</span><span class="p">:</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+
+<span class="nt">output_binding</span><span class="p">:</span> <span class="c1"># output parameters (name: value)</span>
+  <span class="nt">model_dir</span><span class="p">:</span>
+    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/model</span>
+    <span class="nt">k8s</span><span class="p">:</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+</code></pre></div>
+<h2 id="run-a-box-with-the-cli">Run a box with the CLI<a class="headerlink" href="#run-a-box-with-the-cli" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pip install mlcommons-box-k8s
+mlcommons_box_k8s run <span class="se">\</span>
+  --mlbox<span class="o">=</span>examples/mnist <span class="se">\</span>
+  --platform<span class="o">=</span>examples/mnist/platforms/docker.yaml <span class="se">\</span>
+  --task<span class="o">=</span>examples/mnist/run/kubernetes.yaml  <span class="se">\</span>
+  --loglevel INFO
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../ssh-runner/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                SSH Runner
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.7e0ee788.min.js"></script>
+      <script src="../../assets/javascripts/bundle.b3a72adc.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
