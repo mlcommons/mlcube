@@ -57,3 +57,11 @@ jobs:
         run: |
           cd runners/mlcommons_box_ssh
           pytest
+      - name: Install MLCommons Box Kubernetes Runner
+        run: |
+          cd runners/mlcommons_box_k8s
+          python setup.py install
+      - name: Test MLCommons Box Kubernetes CLI
+        run: |
+          cd runners/mlcommons_box_k8s
+          pytest
