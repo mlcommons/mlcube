@@ -91,3 +91,31 @@ jobs:
         repository_url: https://upload.pypi.org/legacy/
       env:
         LOGLEVEL: DEBUG
+
+  kubernetes_runner_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcommons_box_k8s
+        python setup.py sdist bdist_wheel
+    - name: Publish
+      uses: sub-mod/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: runners/mlcommons_box_k8s/dist/
+        repository_url: https://upload.pypi.org/legacy/
+      env:
+        LOGLEVEL: DEBUG
