@@ -8,6 +8,19 @@ from typing import (Tuple, Any)
 from mlcommons_box.common import mlbox_metadata
 
 
+class StandardPaths(object):
+    """ Standard MLBox file system paths. """
+
+    # Base path. Do not use hidden paths such as .mlcommons-box. It does not work with Docker installed with snap.
+    ROOT = '${HOME}/mlcommons-box'
+    # Default path to store singularity containers.
+    CONTAINERS = ROOT + '/containers'
+    # Default path to store MLBoxes for runners such as SSH and GCP (Google Compute Platform).
+    BOXES = ROOT + '/boxes'
+    # Default path for user python environments for runners such as SSH.
+    ENVIRONMENTS = ROOT + '/environments'
+
+
 class Utils(object):
     """Collection of various helper functions from the old MLBox branch.
     Developed by: Victor Bittorf and Xinyuan Huang.

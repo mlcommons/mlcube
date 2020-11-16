@@ -1,0 +1,15 @@
+# Name of the host or IP address or alias defined in ${HOME}/.ssh/config
+host: "gcp-f1-micro"
+
+# Authentication method. If empty, it is either configured in ${HOME}/.ssh/config or authentication is not required.
+authentication:
+
+# A platform file to use on remote host.
+platform: "docker.yaml"
+
+# How to run MLBox runner on a remote host - define python environment here. The 'system' types means either
+# interpreter is available be default, or interpreter is an absolute path.
+interpreter:
+    type: "system"
+    python: "python3.6"
+    requirements: "mlcommons-box-docker==0.2.2"

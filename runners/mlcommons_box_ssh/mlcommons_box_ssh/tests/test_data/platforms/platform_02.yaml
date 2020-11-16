@@ -1,0 +1,18 @@
+# Name of the host or IP address or alias defined in ${HOME}/.ssh/config
+host: "gcp-f1-micro"
+
+# Authentication method. Use this user and identify file. Both parameters are optional.
+authentication:
+    user: "gcp_user"
+    identify_file: "/opt/mlbox/ssh/gcp_identity"
+
+# A platform file to use on remote host.
+platform: "singularity.yaml"
+
+# How to run MLBox runner on a remote host - define python environment here.
+interpreter:
+    type: "virtualenv"
+    python: "python3.6"
+    requirements: "mlcommons-box-docker==0.2.1"
+    location: "${HOME}/mlcommons-box/environments"
+    name: "mlcommons-box-docker-0.2.1"
