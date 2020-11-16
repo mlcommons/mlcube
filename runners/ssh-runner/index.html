@@ -14,7 +14,7 @@
         <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.4">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.5">
     
     
       
@@ -22,10 +22,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.358818c7.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.21aed14c.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.f0267088.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
         
       
     
@@ -108,7 +108,7 @@
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
       <label class="md-search__icon md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
@@ -180,8 +180,7 @@
 
   <li class="md-nav__item md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
-    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
     <label class="md-nav__link" for="nav-2">
       Getting Started
       <span class="md-nav__icon md-icon"></span>
@@ -244,8 +243,7 @@
 
   <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
-    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
     <label class="md-nav__link" for="nav-3">
       Runners
       <span class="md-nav__icon md-icon"></span>
@@ -338,8 +336,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#build-command" class="md-nav__link">
-    Build command
+  <a href="#configure-command" class="md-nav__link">
+    Configure command
   </a>
   
 </li>
@@ -406,8 +404,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#build-command" class="md-nav__link">
-    Build command
+  <a href="#configure-command" class="md-nav__link">
+    Configure command
   </a>
   
 </li>
@@ -441,41 +439,64 @@ platform configuration is used to configure SSH runner.</p>
 </blockquote>
 <h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
 <p>SSH platform configuration file is a YAML file. The configuration file for the reference MNIST box is the following:
-<div class="highlight"><pre><span></span><code><span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">REMOTE_HOST</span>     <span class="c1"># Remote host IP address.</span>
-<span class="nt">user</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">USER</span>            <span class="c1"># User name, assuming passwordless authentication using keys has been set up.</span>
-<span class="nt">platform</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span> <span class="c1"># How to run this box on a remote host - use Docker Runner</span>
-<span class="nt">env</span><span class="p">:</span>                  <span class="c1"># This is for syncing MLBox library itself (library, runners etc.)</span>
-    <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">./mlbox</span>     <span class="c1"># Path on a remote node, this is the default value. Relative paths are relative to use home dir.</span>
-    <span class="nt">sync</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
-    <span class="nt">interpreter</span><span class="p">:</span>      <span class="c1"># Host environment for runners, box can have its own interpreter. Dependencies must be installed.</span>
-        <span class="nt">type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">system</span>
-        <span class="nt">python</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">python3.6</span>   <span class="c1"># Can also be an absolute path to user python environment (virtualenv, conda etc.)</span>
-    <span class="nt">variables</span><span class="p">:</span> <span class="p p-Indicator">{}</span>    <span class="c1"># Environmental variables (will be used by docker build/run), remove &#39;{}&#39; if variables present.</span>
-        <span class="c1"># http_proxy:</span>
-        <span class="c1"># https_proxy:</span>
-<span class="nt">mlbox</span><span class="p">:</span>                <span class="c1"># Remote location of the box to run</span>
-    <span class="nt">path</span><span class="p">:</span>             <span class="c1"># Null, the path will be set to ./.mlbox/mlboxes/mnist-${version}</span>
-    <span class="nt">sync</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">true</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Possible values are hostname or IP address. It can also be a host alias if there is a corresponding section</span>
+<span class="c1"># exists in ~/.ssh/config. The hostname should be possible to use with tools like ssh, rsync and scp.</span>
+<span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">REMOTE_HOST</span>
+
+
+<span class="c1"># Authentication section is optional, and can be null, empty or non-empty dictionary. If value is null or empty </span>
+<span class="c1"># string/dict, it is assumed the authentication is not required, or is configured in user environment </span>
+<span class="c1"># (e.g. ~/.ssh/config). SSH runner will not provide any additional information on a command line for ssh, rsync or scp.</span>
+<span class="c1"># If the value is a dictionary, optional fields that SSH runner recognizes are user name on a remote host (user) and </span>
+<span class="c1"># path to a user private key file (identity_file). If all fields are present, the following connection string is used </span>
+<span class="c1"># by the SSH runner: `-i $identity_file $user@$host`.</span>
+<span class="nt">authentication</span><span class="p">:</span>
+    <span class="nt">user</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">USER</span>
+    <span class="nt">identity_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/mlbox/ssh/gcp_identity</span>
+
+
+<span class="c1"># The platform field points to a platform configuration to be used on a remote host. This file must be located inside </span>
+<span class="c1"># $mlbox_root/platforms directory. The idea is that the SSH runner delivers an MLBox to a remote host and then use </span>
+<span class="c1"># another MLCommons-Box runner such as Docker or Singularity runner to run that MLBox there.</span>
+<span class="nt">platform</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span>
+
+
+<span class="c1"># The interpreter section defines python interpreter on a remote host to use to run other runners there. This is not </span>
+<span class="c1"># environment for MLBoxes, this is environment for runners to run MLBoxes. Two options are supported - `system` and </span>
+<span class="c1"># `virtualenv` interpreters.</span>
+
+<span class="c1"># The system interpreter is a python already available on a remote host. It can be just an executable (python, </span>
+<span class="c1"># python3.8) or a full path to a user existing environment. Three fields should be provided: type (system in this case), </span>
+<span class="c1"># python executable, possibly, with fully specified path, and dependencies in the form of a string (requirements).</span>
+<span class="nt">interpreter</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="s">&quot;system&quot;</span>
+    <span class="nt">python</span><span class="p">:</span> <span class="s">&quot;python3.6&quot;</span>
+    <span class="nt">requirements</span><span class="p">:</span> <span class="s">&quot;mlcommons-box-docker==0.2.2&quot;</span>
+
+<span class="c1"># The virtualenv interpreter does not have to exist. SSH runner can create this one. This interpreter has the same </span>
+<span class="c1"># fields with two additional ones - location (base path for a python environment) and name (basically, a folder name </span>
+<span class="c1"># inside the location path).</span>
+<span class="c1"># interpreter:</span>
+<span class="c1">#     type: &quot;virtualenv&quot;</span>
+<span class="c1">#     python: &quot;python3.6&quot;</span>
+<span class="c1">#     requirements: &quot;mlcommons-box-docker==0.2.1&quot;</span>
+<span class="c1">#     location: &quot;${HOME}/mlcommons-box/environments&quot;</span>
+<span class="c1">#     name: &quot;mlcommons-box-docker-0.2.1&quot;</span>
 </code></pre></div></p>
 <p>SSH runner uses IP or name of a remote host (<code>host</code>) and ssh tool to login and execute shell commands on remote hosts. 
-It uses user name (<code>user</code>) for authentication. If passwordless login is not configured, SSH runner asks for password
-many times during configure and run phases.  </p>
+If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  </p>
 <p>SSH runner depends on other runners to run MLCommons-Box boxes. The <code>platform</code> field specifies what runner should be
-used on a remote host. This is a file name relative to <code>{MLCOMMONS_BOX_ROOT}/platforms</code>.  </p>
-<p>In current implementation, SSH runner synchronizes both MLCommons-Box library and a box workload between local and
-remote hosts. This is optional, and in the future versions, when the library and runners are installed using pip, this
-will not be required.</p>
-<h2 id="build-command">Build command<a class="headerlink" href="#build-command" title="Permanent link">&para;</a></h2>
-<p>During the <code>build</code> phase, the following steps are performed.<br />
-1. If MLCommons-Box library (source tree) needs to be synchronized, SSH runner:<br />
-   - Uses <code>ssh</code> to create root directory for the library.<br />
-   - <code>Uses</code> <code>rsync</code> to synchronize the following library directories: <code>mlcommons_box</code> and <code>runners</code>.<br />
-2. If MLCommons-Box box needs to be synchronized, SSH runner:<br />
-   - Uses <code>ssh</code> to create root directory for the box on a remote host.<br />
-   - <code>Uses</code> <code>rsync</code> to synchronize the entire content of the box.<br />
-3. The only supported remote python environment is the <code>system</code>, and SSH runner assumes that all dependencies have been
-   installed. Two required python packages that are not common are <code>click</code> and <code>mlspeclib</code>.<br />
-4. SSH runner uses <code>platform</code> file and runs standard <code>configure</code> command on a remote host. </p>
+used on a remote host. This is a file name located in <code>{MLCOMMONS_BOX_ROOT}/platforms</code>.  </p>
+<p>In current implementation, SSH runner synchronizes only an mlbox workload between local and remote hosts. Runners
+are assumed to be either available on remote hosts or specified as package dependencies in python interpreter 
+configuration section. </p>
+<h2 id="configure-command">Configure command<a class="headerlink" href="#configure-command" title="Permanent link">&para;</a></h2>
+<p>During the <code>build</code> phase, the following steps are performed.
+1. Based upon configuration, SSH runner creates and/or configures python on a remote host using <code>ssh</code>. This includes
+   execution of such commands as <code>virtualenv -p ...</code> and/or <code>source ... &amp;&amp; pip install ...</code> on a remote host. Default
+   path for a python environment on a remote host is <code>${HOME}/mlcommons-box/environments/</code>. <br />
+2. SSH runner copies mlbox directory to a remote host. Default path on a remote host is <code>${HOME}/mlcommons-box/boxes/</code>.
+3. SSH runner runs another runner specified in a platform configuration file on a remote host to configure it. </p>
 <h2 id="run-command">Run command<a class="headerlink" href="#run-command" title="Permanent link">&para;</a></h2>
 <p>During the run phase, the SSH runner performs the following steps:<br />
 1. It uses <code>ssh</code> to run standard <code>run</code> command on a remote host.<br />
