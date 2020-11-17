@@ -1,0 +1,11 @@
+schema_version: 1.0.0
+schema_type: mlbox_root
+
+name: test_box
+author: MLPerf Best Practices Working Group
+version: 0.1.0
+mlbox_spec_version: 0.1.0
+
+
+tasks:
+  - 'run/kubernetes.yaml'

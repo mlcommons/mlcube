@@ -6,24 +6,24 @@ os.environ['CUDA_VISIBLE_DEVICES'] = ''
 """
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
-import yaml
-import os
-import logging
-import logging.config
+
 import argparse
+import logging.config
+import os
 from enum import Enum
 from typing import List
+
 import numpy as np
 import tensorflow as tf
-from tensorflow_core.python.keras.utils.data_utils import get_file
-
+import yaml
+from tensorflow.keras.utils import get_file
 
 logger = logging.getLogger(__name__)
-
 
 class Task(str, Enum):
     DownloadData = 'download'
     Train = 'train'
+    Kubernetes = 'kubernetes'
 
 
 def download(task_args: List[str]) -> None:
@@ -33,7 +33,10 @@ def download(task_args: List[str]) -> None:
     """
     logger.info(f"Starting '{Task.DownloadData}' task")
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Path to a dataset file.")
+    parser.add_argument('--data_dir', '--data-dir', type=str, default=None, help="Dataset path.")
+    parser.add_argument('--model_dir', '--model-dir', type=str, default=None, help="Model output directory.")
+    parser.add_argument('--parameters_file', '--parameters-file', type=str, default=None,
+                        help="Parameters default values.")
     args = parser.parse_args(args=task_args)
 
     data_dir = args.data_dir
@@ -124,7 +127,6 @@ def main():
         parser.add_argument('mlbox_task', type=str, help="Task for this MLBOX.")
         parser.add_argument('--log_dir', '--log-dir', type=str, required=True, help="Logging directory.")
         ml_box_args, task_args = parser.parse_known_args()
-
         logger_config = {
             "version": 1,
             "disable_existing_loggers": True,
@@ -137,19 +139,26 @@ def main():
                     "level": "INFO",
                     "formatter": "standard",
                     "filename": os.path.join(ml_box_args.log_dir, f"mlbox_mnist_{ml_box_args.mlbox_task}.log")
+                },
+                "stream_handler": {
+                    "class": "logging.StreamHandler",
+                    "level": "INFO",
+                    "formatter": "standard",
                 }
             },
             "loggers": {
-                "": {"level": "INFO", "handlers": ["file_handler"]},
+                "": {"level": "INFO", "handlers": ["file_handler", "stream_handler"]},
                 "__main__": {"level": "NOTSET", "propagate": "yes"},
                 "tensorflow": {"level": "NOTSET", "propagate": "yes"}
             }
         }
         logging.config.dictConfig(logger_config)
-
         if ml_box_args.mlbox_task == Task.DownloadData:
             download(task_args)
         elif ml_box_args.mlbox_task == Task.Train:
+            train(task_args)
+        elif ml_box_args.mlbox_task == Task.Kubernetes:
+            download(task_args)
             train(task_args)
         else:
             raise ValueError(f"Unknown task: {task_args}")

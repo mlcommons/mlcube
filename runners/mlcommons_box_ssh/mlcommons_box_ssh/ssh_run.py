@@ -1,12 +1,31 @@
 import os
 import logging
+from typing import Optional
 from mlcommons_box import parse   # Do not remove (it registers schemas on import)
 from mlcommons_box.common import mlbox_metadata
-from mlcommons_box_ssh.ssh_metadata import InterpreterType
+from mlcommons_box.common.utils import StandardPaths
+from mlcommons_box_ssh.ssh_metadata import PythonInterpreter
 from mlcommons_box_ssh.utils import Utils
 
 
 logger = logging.getLogger(__name__)
+
+
+class Shell(object):
+    @staticmethod
+    def run_or_die(cmd):
+        print(cmd)
+        if os.system(cmd) != 0:
+            raise Exception('Command failed: {}'.format(cmd))
+
+    @staticmethod
+    def ssh(conn: str, cmd: Optional[str]):
+        if cmd:
+            Shell.run_or_die(f"ssh -o StrictHostKeyChecking=no {conn} '{cmd}'")
+
+    @staticmethod
+    def rsync_dirs(source: str, dest: str):
+        Shell.run_or_die(f"rsync -e 'ssh' -r '{source}' '{dest}'")
 
 
 class SSHRun(object):
@@ -18,88 +37,68 @@ class SSHRun(object):
     the same MLBoxes locally. So, the only difference is the requirement for platform configuration file.
     """
 
-    def get_runner_on_remote_host(self):
-        config: dict = Utils.load_yaml(os.path.join(self.mlbox.root, 'platforms', self.mlbox.platform.mlbox_platform))
+    def get_runner_on_remote_host(self) -> str:
+        config: dict = Utils.load_yaml(os.path.join(self.mlbox.root, 'platforms', self.mlbox.platform.platform))
+
+        # Old-style definition
         if config.get('schema_type', None) == 'mlbox_singularity':
             return 'mlcommons_box_singularity'
         if config.get('schema_type', None) == 'mlbox_docker':
             return 'mlcommons_box_docker'
+
+        # New-style definition
+        if config.get('schema_type', None) == 'mlcommons_box_platform':
+            platform_name = config.get('platform', {}).get('name', None)
+            if platform_name == 'docker':
+                return 'mlcommons_box_docker'
         raise ValueError(f"Invalid platform configuration file")
 
-    def __init__(self, mlbox: mlbox_metadata.MLBox):
+    def __init__(self, mlbox: mlbox_metadata.MLBox) -> None:
         """"""
         self.mlbox: mlbox_metadata.MLBox = mlbox
         self.remote_runner: str = self.get_runner_on_remote_host()
 
-    def configure(self):
+    def configure(self) -> None:
         """Run 'configure' phase for SHH runner."""
-        conn = "{}@{}".format(self.mlbox.platform.user, self.mlbox.platform.host)
+        conn: str = self.mlbox.platform.get_connection_string()
+        remote_env: PythonInterpreter = self.mlbox.platform.interpreter
 
-        # Sync mlbox library (runners) root directory with the remote host.
-        if self.mlbox.platform.env.sync is True:
-            # Local and remote paths of MLBox library.
-            # Implement differently.
-            local_path = os.path.abspath((os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))))
-            remote_path = self.mlbox.platform.env.path
-            # Create target directory on a remote host and sync selected folders.
-            Utils.run_or_die(f"ssh -o StrictHostKeyChecking=no {conn} 'mkdir -p {remote_path}'")
-            for path in ('mlcommons_box', 'runners'):
-                Utils.run_or_die(f"rsync -r {local_path}/{path} {conn}:{remote_path}")
+        # If required, create and configure python environment on remote host
+        Shell.ssh(conn, remote_env.create_cmd())
+        Shell.ssh(conn, remote_env.configure_cmd())
 
-        # Sync MLBox workload directories
-        if self.mlbox.platform.mlbox.sync is True:
-            # The 'local_path' and 'remote_path' must both be directories.
-            local_path, remote_path = self.mlbox.root, self.mlbox.platform.mlbox.path
-            Utils.run_or_die(f"ssh -o StrictHostKeyChecking=no {conn} 'mkdir -p {remote_path}'")
-            Utils.run_or_die(f"rsync -r {local_path}/ {conn}:{remote_path}/")
-
-        # Create python environment and install 'mlspeclib' library and/or other requirements.
-        if self.mlbox.platform.env.interpreter.type == InterpreterType.System:
-            # Assuming it has already been configured. Do not want to deal with 'sudo' and other things here.
-            python = self.mlbox.platform.env.interpreter.python
-        else:
-            # In other cases it may be required to create virtualenv/conda environments and install dependencies.
-            # Since python environment is fully specified by the python executable, in all other places we just need
-            # to know the full path to python that is provided by metadata helper classes.
-            raise ValueError("Unsupported python interpreter")
+        # The 'local_path' and 'remote_path' must both be directories.
+        local_path: str = self.mlbox.root
+        remote_path: str = os.path.join(StandardPaths.BOXES, os.path.basename(self.mlbox.root))
+        Shell.ssh(conn, f'mkdir -p {remote_path}')
+        Shell.rsync_dirs(source=f'{local_path}/', dest=f'{conn}:{remote_path}/')
 
         # Configure remote MLBox runner. Idea is that we use chain of runners, for instance, SHH Runner -> Docker
         # runner. So, the runner to be used on a remote host must configure itself.
+        cmd = f"{remote_env.python} -m {self.remote_runner} configure "\
+              f"--mlbox=. --platform=platforms/{self.mlbox.platform.platform}"
+        Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
 
-        # Path to a MLBox workload on a remote host relative to the MLBox library directory.
-        mlbox_rel_path = os.path.relpath(self.mlbox.platform.mlbox.path, self.mlbox.platform.env.path)
-        cmd = f"export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/{self.remote_runner}; "\
-              f"{python} -m {self.remote_runner} configure --mlbox={mlbox_rel_path} "\
-              f"--platform={mlbox_rel_path}/platforms/{self.mlbox.platform.mlbox_platform}"
-        cmd = f"ssh -o StrictHostKeyChecking=no {conn} 'cd {self.mlbox.platform.env.path}; {cmd}'"
-        Utils.run_or_die(cmd)
-
-    def run(self, task_file: str):
+    def run(self, task_file: str) -> None:
         """ Run 'run' phase, one of the MLBox tasks.
         Args:
              task_file (str): A file path to a task file on a local host. It is assumed the relative path to the mlbox
                 root folder is "run/{task_name}.yaml"
         """
-        # This is all temporary solution. SSH runner needs to delegate it to the runner on a remote host.
-        if self.mlbox.platform.env.interpreter.type != InterpreterType.System:
-            raise ValueError("Only system python interpreters are supported.")
+        conn: str = self.mlbox.platform.get_connection_string()
+        remote_env: PythonInterpreter = self.mlbox.platform.interpreter
 
-        if self.mlbox.platform.env.interpreter.type == InterpreterType.System:
-            python = self.mlbox.platform.env.interpreter.python
-        else:
-            raise ValueError("Unsupported python interpreter")
-        conn = "{}@{}".format(self.mlbox.platform.user, self.mlbox.platform.host)
-        # Path to a MLBox workload on a remote host relative to the MLBox library directory.
-        mlbox_rel_path = os.path.relpath(self.mlbox.platform.mlbox.path, self.mlbox.platform.env.path)
-        remote_task_file = os.path.join(mlbox_rel_path, 'run', os.path.basename(task_file))
-        cmd = f"export PYTHONPATH=$(pwd)/mlcommons_box:$(pwd)/runners/{self.remote_runner}; "\
-              f"{python} -m {self.remote_runner} run --mlbox={mlbox_rel_path} "\
-              f"--platform={mlbox_rel_path}/platforms/{self.mlbox.platform.mlbox_platform} "\
-              f"--task={remote_task_file}"
-        cmd = f"ssh -o StrictHostKeyChecking=no {conn} 'cd {self.mlbox.platform.env.path}; {cmd}'"
-        Utils.run_or_die(cmd)
+        # The 'remote_path' variable points to the MLBox root directory on remote host.
+        remote_path = os.path.join(StandardPaths.BOXES, os.path.basename(self.mlbox.root))
+        task_file_rel = os.path.relpath(  # -- Path to a task file relative to MLBox root directory
+            os.path.abspath(task_file),   # ----- Local absolute path to a task file
+            self.mlbox.root               # ----- Local MLBox root directory
+        )
+
+        cmd = f"{remote_env.python} -m {self.remote_runner} run "\
+              f"--mlbox=. --platform=platforms/{self.mlbox.platform.platform} --task={task_file_rel}"
+        Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
 
         # Sync back results
         # TODO: Only workspace/ directory is synced. Better solution?
-        remote_path, local_path = self.mlbox.platform.mlbox.path, self.mlbox.root
-        Utils.run_or_die("rsync -r {}:{}/workspace/ {}/workspace/".format(conn, remote_path, local_path))
+        Shell.rsync_dirs(source=f'{conn}:{remote_path}/workspace/', dest=f'{self.mlbox.root}/workspace/')

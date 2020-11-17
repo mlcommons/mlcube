@@ -1,166 +1,149 @@
-import os
-import copy
-from enum import Enum
-from typing import Optional
-from mlcommons_box.common import mlbox_metadata
-from mlcommons_box.common.utils import Utils
-
+from typing import (Optional, Dict, TypeVar)
+from mlcommons_box.common.utils import (Utils, StandardPaths)
 
 """
 Classes that provide convenient access to SHH runner-specific platform parameters. Pretty much all is initialized based
 on configuration in a platform definition file.
 """
 
+Interpreter = TypeVar('Interpreter', bound='PythonInterpreter')
 
-class InterpreterType(str, Enum):
-    """Type of a python interpreter on a remote host for running mlbox runners.
-    PS - MLBoxes may have their own Python environment.
+
+class PythonInterpreter(object):
+    """ Base class for Python interpreters.
+
+    A python interpreter is responsible for running MLBox runners on remote hosts. It also provides additional
+    functionality such as providing commands for:
+        - Creating an interpreter (create_cmd).
+        - Activating an interpreter (activate_cmd).
+        - Configuring an interpreter (configure_cmd).
+
+    Note on activation. As far as I know, activation is not required in general, this is just a convenience feature.
+    Tools like python and pip executables can be used using their absolute paths.
     """
-    System = "system"           # Python that's already available. Can be user existing existing environment.
-    VirtualEnv = "virtualenv"   # Is used to automatically create a new python environment in the MLBox root folder.
-    Conda = "conda"             # Is used to automatically create a new python environment in the MLBox root folder.
+    type: str = 'unknown'
+    _interpreters: Dict[str, callable] = {}
 
+    def __init_subclass__(cls, **kwargs):
+        """ Register all python interpreters in this method. """
+        if cls.type in PythonInterpreter._interpreters:
+            raise ValueError(f"Duplicate interpreter name: {cls.type}.")
+        PythonInterpreter._interpreters[cls.type] = cls
 
-class SystemInterpreter(object):
-    """System interpreter is the one already available on a remote host that does not need to be configured.
-    It can also be a user existing environment (virtualenv, conda etc.).
-    """
-    def __init__(self, python: str = 'python'):
-        """
-        Args:
-            python (str): Python executable, can be a full path to user python executable.
-        """
-        self.type = InterpreterType.System
-        self.python = python
+    @staticmethod
+    def create(config: dict) -> Interpreter:
+        if not isinstance(config, dict):
+            raise ValueError(f"Invalid configuration object type('{type(config)}'). Expected: 'dict'.")
+        interpreter_type = config.get('type', None)
+        if interpreter_type is None:
+            raise ValueError("Python interpreter configuration does not provide 'type' field.")
+        if interpreter_type not in PythonInterpreter._interpreters:
+            raise ValueError(f"Invalid python interpreter ('{interpreter_type}'). "
+                             f"Expected: {PythonInterpreter._interpreters.keys()}")
+        return PythonInterpreter._interpreters[interpreter_type](config)
 
-    def __str__(self) -> str:
-        return f"SystemInterpreter(type=system, python={self.python})"
-
-
-class Env(object):
-    """Class that describes remote mlbox library (runners) environment."""
-    def __init__(self, path: str, sync: bool, interpreter: dict, variables: dict):
-        """
-        Args:
-            path (str): A path to a mlbox library on a remote host. Relative paths are relative to user home dir.
-            sync (bool): If true, mlbox library will be synced (local -> remote) during the configure phase.
-            interpreter (dict): Definition of a remote python interpreter for running mlbox runners.
-            variables (dict): Environmental variables to use at a remote host. In particular, they will be passed to
-                docker build/run.
-        """
-        self.path = path
-        self.sync = sync
-        if interpreter['type'] == InterpreterType.System:
-            self.interpreter = SystemInterpreter(interpreter['python'])
-        else:
-            raise ValueError("Unsupported interpreter: {}".format(interpreter['type']))
-        self.variables = copy.deepcopy(variables)
+    def __init__(self, config: dict) -> None:
+        """  """
+        # Python executable, possibly, including the full path (python, python3, /my/custom/path/python etc.).
+        self.python: str = config.get('python', 'python')
+        # String of python dependencies.
+        self.requirements: str = Utils.get(config, 'requirements', '')
 
     def __str__(self) -> str:
-        return f"Env(path={self.path}, sync={self.sync}, interpreter={self.interpreter})"
+        return f"PythonInterpreter(python={self.python}, requirements={self.requirements})"
 
-    def docker_build_args(self) -> str:
-        """
-        Returns:
-            A string that contains definitions of variables for docker 'build' phase.
-        """
-        return " ".join([f"--build-arg {name}={value}" for name, value in self.variables.items()])
+    def create_cmd(self, noop: Optional[str] = None) -> Optional[str]:
+        """ Return command to create an interpreter. """
+        return noop
 
-    def docker_run_args(self) -> str:
-        """
-        Returns:
-            A string that contains definitions of variables for docker 'run' phase.
-        """
-        return " ".join([f"-e {name}={value}" for name, value in self.variables.items()])
+    def configure_cmd(self, noop: Optional[str] = None) -> Optional[str]:
+        """ Configure python: install requirements. """
+        if not self.requirements:
+            return noop
+        config_cmd = ""
+        activate_cmd = self.activate_cmd()
+        if activate_cmd is not None:
+            config_cmd += f"{activate_cmd} && "
+        return config_cmd + f"{self.python} -m pip install {self.requirements}"
+
+    def activate_cmd(self, noop: Optional[str] = None) -> Optional[str]:
+        """ Return command to activate an interpreter. """
+        return noop
 
 
-class MLBox(object):
-    """Class that describes remote mlbox location."""
-    def __init__(self, path: str, sync: bool = True):
-        """
-        Args:
-            path (str): Path on a remote host for a mlbox-packaged workload.
-            sync (bool): If true, local mlbox directory is synced with the remote host during the configure phase.
-        """
-        self.path = path
-        self.sync = sync
+class SystemInterpreter(PythonInterpreter):
+
+    type: str = 'system'
+
+    """ Just a formal wrapper on top of Python Interpreter. """
+    def __init__(self, config: dict) -> None:
+        super().__init__(config)
 
     def __str__(self) -> str:
-        return f"MLBox(path={self.path}, sync={self.sync})"
+        return f"SystemInterpreter(python={self.python}, requirements={self.requirements})"
+
+
+class VirtualEnvInterpreter(PythonInterpreter):
+
+    type: str = 'virtualenv'
+
+    def __init__(self, config: dict) -> None:
+        super().__init__(config)
+
+        self.location = Utils.get(config, 'location', StandardPaths.ENVIRONMENTS)
+        self.name = Utils.get(config, 'name', '')
+        if not self.name:
+            raise ValueError(f"Invalid python interpreter name: '{self.name}'")
+
+    def create_cmd(self, noop: Optional[str] = None) -> Optional[str]:
+        env_path = f'{self.location}/{self.name}'
+        return f'[ ! -d "{env_path}" ] && {{ mkdir -p {self.location} && cd {self.location} && '\
+               f'virtualenv -p {self.python} {self.name}; }}'
+
+    def activate_cmd(self, noop: Optional[str] = None) -> Optional[str]:
+        return f"source {self.location}/{self.name}/bin/activate"
+
+    def __str__(self) -> str:
+        return f"VirtualEnvInterpreter(python={self.python}, requirements={self.requirements}, "\
+               f"location={self.location}, name={self.name})"
 
 
 class Platform(object):
-
-    def __init__(self, path: str, mlbox: mlbox_metadata.MLBox):
-        """
-        Args:
-            path (str): Path to a SSH platform that is usually located in the MLBox `platforms` directory.
-            mlbox (MLBox): MLBox definition object.
-        """
-        metadata = Utils.load_yaml(path)
-
-        if 'host' not in metadata:
-            raise ValueError("Missing mandatory parameter 'host'")
-        if 'user' not in metadata:
-            raise ValueError("Missing mandatory parameter 'user'")
-        #
-        metadata['env'] = Utils.get(metadata, 'env', {'path': None, 'sync': True,
-                                                      'interpreter': {'type': 'system', 'python': 'python'},
-                                                      'variables': {}})
-        metadata['env']['path'] = Utils.get(metadata['env'], 'path', '.mlbox')
-        metadata['env']['sync'] = Utils.get(metadata['env'], 'sync', True)
-        metadata['env']['interpreter'] = Utils.get(metadata['env'], 'interpreter',
-                                                   {'type': 'system', 'python': 'python'})
-        metadata['env']['variables'] = Utils.get(metadata['env'], 'variables', {})
-
-        metadata['mlbox'] = Utils.get(metadata, 'mlbox', {'path': None, 'sync': True})
-        metadata['mlbox']['path'] = Utils.get(
-            metadata['mlbox'],
-            'path',
-            os.path.join(metadata['env']['path'], 'mlboxes', mlbox.qualified_name)
-        )
-        metadata['mlbox']['sync'] = Utils.get(metadata['mlbox'], 'sync', True)
-
+    def __init__(self, path: str) -> None:
         self.type: str = 'ssh'
-        self.platform: dict = copy.deepcopy(metadata)
 
-    @property
-    def host(self) -> Optional[str]:
-        """
-        Returns:
-            Name (or IP address) of a remote host.
-        """
-        return self.platform.get('host', None)
+        cfg = Utils.load_yaml(path)
+        if not isinstance(cfg, dict):
+            raise ValueError(f"Invalid platform configuration, type={type(cfg)}. Expected: 'dict'.")
 
-    @property
-    def user(self) -> Optional[str]:
-        """
-        Returns:
-            User to use on a remote host. It's better to have a password-less access for this user.
-        """
-        return self.platform.get('user', None)
+        self.host: str = Utils.get(cfg, 'host', '')
+        if not self.host:
+            raise ValueError(f"Invalid host name: '{self.host}'.")
 
-    @property
-    def mlbox_platform(self) -> Optional[str]:
-        """Rename me."""
-        return self.platform.get('platform', None)
+        self.authentication: dict = Utils.get(cfg, 'authentication', {})
+        if not isinstance(self.authentication, dict):
+            self.authentication = {}
 
-    @property
-    def env(self) -> Env:
-        """
-        Returns:
-            Instance of the 'Env' class that describes environment of the mlbox library (runners) on a remote host.
-        """
-        return Env(**self.platform['env'])
+        self.platform: str = Utils.get(cfg, 'platform', '')
+        if not self.platform:
+            raise ValueError(f"Invalid platform: '{self.platform}'.")
 
-    @property
-    def mlbox(self) -> MLBox:
+        self.interpreter: PythonInterpreter = PythonInterpreter.create(Utils.get(cfg, 'interpreter', {}))
+
+    def get_connection_string(self) -> str:
+        """ Return authentication string for tools like `ssh` and `rsync`.
+
+            ssh -i PATH_TO_PRIVATE_KEY USER_NAME@HOST_NAME
         """
-        Returns:
-            Instance of the 'MLBox' class that describes location of the MLBox workload on a remote host.
-        """
-        return MLBox(**self.platform['mlbox'])
+        auth_str = ''
+        identify_file = Utils.get(self.authentication, 'identify_file', '')
+        if identify_file:
+            auth_str += f"-i {identify_file} "
+        user = Utils.get(self.authentication, 'user', '')
+        if user:
+            auth_str += f'{user}@'
+        return auth_str + self.host
 
     def __str__(self) -> str:
-        return f"Platform(host={self.host}, user={self.user}, platform={self.platform}, "\
-               f"env={self.env}, mlbox={self.mlbox})"
+        return f"Platform(host={self.host}, authentication={self.authentication}, platform={self.platform}, "\
+               f"interpreter={self.interpreter})"

@@ -2,11 +2,9 @@ import os
 import click
 from mlcommons_box import parse   # Do not remove (it registers schemas on import)
 from mlcommons_box.common import mlbox_metadata
-from mlcommons_box_singularity import metadata
+from mlcommons_box.common import objects
+from mlcommons_box.common.objects import platform_config
 from mlcommons_box_singularity.singularity_run import SingularityRun
-
-
-metadata.MLSchemaRegistrar.register()
 
 
 @click.group(name='mlcommons_box_singularity')
@@ -23,7 +21,7 @@ def cli():
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLBox Platform definition file.')
 def configure(mlbox: str, platform: str):
     mlbox: mlbox_metadata.MLBox = mlbox_metadata.MLBox(path=mlbox)
-    mlbox.platform = metadata.SingularityPlatform(path=platform, mlbox=mlbox)
+    mlbox.platform = objects.load_object_from_file(file_path=platform, obj_class=platform_config.PlatformConfig)
     print(mlbox)
 
     runner = SingularityRun(mlbox)
@@ -36,7 +34,7 @@ def configure(mlbox: str, platform: str):
 @click.option('--task', required=True, type=click.Path(exists=True), help='Path to MLBox Task definition file.')
 def run(mlbox: str, platform: str, task: str):
     mlbox: mlbox_metadata.MLBox = mlbox_metadata.MLBox(path=mlbox)
-    mlbox.platform = metadata.SingularityPlatform(path=platform, mlbox=mlbox)
+    mlbox.platform = objects.load_object_from_file(file_path=platform, obj_class=platform_config.PlatformConfig)
     mlbox.invoke = mlbox_metadata.MLBoxInvoke(task)
     mlbox.task = mlbox_metadata.MLBoxTask(os.path.join(mlbox.tasks_path, f'{mlbox.invoke.task_name}.yaml'))
     print(mlbox)
