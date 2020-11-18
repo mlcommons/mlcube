@@ -48,9 +48,11 @@ class KubernetesRun(object):
         container_args: List[str] = []
         container_volume_mounts: Dict = dict()
         container_volumes: Dict = dict()
-        
+
+        container_args.append(self.mlcube.invoke.task_name)
         self.binding_to_volumes(self.mlcube.invoke.input_binding, container_args, container_volume_mounts, container_volumes)
         self.binding_to_volumes(self.mlcube.invoke.output_binding, container_args, container_volume_mounts, container_volumes)
+
         logging.info("Using Container arguments: %s" % container_args)
 
         container = client.V1Container(name="mlcube-container",
@@ -93,10 +95,6 @@ class KubernetesRun(object):
 
     def run(self):
         """Run a cube"""
-        if self.mlcube.invoke.task_name != "kubernetes":
-            raise RuntimeError("Uh oh. \
-                Task file doesn't seem to be right, please use the correct kubernetes task file."
-                               )
         logging.info("Configuring MLCube as a Kubernetes Job...")
         self.create_job_manifest()
 
