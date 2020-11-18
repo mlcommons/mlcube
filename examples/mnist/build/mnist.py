@@ -44,6 +44,9 @@ def download(task_args: List[str]) -> None:
         raise ValueError("Data directory is not specified (did you use --data-dir=PATH?)")
     if not data_dir.startswith("/"):
         logger.warning("Data directory seems to be a relative path.")
+    if not os.path.exists(data_dir):
+        logger.info("Creating data directory: %s", data_dir)
+        os.makedirs(data_dir)
 
     data_file = os.path.join(data_dir, 'mnist.npz')
     if os.path.exists(data_file):
@@ -74,6 +77,10 @@ def train(task_args: List[str]) -> None:
     parser.add_argument('--parameters_file', '--parameters-file', type=str, default=None,
                         help="Parameters default values.")
     args = parser.parse_args(args=task_args)
+
+    if not os.path.exists(args.model_dir):
+        logger.info("Creating model directory: %s", args.model_dir)
+        os.makedirs(args.model_dir)
 
     with open(args.parameters_file, 'r') as stream:
         parameters = yaml.load(stream, Loader=yaml.FullLoader)
@@ -127,6 +134,8 @@ def main():
         parser.add_argument('mlbox_task', type=str, help="Task for this MLBOX.")
         parser.add_argument('--log_dir', '--log-dir', type=str, required=True, help="Logging directory.")
         ml_box_args, task_args = parser.parse_known_args()
+        if not os.path.exists(ml_box_args.log_dir):
+            os.makedirs(ml_box_args.log_dir)
         logger_config = {
             "version": 1,
             "disable_existing_loggers": True,
