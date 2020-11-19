@@ -29,19 +29,19 @@ def run_(mlcube: str, platform: str, task: str):
 @click.group(name='mlcube_ssh')
 def cli():
     """
-    MLCommons-Box SSH Runner runs cubes (packaged Machine Learning (ML) workloads) in the remote environment.
+    MLCube SSH Runner runs cubes (packaged Machine Learning (ML) workloads) in the remote environment.
     """
     pass
 
 
-@cli.command(name='configure', help='Configure remote environment for MLCommons-Box ML workload.')
+@cli.command(name='configure', help='Configure remote environment for MLCube ML workload.')
 @click.option('--mlcube', required=True, type=click.Path(exists=True), help='Path to MLCube directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLCube Platform definition file.')
 def configure(mlcube: str, platform: str):
     configure_(mlcube, platform)
 
 
-@cli.command(name='run', help='Run MLCommons-Box ML workload in the remote environment.')
+@cli.command(name='run', help='Run MLCube ML workload in the remote environment.')
 @click.option('--mlcube', required=True, type=click.Path(exists=True), help='Path to MLCube directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLCube Platform definition file.')
 @click.option('--task', required=True, type=click.Path(exists=True), help='Path to MLCube Task definition file.')

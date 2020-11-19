@@ -1,6 +1,6 @@
 # Hello World
 ## Docker runtime
-Hello World MLCommons-Box is an example of a docker-based cube. Docker runtime must be installed in a system.
+Hello World MLCube is an example of a docker-based cube. Docker runtime must be installed in a system.
 Installation guides for various operating systems can be found [here](https://docs.docker.com/engine/install/). This
 example was tested on a system where users are in the docker group and run docker without `sudo`. To add yourself to a
 docker group, run the following:
@@ -13,30 +13,30 @@ newgrp docker                    # Either do a `newgrp docker` or log out/in to 
 
  
 ## Host python environment
-Hello World is an example of a simple python program distributed as an MLCommons-Box docker-based cube. Follow the steps
-outlined in the `Introduction` section to create your Python virtual environment, download example MLCommons-Box cubes
-and install standard MLCommons-Box runners. Go to the folder containing MLCommons-Box example cubes and change directory
+Hello World is an example of a simple python program distributed as an MLCube docker-based cube. Follow the steps
+outlined in the `Introduction` section to create your Python virtual environment, download example MLCube cubes
+and install standard MLCube runners. Go to the folder containing MLCube example cubes and change directory
 to Hello World Box:
 ```
 cd ./hello_world
 ```
 
 
-## Configuring Hello World MLCommons-Box
-Boxes need to be configured before they can run. To do so, users need to run a MLCommons-Box runner with `configure` 
+## Configuring Hello World MLCube
+Boxes need to be configured before they can run. To do so, users need to run a MLCube runner with `configure` 
 command providing path to a cube root directory and path to a platform configuration file. The Hello World cube is a 
-docker-based cube, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
+docker-based cube, so users provide path to a MLCube Docker platform configuration file that sets a number of
 parameters, including docker image name:
 ```
 mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 ```
 The Docker runner will build a docker image for the Hello World cube. In general, this step is optional and is only
-required when MLCommons-Box needs to be rebuild. This can happen when users change implementation files and want to
-re-package their ML project into MLCommons-Box. In other situations, MLCommons-Box runners can auto-detect if
+required when MLCube needs to be rebuild. This can happen when users change implementation files and want to
+re-package their ML project into MLCube. In other situations, MLCube runners can auto-detect if
 `configure` command needs to be run before running a MLCube task.
 
 
-## Running Hello World MLCommons-Box 
+## Running Hello World MLCube 
 In order to run the Hello World cube, users need to provide the path to the root directory of the cube, platform
 configuration file and path to a task definition file. Run the following two commands one at a time:
 ```
@@ -49,7 +49,7 @@ Hello World creates a file `workspace/chats/chat_with_alice.txt` that contains t
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 ```
  
-## Modifying MLCommons-Box
+## Modifying MLCube
 
 ### Adding new user 
 Create a new file `workspace/names/donald.txt` with the following content: `Donald`.

@@ -1,5 +1,5 @@
 # Docker Runner
-Docker runner uses docker/nvidia-docker to run MLCommons-Box cubes. It supports two mandatory commands - `configure` and
+Docker runner uses docker/nvidia-docker to run MLCube cubes. It supports two mandatory commands - `configure` and
 `run` with standard arguments - `mlcube`, `platform` and `task`. Docker platform configuration is used to configure
 docker runner.
 
@@ -22,11 +22,11 @@ configure and run phases:
 
 
 ## Configuring MLCubes
-Docker runner uses `{MLCOMMONS_BOX_ROOT}/build` directory as the build context directory. This implies that all files
+Docker runner uses `{MLCUBE_ROOT}/build` directory as the build context directory. This implies that all files
 that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
 resource files, ML models etc. The docker recipe must have the standard name `Dockerfile`.
 
-If `Dockerfile` file exists in `{MLCOMMONS_BOX_ROOT}/build`, the Docker runner assumes that it needs to `build` a docker
+If `Dockerfile` file exists in `{MLCUBE_ROOT}/build`, the Docker runner assumes that it needs to `build` a docker
 image. If that file does not exists, the Docker runner will try to `pull` image with the specified name.
 
 Docker runner under the hood runs the following command line:  
@@ -34,7 +34,7 @@ Docker runner under the hood runs the following command line:
 cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile .
 ```  
 where:  
-- `{build_path}` is `{MLCOMMONS_BOX_ROOT}/build` root directory.  
+- `{build_path}` is `{MLCUBE_ROOT}/build` root directory.  
 - `{env_args}` is the arguments retrieved from user environment. Currently, only `http_proxy` and `https_proxy` are
   supported.  
 -  `{image_name}` is the image name defined in the platform configuration file.  

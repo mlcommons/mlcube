@@ -1,9 +1,9 @@
 # MNIST
 The [MNIST dataset](http://yann.lecun.com/exdb/mnist/) is a collection of 60,000 handwritten digits widely used for
-training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCommons-Box example demonstrates
+training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCube example demonstrates
 how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
-validation and inference code) as MLCommons-Box cubes. MLCommons-Box establishes a standard to package user workloads,
-and provides unified command line interface. In addition, MLCommons-Box provides a number of reference runners - python
+validation and inference code) as MLCube cubes. MLCube establishes a standard to package user workloads,
+and provides unified command line interface. In addition, MLCube provides a number of reference runners - python
 packages that can run cubes on different platforms including docker and singularity.
 
 > A data scientist has been working on a machine learning project. The goal is to train a simple neural network to
@@ -46,11 +46,11 @@ python mnist.py train --data_dir=PATH --log_dir=PATH --model_dir=PATH --paramete
 ```
 
 
-## MLCommons-Box implementation
-Packaging our MNIST training script as a MLCommons-Box is done in several steps. We will be using a directory-based 
-cube where a directory is structured in a certain way and contains specific files that make it MLCommons-Box compliant.
+## MLCube implementation
+Packaging our MNIST training script as a MLCube is done in several steps. We will be using a directory-based 
+cube where a directory is structured in a certain way and contains specific files that make it MLCube compliant.
 We need to create an empty directory on a local disk. Let's assume we call it `mnist` and we'll use
-`{MLCOMMONS_BOX_ROOT}` to denote a full path to this directory. This is called a cube root directory. At this point this
+`{MLCUBE_ROOT}` to denote a full path to this directory. This is called a cube root directory. At this point this
 directory is empty:
 ```
 mnist/
@@ -58,7 +58,7 @@ mnist/
 
 
 ### Build location
-The cube directory has a sub-directory called `build` (`{MLCOMMONS_BOX_ROOT}/build`) that stores project source files,
+The cube directory has a sub-directory called `build` (`{MLCUBE_ROOT}/build`) that stores project source files,
 resources required for training, other files to recreate run time (such as requirements.txt, docker and singularity
 recipes etc.). We need to create the build directory and copy two files: mnist.py that implements training and
 requirements.txt that lists python dependencies. By doing so, we are enforcing reproducibility. A developer of this 
@@ -78,9 +78,9 @@ A good test at this point would be ensure that project is runnable from the buil
 images can be built.  
 
 
-### MLCommons-Box definition file
+### MLCube definition file
 At this point we are ready to create a cube definition file. This is the first definition file that makes some folder a
-MLCommons-Box folder. This is a YAML file that provides information such as name, author, version, named as `mlcube.yaml`
+MLCube folder. This is a YAML file that provides information such as name, author, version, named as `mlcube.yaml`
 and located in the cube root directory . The most important section is the one that lists what tasks are implemented in
 this cube:
 ```yaml
@@ -187,7 +187,7 @@ mnist/
 
 
 ### Run configurations
-The MLCommons-Box definition file (`mlcube.yaml`) provides paths to task definition files that formally define tasks
+The MLCube definition file (`mlcube.yaml`) provides paths to task definition files that formally define tasks
 input/output parameters. A run configuration assigns values to task parameters. One reason to define and "implement" 
 parameters in different files is to be able to provide multiple configurations for the same task. One example could be 
 one-GPU training configuration and 8-GPU training configuration. Since we have two tasks - download and train - we need 
@@ -237,7 +237,7 @@ mnist/
 
 
 ### Platform configurations
-Platform configurations define how MLCommons-Box cubes run. Docker, Singularity, SSH and cloud runners have their own 
+Platform configurations define how MLCube cubes run. Docker, Singularity, SSH and cloud runners have their own 
 configurations. For instance, Docker platform configuration at minimum provides image name and docker executable 
 (docker / nvidia-docker). SSH platform configuration could provide IP address of a remote host, login credentials etc.
 Platform configurations are supposed to be used by runners, and each runner has its own platform schema. The `Runners`
@@ -275,7 +275,7 @@ mnist/
 ```
 
 
-## MNIST MLCommons-Box directory structure summary
+## MNIST MLCube directory structure summary
 ```yaml
 mnist/                                   # MLCube root directory.
     build/                               # Project source code, resource files, Docker/Singularity recipes.
@@ -299,14 +299,14 @@ mnist/                                   # MLCube root directory.
 ```
 
 
-## Running MNIST MLCommons-Box
+## Running MNIST MLCube
 We need to setup the Python virtual environment. These are the steps outlined in the `Introduction` section except we do
-not clone GitHub repository with the example MLCommons-Box cubes. 
+not clone GitHub repository with the example MLCube cubes. 
 ```
 # Create Python Virtual Environment
 virtualenv -p python3 ./env && source ./env/bin/activate
 
-# Install MLCommons-Box Docker and Singularity runners 
+# Install MLCube Docker and Singularity runners 
 pip install mlcube-docker mlcube-singularity
 
 # Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
