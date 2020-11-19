@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation site for MLBox">
+        <meta name="description" content="Documentation site for MLCube">
       
       
       
@@ -18,7 +18,7 @@
     
     
       
-        <title>Docker Runner - MLBox</title>
+        <title>Docker Runner - MLCube</title>
       
     
     
@@ -76,7 +76,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-header-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -89,7 +89,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            MLBox
+            MLCube
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -150,13 +150,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
     </a>
-    MLBox
+    MLCube
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -319,15 +319,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-mlboxes" class="md-nav__link">
-    Configuring MLBoxes
+  <a href="#configuring-mlcubes" class="md-nav__link">
+    Configuring MLCubes
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-mlboxes" class="md-nav__link">
-    Running MLBoxes
+  <a href="#running-mlcubes" class="md-nav__link">
+    Running MLCubes
   </a>
   
 </li>
@@ -418,15 +418,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-mlboxes" class="md-nav__link">
-    Configuring MLBoxes
+  <a href="#configuring-mlcubes" class="md-nav__link">
+    Configuring MLCubes
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-mlboxes" class="md-nav__link">
-    Running MLBoxes
+  <a href="#running-mlcubes" class="md-nav__link">
+    Running MLCubes
   </a>
   
 </li>
@@ -445,16 +445,16 @@
                 
                 
                 <h1 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h1>
-<p>Docker runner uses docker/nvidia-docker to run MLCommons-Box boxes. It supports two mandatory commands - <code>configure</code> and
-<code>run</code> with standard arguments - <code>mlbox</code>, <code>platform</code> and <code>task</code>. Docker platform configuration is used to configure
+<p>Docker runner uses docker/nvidia-docker to run MLCommons-Box cubes. It supports two mandatory commands - <code>configure</code> and
+<code>run</code> with standard arguments - <code>mlcube</code>, <code>platform</code> and <code>task</code>. Docker platform configuration is used to configure
 docker runner.</p>
 <h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
-<p>Docker platform configuration file is a YAML file that follows <code>mlbox_docker</code> ML schema. The configuration file for the
-reference MNIST box is the following:
+<p>Docker platform configuration file is a YAML file that follows <code>mlcube_docker</code> ML schema. The configuration file for the
+reference MNIST cube is the following:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_docker</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span>
 
-<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlbox:mnist</span>   <span class="c1"># Docker image name</span>
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlcube:mnist</span>   <span class="c1"># Docker image name</span>
 <span class="nt">docker_runtime</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>      <span class="c1"># Docker executable: docker or nvidia-docker</span>
 </code></pre></div></p>
 <h2 id="additional-configuration">Additional configuration<a class="headerlink" href="#additional-configuration" title="Permanent link">&para;</a></h2>
@@ -462,7 +462,7 @@ reference MNIST box is the following:
 configure and run phases:<br />
 - <strong>configure</strong>: <code>docker build ... --build-args http_proxy=${http_proxy} --build-args https_proxy=${https_proxy} ...</code><br />
 - <strong>run</strong>: <code>docker run ... -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ...</code>  </p>
-<h2 id="configuring-mlboxes">Configuring MLBoxes<a class="headerlink" href="#configuring-mlboxes" title="Permanent link">&para;</a></h2>
+<h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
 <p>Docker runner uses <code>{MLCOMMONS_BOX_ROOT}/build</code> directory as the build context directory. This implies that all files
 that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
 resource files, ML models etc. The docker recipe must have the standard name <code>Dockerfile</code>.</p>
@@ -483,7 +483,7 @@ auto-detects if docker image exists before running a task, and if it does not ex
 following. If some of the implementation files have been modified, to rebuild the docker image users need to run
 the <code>configure</code> command explicitly.</p>
 </blockquote>
-<h2 id="running-mlboxes">Running MLBoxes<a class="headerlink" href="#running-mlboxes" title="Permanent link">&para;</a></h2>
+<h2 id="running-mlcubes">Running MLCubes<a class="headerlink" href="#running-mlcubes" title="Permanent link">&para;</a></h2>
 <p>Docker runner runs the following command:  <br />
 <div class="highlight"><pre><span></span><code>{docker_runtime} run --rm --net=host --privileged=true {volumes} {env_args} {image_name} {args}
 </code></pre></div>

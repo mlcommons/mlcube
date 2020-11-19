@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation site for MLBox">
+        <meta name="description" content="Documentation site for MLCube">
       
       
       
@@ -18,7 +18,7 @@
     
     
       
-        <title>Hello World - MLBox</title>
+        <title>Hello World - MLCube</title>
       
     
     
@@ -76,7 +76,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-header-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -89,7 +89,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            MLBox
+            MLCube
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -150,13 +150,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
     </a>
-    MLBox
+    MLCube
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -500,7 +500,7 @@
                 
                 <h1 id="hello-world">Hello World<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h1>
 <h2 id="docker-runtime">Docker runtime<a class="headerlink" href="#docker-runtime" title="Permanent link">&para;</a></h2>
-<p>Hello World MLCommons-Box is an example of a docker-based box. Docker runtime must be installed in a system.
+<p>Hello World MLCommons-Box is an example of a docker-based cube. Docker runtime must be installed in a system.
 Installation guides for various operating systems can be found <a href="https://docs.docker.com/engine/install/">here</a>. This
 example was tested on a system where users are in the docker group and run docker without <code>sudo</code>. To add yourself to a
 docker group, run the following:
@@ -510,28 +510,28 @@ sudo service docker restart      # Restart the Docker daemon.
 newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the changes to groups.
 </code></pre></div></p>
 <h2 id="host-python-environment">Host python environment<a class="headerlink" href="#host-python-environment" title="Permanent link">&para;</a></h2>
-<p>Hello World is an example of a simple python program distributed as an MLCommons-Box docker-based box. Follow the steps
-outlined in the <code>Introduction</code> section to create your Python virtual environment, download example MLCommons-Box boxes
-and install standard MLCommons-Box runners. Go to the folder containing MLCommons-Box example boxes and change directory
+<p>Hello World is an example of a simple python program distributed as an MLCommons-Box docker-based cube. Follow the steps
+outlined in the <code>Introduction</code> section to create your Python virtual environment, download example MLCommons-Box cubes
+and install standard MLCommons-Box runners. Go to the folder containing MLCommons-Box example cubes and change directory
 to Hello World Box:
 <div class="highlight"><pre><span></span><code>cd ./hello_world
 </code></pre></div></p>
 <h2 id="configuring-hello-world-mlcommons-box">Configuring Hello World MLCommons-Box<a class="headerlink" href="#configuring-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
 <p>Boxes need to be configured before they can run. To do so, users need to run a MLCommons-Box runner with <code>configure</code> 
-command providing path to a box root directory and path to a platform configuration file. The Hello World box is a 
-docker-based box, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
+command providing path to a cube root directory and path to a platform configuration file. The Hello World cube is a 
+docker-based cube, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
 parameters, including docker image name:
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 </code></pre></div>
-The Docker runner will build a docker image for the Hello World box. In general, this step is optional and is only
+The Docker runner will build a docker image for the Hello World cube. In general, this step is optional and is only
 required when MLCommons-Box needs to be rebuild. This can happen when users change implementation files and want to
 re-package their ML project into MLCommons-Box. In other situations, MLCommons-Box runners can auto-detect if
-<code>configure</code> command needs to be run before running a MLBox task.</p>
+<code>configure</code> command needs to be run before running a MLCube task.</p>
 <h2 id="running-hello-world-mlcommons-box">Running Hello World MLCommons-Box<a class="headerlink" href="#running-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
-<p>In order to run the Hello World box, users need to provide the path to the root directory of the box, platform
+<p>In order to run the Hello World cube, users need to provide the path to the root directory of the cube, platform
 configuration file and path to a task definition file. Run the following two commands one at a time:
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
-mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/alice/bye.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/bye.yaml
 </code></pre></div>
 Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that contains the following:
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
@@ -541,7 +541,7 @@ Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that
 <h3 id="adding-new-user">Adding new user<a class="headerlink" href="#adding-new-user" title="Permanent link">&para;</a></h3>
 <p>Create a new file <code>workspace/names/donald.txt</code> with the following content: <code>Donald</code>.</p>
 <p>Create a new file <code>run/donald/hello.yaml</code> with the following content:
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
@@ -553,7 +553,7 @@ Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that
         <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
 </code></pre></div></p>
 <p>Create a new file <code>run/donald/bye.yaml</code> with the following content:
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bye</span>
@@ -565,30 +565,30 @@ Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that
         <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
 </code></pre></div></p>
 <p>Run the following two commands one at a time:
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/donald/hello.yaml
-mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/donald/bye.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/donald/hello.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/donald/bye.yaml
 </code></pre></div>
-The Hello World box creates a file <code>workspace/chats/chat_with_donald.txt</code> that contains the
+The Hello World cube creates a file <code>workspace/chats/chat_with_donald.txt</code> that contains the
 following:
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:23:09.569558]  Hi, Donald! Nice to meet you.
 [2020-09-03 09:23:20.076845]  Bye, Donald! It was great talking to you.
 </code></pre></div></p>
 <h3 id="providing-a-better-greeting-message">Providing a better greeting message<a class="headerlink" href="#providing-a-better-greeting-message" title="Permanent link">&para;</a></h3>
-<p>Because how Hello World box was implemented, the greeting message is always the following: <code>Nice to meet you.</code>. We will
-update the implementation so that if this is not the first time Alice says <code>hello</code>, the  MLBox will respond: <code>Nice to 
+<p>Because how Hello World cube was implemented, the greeting message is always the following: <code>Nice to meet you.</code>. We will
+update the implementation so that if this is not the first time Alice says <code>hello</code>, the  MLCube will respond: <code>Nice to 
 see you again.</code>.</p>
 <p>Modify the file <code>build/hello_world.py</code>. Update the function named <code>get_greeting_message</code> on line
 14. It should have the following implementation:
 <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_greeting_message</span><span class="p">(</span><span class="n">chat_file</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="k">return</span> <span class="s2">&quot;Nice to meet you.&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">chat_file</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;Nice to see you again.&quot;</span>
 </code></pre></div></p>
-<p>Since we updated a file in the <code>build</code> subdirectory, we need to re-configure the Hello World box:
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
+<p>Since we updated a file in the <code>build</code> subdirectory, we need to re-configure the Hello World cube:
+<div class="highlight"><pre><span></span><code>mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 </code></pre></div>
 Now, run two <code>hello</code> task again:
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
 </code></pre></div>
-The MLBox recognized it was not the first time it talked to Alice, and changed the greeting:
+The MLCube recognized it was not the first time it talked to Alice, and changed the greeting:
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 [2020-09-03 09:32:41.369367]  Hi, Alice! Nice to see you again.

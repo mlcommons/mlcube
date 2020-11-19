@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation site for MLBox">
+        <meta name="description" content="Documentation site for MLCube">
       
       
       
@@ -18,7 +18,7 @@
     
     
       
-        <title>MNIST - MLBox</title>
+        <title>MNIST - MLCube</title>
       
     
     
@@ -76,7 +76,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-header-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -89,7 +89,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            MLBox
+            MLCube
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -150,13 +150,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
     </a>
-    MLBox
+    MLCube
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -584,9 +584,9 @@
 <p>The <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a> is a collection of 60,000 handwritten digits widely used for
 training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCommons-Box example demonstrates
 how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
-validation and inference code) as MLCommons-Box boxes. MLCommons-Box establishes a standard to package user workloads,
+validation and inference code) as MLCommons-Box cubes. MLCommons-Box establishes a standard to package user workloads,
 and provides unified command line interface. In addition, MLCommons-Box provides a number of reference runners - python
-packages that can run boxes on different platforms including docker and singularity.</p>
+packages that can run cubes on different platforms including docker and singularity.</p>
 <blockquote>
 <p>A data scientist has been working on a machine learning project. The goal is to train a simple neural network to
 classify collection of 60,000 small images into 10 classes. </p>
@@ -623,21 +623,21 @@ python mnist.py train --data_dir=PATH --log_dir=PATH --model_dir=PATH --paramete
 </code></pre></div></p>
 <h2 id="mlcommons-box-implementation">MLCommons-Box implementation<a class="headerlink" href="#mlcommons-box-implementation" title="Permanent link">&para;</a></h2>
 <p>Packaging our MNIST training script as a MLCommons-Box is done in several steps. We will be using a directory-based 
-box where a directory is structured in a certain way and contains specific files that make it MLCommons-Box compliant.
+cube where a directory is structured in a certain way and contains specific files that make it MLCommons-Box compliant.
 We need to create an empty directory on a local disk. Let's assume we call it <code>mnist</code> and we'll use
-<code>{MLCOMMONS_BOX_ROOT}</code> to denote a full path to this directory. This is called a box root directory. At this point this
+<code>{MLCOMMONS_BOX_ROOT}</code> to denote a full path to this directory. This is called a cube root directory. At this point this
 directory is empty:
 <div class="highlight"><pre><span></span><code>mnist/
 </code></pre></div></p>
 <h3 id="build-location">Build location<a class="headerlink" href="#build-location" title="Permanent link">&para;</a></h3>
-<p>The box directory has a sub-directory called <code>build</code> (<code>{MLCOMMONS_BOX_ROOT}/build</code>) that stores project source files,
+<p>The cube directory has a sub-directory called <code>build</code> (<code>{MLCOMMONS_BOX_ROOT}/build</code>) that stores project source files,
 resources required for training, other files to recreate run time (such as requirements.txt, docker and singularity
 recipes etc.). We need to create the build directory and copy two files: mnist.py that implements training and
 requirements.txt that lists python dependencies. By doing so, we are enforcing reproducibility. A developer of this 
-box wants to make it easier to run their training workload in a great variety of environments including universities, 
+cube wants to make it easier to run their training workload in a great variety of environments including universities, 
 commercial companies, HPC-friendly organizations such as national labs. One way to achieve it is to use container
 runtime such as docker or singularity. So, we'll provide both docker file and singularity recipe that we'll put into
-<code>build</code> directory as well. Thus, we'll make this directory a build context. The box directory now looks like:
+<code>build</code> directory as well. Thus, we'll make this directory a build context. The cube directory now looks like:
 <div class="highlight"><pre><span></span><code>mnist/
   build/
     mnist.py
@@ -648,17 +648,17 @@ runtime such as docker or singularity. So, we'll provide both docker file and si
 A good test at this point would be ensure that project is runnable from the build directory, and docker and singularity
 images can be built.  </p>
 <h3 id="mlcommons-box-definition-file">MLCommons-Box definition file<a class="headerlink" href="#mlcommons-box-definition-file" title="Permanent link">&para;</a></h3>
-<p>At this point we are ready to create a box definition file. This is the first definition file that makes some folder a
-MLCommons-Box folder. This is a YAML file that provides information such as name, author, version, named as <code>mlbox.yaml</code>
-and located in the box root directory . The most important section is the one that lists what tasks are implemented in
-this box:
+<p>At this point we are ready to create a cube definition file. This is the first definition file that makes some folder a
+MLCommons-Box folder. This is a YAML file that provides information such as name, author, version, named as <code>mlcube.yaml</code>
+and located in the cube root directory . The most important section is the one that lists what tasks are implemented in
+this cube:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>                            <span class="c1"># We use MLSpec library to validate YAML definition files. This is the</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_root</span>                          <span class="c1"># specification of the schema that this file must be consistent with. </span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_root</span>                          <span class="c1"># specification of the schema that this file must be consistent with. </span>
 
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mnist</span>                                      <span class="c1"># Name of this box.</span>
-<span class="nt">author</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MLPerf Best Practices Working Group</span>      <span class="c1"># A developer of the box.</span>
-<span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>                                   <span class="c1"># MLBox version.</span>
-<span class="nt">mlbox_spec_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>                        <span class="c1"># TODO: What is it?</span>
+<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mnist</span>                                      <span class="c1"># Name of this cube.</span>
+<span class="nt">author</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MLPerf Best Practices Working Group</span>      <span class="c1"># A developer of the cube.</span>
+<span class="nt">version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>                                   <span class="c1"># MLCube version.</span>
+<span class="nt">mlcube_spec_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>                        <span class="c1"># TODO: What is it?</span>
 
 <span class="nt">tasks</span><span class="p">:</span>                                           <span class="c1"># Tasks are defined in external YAML files located in tasks folder.</span>
   <span class="p p-Indicator">-</span> <span class="s">&#39;tasks/download.yaml&#39;</span>                        <span class="c1">#    &quot;Download data set&quot; task definition file.</span>
@@ -667,15 +667,15 @@ this box:
 At this point, the directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
   build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
-  mlbox.yaml
+  mlcube.yaml
 </code></pre></div></p>
 <h3 id="task-definition-file">Task definition file<a class="headerlink" href="#task-definition-file" title="Permanent link">&para;</a></h3>
-<p>The box definition file references two tasks defined in the <code>tasks</code> subdirectory. Each YAML file there defines a 
-task supported by the box. Task files are named the same as tasks. We need to create a tasks directory and two files
+<p>The cube definition file references two tasks defined in the <code>tasks</code> subdirectory. Each YAML file there defines a 
+task supported by the cube. Task files are named the same as tasks. We need to create a tasks directory and two files
 inside that directory - <code>download.yaml</code> and <code>train.yaml</code>.</p>
 <p>Each task file defines input and output specifications for each task. The download task (download.yaml) is defined:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>           <span class="c1"># Task schema definition. Leave this two fields as is.</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_task</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_task</span>
 
 <span class="nt">inputs</span><span class="p">:</span> <span class="p p-Indicator">[]</span>                      <span class="c1"># Since this task does not have any inputs, the section is empty.</span>
 
@@ -691,7 +691,7 @@ Names of these parameters are the same that are accepted by mnist.py:
 </code></pre></div></p>
 <p>The train task (<code>train.yaml</code>) is defined in the following way:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>                <span class="c1"># Task schema definition. Leave this two fields as is.</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_task</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_task</span>
 
 <span class="nt">inputs</span><span class="p">:</span>                              <span class="c1"># These are the task inputs.</span>
         <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">data_dir</span>             <span class="c1">#    This parameter accepts path to a directory where data set will be serialized.</span>
@@ -710,16 +710,16 @@ Names of these parameters are the same that are accepted by mnist.py:
 Names of these parameters are the same that are accepted by mnist.py:
 <div class="highlight"><pre><span></span><code>python mnist.py train --data_dir=PATH --log_dir=PATH --model_dir=PATH --parameters_file=PATH
 </code></pre></div>
-At this point, the MLBox directory looks like:
+At this point, the MLCube directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
   build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
   tasks/ {download.yaml, train.yaml}
-  mlbox.yaml
+  mlcube.yaml
 </code></pre></div></p>
 <h3 id="workspace">Workspace<a class="headerlink" href="#workspace" title="Permanent link">&para;</a></h3>
-<p>The workspace is a directory inside box (<code>workspace</code>) where, by default, input/output file system artifacts are
+<p>The workspace is a directory inside cube (<code>workspace</code>) where, by default, input/output file system artifacts are
 stored. The are multiple reasons to have one. One is to formally have default place for data sets, configuration
-and log files etc. Having all these parameters in one place makes it simpler to run boxes on remote hosts and then
+and log files etc. Having all these parameters in one place makes it simpler to run cubes on remote hosts and then
 sync results back to users' local machines.</p>
 <p>We need to be able to provide collection of hyper-parameters and formally define a directory to store logs, models and
 MNIST data set. To do so, we create the directory tree <code>workspace/parameters</code>, and then create a file 
@@ -728,23 +728,23 @@ MNIST data set. To do so, we create the directory tree <code>workspace/parameter
 <span class="nt">train_epochs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
 <span class="nt">batch_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">32</span>
 </code></pre></div>
-At this point, the box directory looks like:
+At this point, the cube directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
   build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
   tasks/ {download.yaml, train.yaml}
   workspace/
     parameters/
       default.parameters.yaml
-  mlbox.yaml
+  mlcube.yaml
 </code></pre></div></p>
 <h3 id="run-configurations">Run configurations<a class="headerlink" href="#run-configurations" title="Permanent link">&para;</a></h3>
-<p>The MLCommons-Box definition file (<code>mlbox.yaml</code>) provides paths to task definition files that formally define tasks
+<p>The MLCommons-Box definition file (<code>mlcube.yaml</code>) provides paths to task definition files that formally define tasks
 input/output parameters. A run configuration assigns values to task parameters. One reason to define and "implement" 
 parameters in different files is to be able to provide multiple configurations for the same task. One example could be 
 one-GPU training configuration and 8-GPU training configuration. Since we have two tasks - download and train - we need 
 to define at least two run configurations. Run configurations are defined in the <code>run</code> subdirectory.  </p>
 <p>Run configuration for the download task looks like:
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>                     <span class="c1"># Run (invoke) schema definition. Leave this two fields as is.</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>                     <span class="c1"># Run (invoke) schema definition. Leave this two fields as is.</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">download</span>                           <span class="c1"># Task name</span>
@@ -755,10 +755,10 @@ to define at least two run configurations. Run configurations are defined in the
         <span class="nt">data_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/data</span>             <span class="c1">#    Path to serialize downloaded MNIST data set</span>
         <span class="nt">log_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/download_logs</span>     <span class="c1">#    Path to log files.</span>
 </code></pre></div>
-The <code>$WORKSPACE</code> token is replaced with actual path to the box workspace. File system paths are relative to the
+The <code>$WORKSPACE</code> token is replaced with actual path to the cube workspace. File system paths are relative to the
 workspace directory. This makes it possible to provide absolute paths for cases when data sets are stored on shared
 drives. Run configuration for the train task looks like:
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>                     <span class="c1"># Run (invoke) schema definition. Leave this two fields as is.</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>                     <span class="c1"># Run (invoke) schema definition. Leave this two fields as is.</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">train</span>                              <span class="c1"># Task name</span>
@@ -771,7 +771,7 @@ drives. Run configuration for the train task looks like:
         <span class="nt">log_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/train_logs</span>
         <span class="nt">model_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/model</span>
 </code></pre></div>
-At this point, the box directory looks like:
+At this point, the cube directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
   build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
   tasks/ {download.yaml, train.yaml}
@@ -779,10 +779,10 @@ At this point, the box directory looks like:
   run/
     download.yaml
     train.yaml
-  mlbox.yaml
+  mlcube.yaml
 </code></pre></div></p>
 <h3 id="platform-configurations">Platform configurations<a class="headerlink" href="#platform-configurations" title="Permanent link">&para;</a></h3>
-<p>Platform configurations define how MLCommons-Box boxes run. Docker, Singularity, SSH and cloud runners have their own 
+<p>Platform configurations define how MLCommons-Box cubes run. Docker, Singularity, SSH and cloud runners have their own 
 configurations. For instance, Docker platform configuration at minimum provides image name and docker executable 
 (docker / nvidia-docker). SSH platform configuration could provide IP address of a remote host, login credentials etc.
 Platform configurations are supposed to be used by runners, and each runner has its own platform schema. The <code>Runners</code>
@@ -791,18 +791,18 @@ Since we wanted to support Docker and Singularity runtimes, we provide <code>doc
 the <code>platforms</code> subdirectory that is default location to store these types of files. Docker platform configuration is
 the following:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_docker</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span>
 
-<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlbox:mnist</span>   <span class="c1"># Docker image name</span>
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlcube:mnist</span>   <span class="c1"># Docker image name</span>
 <span class="nt">docker_runtime</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>      <span class="c1"># Docker executable: docker or nvidia-docker</span>
 </code></pre></div></p>
 <p>Singularity platform configuration is the following:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_singularity</span>
+<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_singularity</span>
 
-<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/singularity/mlperf_mlbox_mnist-0.01.simg</span>   <span class="c1"># Path to or name of a Singularity image.</span>
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/singularity/mlperf_mlcube_mnist-0.01.simg</span>   <span class="c1"># Path to or name of a Singularity image.</span>
 </code></pre></div>
-At this point, the box directory looks like:
+At this point, the cube directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
   build/ {mnist.py, requirements.txt, Dockerfile, Singularity.recipe}
   tasks/ {download.yaml, train.yaml}
@@ -811,16 +811,16 @@ At this point, the box directory looks like:
   platforms/
     docker.yaml
     singularity.yaml
-  mlbox.yaml
+  mlcube.yaml
 </code></pre></div></p>
 <h2 id="mnist-mlcommons-box-directory-structure-summary">MNIST MLCommons-Box directory structure summary<a class="headerlink" href="#mnist-mlcommons-box-directory-structure-summary" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span>                                   <span class="c1"># MLBox root directory.</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span>                                   <span class="c1"># MLCube root directory.</span>
     <span class="l l-Scalar l-Scalar-Plain">build/</span>                               <span class="c1"># Project source code, resource files, Docker/Singularity recipes.</span>
         <span class="l l-Scalar l-Scalar-Plain">mnist.py</span>                         <span class="c1">#    Python source code training simple neural network using MNIST data set.</span>
         <span class="l l-Scalar l-Scalar-Plain">requirements.txt</span>                 <span class="c1">#    Python project dependencies.</span>
         <span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>                       <span class="c1">#    Docker recipe.</span>
         <span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>               <span class="c1">#    Singularity recipe.</span>
-    <span class="l l-Scalar l-Scalar-Plain">tasks/</span>                               <span class="c1"># Task definition files - define functionality that MLBox supports</span>
+    <span class="l l-Scalar l-Scalar-Plain">tasks/</span>                               <span class="c1"># Task definition files - define functionality that MLCube supports</span>
         <span class="l l-Scalar l-Scalar-Plain">download.yaml</span>                    <span class="c1">#    Download MNIST data set.</span>
         <span class="l l-Scalar l-Scalar-Plain">train.yaml</span>                       <span class="c1">#    Train neural network.</span>
     <span class="l l-Scalar l-Scalar-Plain">workspace/</span>                           <span class="c1"># Default location for data sets, logs, models, parameter files.</span>
@@ -829,47 +829,47 @@ At this point, the box directory looks like:
     <span class="l l-Scalar l-Scalar-Plain">run/</span>                                 <span class="c1"># Run configurations - bind task parameters and values.</span>
         <span class="l l-Scalar l-Scalar-Plain">download.yaml</span>                    <span class="c1">#    Concrete run specification for the download task.</span>
         <span class="l l-Scalar l-Scalar-Plain">train.yaml</span>                       <span class="c1">#    Concrete run specification for the train task.</span>
-    <span class="l l-Scalar l-Scalar-Plain">platforms/</span>                           <span class="c1"># Platform definition files - define how MLBox runs.</span>
+    <span class="l l-Scalar l-Scalar-Plain">platforms/</span>                           <span class="c1"># Platform definition files - define how MLCube runs.</span>
         <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span>                      <span class="c1">#    Docker runtime definition.</span>
         <span class="l l-Scalar l-Scalar-Plain">singularity.yaml</span>                 <span class="c1">#    Singularity runtime definition. </span>
-  <span class="l l-Scalar l-Scalar-Plain">mlbox.yaml</span>                             <span class="c1"># MLBox definition file.</span>
+  <span class="l l-Scalar l-Scalar-Plain">mlcube.yaml</span>                             <span class="c1"># MLCube definition file.</span>
 </code></pre></div>
 <h2 id="running-mnist-mlcommons-box">Running MNIST MLCommons-Box<a class="headerlink" href="#running-mnist-mlcommons-box" title="Permanent link">&para;</a></h2>
 <p>We need to setup the Python virtual environment. These are the steps outlined in the <code>Introduction</code> section except we do
-not clone GitHub repository with the example MLCommons-Box boxes. 
+not clone GitHub repository with the example MLCommons-Box cubes. 
 <div class="highlight"><pre><span></span><code># Create Python Virtual Environment
 virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
 
 # Install MLCommons-Box Docker and Singularity runners 
-pip install mlcommons-box-docker mlcommons-box-singularity
+pip install mlcube-docker mlcube-singularity
 
 # Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
 # export http_proxy=...
 # export https_proxy=..
 </code></pre></div></p>
 <blockquote>
-<p>Before running MNIST box below, it is probably a good idea to remove tasks' outputs from previous runs that are
+<p>Before running MNIST cube below, it is probably a good idea to remove tasks' outputs from previous runs that are
 located in the <code>workspace</code> directory. All directories except <code>parameters</code> can be removed.</p>
 </blockquote>
 <h3 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h3>
-<p>Configure MNIST box (this is optional step, docker runner checks if image exists, and if does not, runs <code>configure</code>
+<p>Configure MNIST cube (this is optional step, docker runner checks if image exists, and if does not, runs <code>configure</code>
 phase automatically):
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker configure --mlbox=. --platform=platforms/docker.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
-<div class="highlight"><pre><span></span><code>mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/download.yaml
-mlcommons_box_docker run --mlbox=. --platform=platforms/docker.yaml --task=run/train.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/download.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/train.yaml
 </code></pre></div></p>
 <h3 id="singularity-runner">Singularity Runner<a class="headerlink" href="#singularity-runner" title="Permanent link">&para;</a></h3>
 <p>Update path to store Singularity image. Open <code>platforms/singularity.yaml</code> and update the <code>image</code> value
-that is set by default to <code>/opt/singularity/mlperf_mlbox_mnist-0.01.simg</code> (relative paths are supported, they are
+that is set by default to <code>/opt/singularity/mlperf_mlcube_mnist-0.01.simg</code> (relative paths are supported, they are
 relative to <code>workspace</code>).  </p>
-<p>Configure MNIST box:
-<div class="highlight"><pre><span></span><code>mlcommons_box_singularity configure --mlbox=. --platform=platforms/singularity.yaml
+<p>Configure MNIST cube:
+<div class="highlight"><pre><span></span><code>mlcube_singularity configure --mlcube=. --platform=platforms/singularity.yaml
 </code></pre></div></p>
 <p>Run two tasks - <code>download</code> (download data) and <code>train</code> (train tiny neural network):
-<div class="highlight"><pre><span></span><code>mlcommons_box_singularity run --mlbox=. --platform=platforms/singularity.yaml --task=run/download.yaml
-mlcommons_box_singularity run --mlbox=. --platform=platforms/singularity.yaml --task=run/train.yaml
+<div class="highlight"><pre><span></span><code>mlcube_singularity run --mlcube=. --platform=platforms/singularity.yaml --task=run/download.yaml
+mlcube_singularity run --mlcube=. --platform=platforms/singularity.yaml --task=run/train.yaml
 </code></pre></div></p>
                 
               

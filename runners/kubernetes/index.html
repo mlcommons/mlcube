@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Documentation site for MLBox">
+        <meta name="description" content="Documentation site for MLCube">
       
       
       
@@ -18,7 +18,7 @@
     
     
       
-        <title>Kubernetes Runner - MLBox</title>
+        <title>Kubernetes Runner - MLCube</title>
       
     
     
@@ -76,7 +76,7 @@
 
 <header class="md-header" data-md-component="header">
   <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href="../.." title="MLBox" class="md-header-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-header-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -89,7 +89,7 @@
       
         <div class="md-header-nav__ellipsis">
           <span class="md-header-nav__topic md-ellipsis">
-            MLBox
+            MLCube
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
@@ -150,13 +150,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MLBox" class="md-nav__button md-logo" aria-label="MLBox">
+    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
 
     </a>
-    MLBox
+    MLCube
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -409,8 +409,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#run-a-box-with-the-cli" class="md-nav__link">
-    Run a box with the CLI
+  <a href="#run-a-cube-with-the-cli" class="md-nav__link">
+    Run a cube with the CLI
   </a>
   
 </li>
@@ -519,8 +519,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#run-a-box-with-the-cli" class="md-nav__link">
-    Run a box with the CLI
+  <a href="#run-a-cube-with-the-cli" class="md-nav__link">
+    Run a cube with the CLI
   </a>
   
 </li>
@@ -546,14 +546,14 @@
 Kubernetes offers the a good set of abstractions to enable model training to be portable
 across different compute platforms.</p>
 <h2 id="design">Design<a class="headerlink" href="#design" title="Permanent link">&para;</a></h2>
-<p><a href="http://bit.ly/box-k8s-runner">Kubernetes Runner Proposal Doc</a></p>
+<p><a href="http://bit.ly/cube-k8s-runner">Kubernetes Runner Proposal Doc</a></p>
 <p>The Kubernetes runner takes in a kubernetes specific task file in the <code>run</code> directory and re-uses the Docker runner
 platform config and prepares a Kubernetes Job manifest. The runner then creates the job on the Kubernetes cluster.</p>
-<p><img alt="Design" src="../../assets/mlcommons-box-k8s.png" /></p>
-<p>The Kubernetes Runner takes in a MLBox run configuration file similar to other runners. With clear definitions of input
+<p><img alt="Design" src="../assets/mlcube-k8s.png" /></p>
+<p>The Kubernetes Runner takes in a MLCube run configuration file similar to other runners. With clear definitions of input
 and output bindings.
 Here's an example:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubernetes</span>   <span class="c1"># task name set to &#39;kubernetes&#39;</span>
@@ -562,53 +562,53 @@ Here's an example:</p>
   <span class="nt">data_dir</span><span class="p">:</span>
     <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/data</span>
     <span class="nt">k8s</span><span class="p">:</span>
-      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-input</span>
 <span class="nn">...</span>
 <span class="nt">output_binding</span><span class="p">:</span> <span class="c1"># output parameters (name: value)</span>
   <span class="nt">model_dir</span><span class="p">:</span>
     <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/model</span>
     <span class="nt">k8s</span><span class="p">:</span>
-      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-output</span>
 <span class="nn">...</span>
 </code></pre></div>
 <p>The Runner also re-uses the Docker platform config file. So it needs a Docker platform config file in the Box. Let's
 revisit the Docker platform config.</p>
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons_box_platform</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_platform</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0.1.0</span>
 
 <span class="nt">platform</span><span class="p">:</span>
   <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;docker&quot;</span>
   <span class="nt">version</span><span class="p">:</span> <span class="s">&quot;&gt;=18.01&quot;</span>
 <span class="nt">container</span><span class="p">:</span>
-  <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;mlperf/mlbox:mnist&quot;</span>
+  <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;mlperf/mlcube:mnist&quot;</span>
 </code></pre></div>
 <p>With these two config files, the runner then constructs the following Kubernetes Job manifest. </p>
 <div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
 <span class="nt">kind</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Job</span>
 <span class="nt">metadata</span><span class="p">:</span>
   <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
-  <span class="nt">generateName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons-box-mnist-</span>
+  <span class="nt">generateName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-mnist-</span>
 <span class="nt">spec</span><span class="p">:</span>
   <span class="nt">template</span><span class="p">:</span>
     <span class="nt">spec</span><span class="p">:</span>
       <span class="nt">containers</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons-box-container</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlbox:mnist</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-container</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlcube:mnist</span>
         <span class="nt">args</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--data_dir=/mnt/mlbox/mlbox-input/workspace/data</span>
-        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--model_dir=/mnt/mlbox/mlbox-output/workspace/model</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--data_dir=/mnt/mlcube/mlcube-input/workspace/data</span>
+        <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--model_dir=/mnt/mlcube/mlcube-output/workspace/model</span>
         <span class="nt">volumeMounts</span><span class="p">:</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
-          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt/mlbox/mlbox-input</span>
-        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
-          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt/mlbox/mlbox-output</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-input</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt/mlcube/mlcube-input</span>
+        <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-output</span>
+          <span class="nt">mountPath</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/mnt/mlcube/mlcube-output</span>
       <span class="nt">volumes</span><span class="p">:</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-input</span>
         <span class="nt">persistentVolumeClaim</span><span class="p">:</span>
-          <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
-      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+          <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-input</span>
+      <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-output</span>
         <span class="nt">persistentVolumeClaim</span><span class="p">:</span>
-          <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+          <span class="nt">claimName</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-output</span>
       <span class="nt">restartPolicy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Never</span>
   <span class="nt">backoffLimit</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">4</span>
 </code></pre></div>
@@ -625,7 +625,7 @@ revisit the Docker platform config.</p>
 <div class="highlight"><pre><span></span><code>touch run/kubernetes.yaml
 </code></pre></div>
 <h4 id="set-schema-for-task">Set Schema for Task<a class="headerlink" href="#set-schema-for-task" title="Permanent link">&para;</a></h4>
-<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox_invoke</span>
+<div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 </code></pre></div>
 <h4 id="set-task-name">Set task name<a class="headerlink" href="#set-task-name" title="Permanent link">&para;</a></h4>
@@ -636,18 +636,18 @@ revisit the Docker platform config.</p>
   <span class="nt">data_dir</span><span class="p">:</span>
     <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/data</span>
     <span class="nt">k8s</span><span class="p">:</span>
-      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-input</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-input</span>
 
 <span class="nt">output_binding</span><span class="p">:</span> <span class="c1"># output parameters (name: value)</span>
   <span class="nt">model_dir</span><span class="p">:</span>
     <span class="nt">path</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">workspace/model</span>
     <span class="nt">k8s</span><span class="p">:</span>
-      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlbox-output</span>
+      <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-output</span>
 </code></pre></div>
-<h2 id="run-a-box-with-the-cli">Run a box with the CLI<a class="headerlink" href="#run-a-box-with-the-cli" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>pip install mlcommons-box-k8s
-mlcommons_box_k8s run <span class="se">\</span>
-  --mlbox<span class="o">=</span>examples/mnist <span class="se">\</span>
+<h2 id="run-a-cube-with-the-cli">Run a cube with the CLI<a class="headerlink" href="#run-a-cube-with-the-cli" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>pip install mlcube-k8s
+mlcube_k8s run <span class="se">\</span>
+  --mlcube<span class="o">=</span>examples/mnist <span class="se">\</span>
   --platform<span class="o">=</span>examples/mnist/platforms/docker.yaml <span class="se">\</span>
   --task<span class="o">=</span>examples/mnist/run/kubernetes.yaml  <span class="se">\</span>
   --loglevel INFO
