@@ -1,15 +1,15 @@
 host: REMOTE_HOST     # Remote host IP address.
 user: USER            # User name, assuming passwordless authentication using keys has been set up.
-platform: docker.yaml # How to run MLBox
-env:                  # This is for syncing MLBox library itself (library, runners etc.)
-    path: ./mlbox     # Path on a remote node, this is the default value. Relative paths are relative to use home dir.
+platform: docker.yaml # How to run MLCube
+env:                  # This is for syncing MLCube library itself (library, runners etc.)
+    path: ./mlcube     # Path on a remote node, this is the default value. Relative paths are relative to use home dir.
     sync: true
-    interpreter:      # Environment for running runners, mlbox can have its own interpreter. Dependencies must be inst.
+    interpreter:      # Environment for running runners, mlcube can have its own interpreter. Dependencies must be inst.
         type: system
         python: python3.6   # Can also be an absolute path to user python environment (virtualenv, conda etc.)
     variables: {}    # Environmental variables (will be used by docker build/run), remove '{}' if variables present.
         # http_proxy:
         # https_proxy:
-mlbox:                # Remote location of the MLBox to run
-    path:             # Null, the path will be set to ./.mlbox/mlboxes/mnist-${version}
+mlcube:                # Remote location of the MLCube to run
+    path:             # Null, the path will be set to ./.mlcube/mlcubes/mnist-${version}
     sync: true

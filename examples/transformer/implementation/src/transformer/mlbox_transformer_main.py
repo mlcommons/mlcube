@@ -34,8 +34,8 @@ from mlperf_logging import mllog
 from mlperf_logging.mllog import constants as mllog_const
 
 import compute_bleu
-import mlbox_constants as mlbox_const
-import mlbox_model_params
+import mlcube_constants as mlcube_const
+import mlcube_model_params
 from model import transformer
 import translate
 from utils import dataset
@@ -330,9 +330,9 @@ def main(_):
     raise ValueError("Both --train_steps and --train_epochs were set. Only one "
                      "may be defined.")
   if FLAGS.train_steps is None and FLAGS.train_epochs is None:
-    FLAGS.train_epochs = mlbox_const.DEFAULT_TRAIN_EPOCHS
+    FLAGS.train_epochs = mlcube_const.DEFAULT_TRAIN_EPOCHS
 
-  params = mlbox_model_params.MLBoxTransformerParams(FLAGS)
+  params = mlcube_model_params.MLCubeTransformerParams(FLAGS)
 
   # Make sure that the BLEU source and ref files if set
   if FLAGS.bleu_source is not None and FLAGS.bleu_ref is not None:
@@ -355,33 +355,33 @@ def main(_):
 
 
 if __name__ == "__main__":
-  mlbox_parser = argparse.ArgumentParser()
+  mlcube_parser = argparse.ArgumentParser()
 
-  mlbox_parser.add_argument(
+  mlcube_parser.add_argument(
       "--parameter_file", type=str, default=None,
       help="Parameter file to use. The parameter file should be a yaml file "
            "that serves as command line arguments.",
       metavar="<PF>")
 
-  mlbox_parser.add_argument(
+  mlcube_parser.add_argument(
       "--data_dir", type=str, default="/tmp/translate_ende",
       help="[default: %(default)s] Directory containing training and "
            "evaluation data, and vocab file used for encoding.",
       metavar="<DD>")
-  mlbox_parser.add_argument(
-      "--vocab_file", type=str, default=mlbox_const.VOCAB_FILE,
+  mlcube_parser.add_argument(
+      "--vocab_file", type=str, default=mlcube_const.VOCAB_FILE,
       help="[default: %(default)s] Name of vocabulary file.",
       metavar="<VF>")
-  mlbox_parser.add_argument(
+  mlcube_parser.add_argument(
       "--model_dir", type=str, default="/tmp/transformer_model",
       help="[default: %(default)s] Directory to save Transformer model "
            "training checkpoints",
       metavar="<MD>")
-  mlbox_parser.add_argument(
+  mlcube_parser.add_argument(
       "--bleu_dir", type=str, default="/tmp/bleu",
       help="[default: %(default)s] Directory to save BLEU scores."
   )
-  mlbox_parser.add_argument(
+  mlcube_parser.add_argument(
       "--mlperf_log_dir", type=str, default="/tmp/mlperf_log",
       help="[default: %(default)s] Directory for mlperf log files.", metavar="<LD>"
   )
@@ -397,7 +397,7 @@ if __name__ == "__main__":
   #     "--train_epochs", "-te", type=int, default=None,
   #     help="The number of epochs used to train. If both --train_epochs and "
   #          "--train_steps are not set, the model will train for %d epochs." %
-  #     mlbox_const.DEFAULT_TRAIN_EPOCHS,
+  #     mlcube_const.DEFAULT_TRAIN_EPOCHS,
   #     metavar="<TE>")
   # parser.add_argument(
   #     "--epochs_between_eval", "-ebe", type=int, default=1,
@@ -410,7 +410,7 @@ if __name__ == "__main__":
   #     "--train_steps", "-ts", type=int, default=None,
   #     help="Total number of training steps. If both --train_epochs and "
   #          "--train_steps are not set, the model will train for %d epochs." %
-  #     mlbox_const.DEFAULT_TRAIN_EPOCHS,
+  #     mlcube_const.DEFAULT_TRAIN_EPOCHS,
   #     metavar="<TS>")
   # parser.add_argument(
   #     "--steps_between_eval", "-sbe", type=int, default=1000,
@@ -509,7 +509,7 @@ if __name__ == "__main__":
   #          "normalization in beam search",
   #     metavar="<ALPHA>")
 
-  FLAGS, unparsed = mlbox_parser.parse_known_args()
+  FLAGS, unparsed = mlcube_parser.parse_known_args()
 
   # Load parameter file and combile flags with those set in command line.
   # The flags set in command line take higher priority.

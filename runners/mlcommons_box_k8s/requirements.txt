@@ -1,5 +1,0 @@
-click==7.1.2
-mlspeclib==1.0.0
-mlcommons-box==0.2.3
-kubernetes==12.0.0
-diagrams==0.17.0

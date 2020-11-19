@@ -1,6 +1,6 @@
 """Defines Transformer model parameters."""
 
-class MLBoxTransformerParams(object):
+class MLCubeTransformerParams(object):
   """Parameters for the base Transformer model."""
   def __init__(self, flags):
     # Input params

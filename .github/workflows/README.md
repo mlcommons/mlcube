@@ -6,7 +6,7 @@ The mkdocs action builds and deploys the documentation site into the `gh-pages` 
 
 ### How it works
 
-The [mlbox repo](https://github.com/mlperf/mlbox) has Pull Requests pushed into the `master` branch on every merge. So the event associated with every PR merge is a `event:push`.
+The [mlcube repo](https://github.com/mlperf/mlcube) has Pull Requests pushed into the `master` branch on every merge. So the event associated with every PR merge is a `event:push`.
 
 So the `docs-site` GitHub Action is triggered on every push into the repo. 
 
@@ -57,4 +57,4 @@ In order to not fill-up space on the repo with the docs-site related files, the 
 
 - Permissions
 
-    The `docs-site` GitHub Action uses a deploy key specifically created for it. To revoke access to the GitHub Action, delete the secret `ACTIONS_DEPLOY_KEY` in [Repository Settings](https://github.com/mlperf/mlbox/settings/secrets/).
+    The `docs-site` GitHub Action uses a deploy key specifically created for it. To revoke access to the GitHub Action, delete the secret `ACTIONS_DEPLOY_KEY` in [Repository Settings](https://github.com/mlperf/mlcube/settings/secrets/).

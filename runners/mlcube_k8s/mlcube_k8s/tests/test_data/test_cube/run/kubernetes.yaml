@@ -1,0 +1,16 @@
+schema_type: mlcube_invoke
+schema_version: 1.0.0
+
+task_name: kubernetes
+
+input_binding:
+  test_data:
+    path: workspace/data
+    k8s:
+      pvc: mlcube-input
+
+output_binding:
+  test_model:
+    path: workspace/model
+    k8s:
+      pvc: mlcube-output

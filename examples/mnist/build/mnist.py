@@ -124,9 +124,9 @@ def main():
     # noinspection PyBroadException
     try:
         parser = argparse.ArgumentParser()
-        parser.add_argument('mlbox_task', type=str, help="Task for this MLBOX.")
+        parser.add_argument('mlcube_task', type=str, help="Task for this MLBOX.")
         parser.add_argument('--log_dir', '--log-dir', type=str, required=True, help="Logging directory.")
-        ml_box_args, task_args = parser.parse_known_args()
+        ml_cube_args, task_args = parser.parse_known_args()
         logger_config = {
             "version": 1,
             "disable_existing_loggers": True,
@@ -138,7 +138,7 @@ def main():
                     "class": "logging.FileHandler",
                     "level": "INFO",
                     "formatter": "standard",
-                    "filename": os.path.join(ml_box_args.log_dir, f"mlbox_mnist_{ml_box_args.mlbox_task}.log")
+                    "filename": os.path.join(ml_cube_args.log_dir, f"mlcube_mnist_{ml_cube_args.mlcube_task}.log")
                 },
                 "stream_handler": {
                     "class": "logging.StreamHandler",
@@ -153,11 +153,11 @@ def main():
             }
         }
         logging.config.dictConfig(logger_config)
-        if ml_box_args.mlbox_task == Task.DownloadData:
+        if ml_cube_args.mlcube_task == Task.DownloadData:
             download(task_args)
-        elif ml_box_args.mlbox_task == Task.Train:
+        elif ml_cube_args.mlcube_task == Task.Train:
             train(task_args)
-        elif ml_box_args.mlbox_task == Task.Kubernetes:
+        elif ml_cube_args.mlcube_task == Task.Kubernetes:
             download(task_args)
             train(task_args)
         else:

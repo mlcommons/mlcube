@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-MAINTAINER MLPerf MLBox Working Group
+MAINTAINER MLPerf MLCube Working Group
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
