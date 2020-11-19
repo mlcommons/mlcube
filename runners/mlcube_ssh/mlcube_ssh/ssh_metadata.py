@@ -96,9 +96,10 @@ class VirtualEnvInterpreter(PythonInterpreter):
             raise ValueError(f"Invalid python interpreter name: '{self.name}'")
 
     def create_cmd(self, noop: Optional[str] = None) -> Optional[str]:
-        env_path = f'{self.location}/{self.name}'
-        return f'[ ! -d "{env_path}" ] && {{ mkdir -p {self.location} && cd {self.location} && '\
-               f'virtualenv -p {self.python} {self.name}; }}'
+        condition = f'[ ! -d "{self.location}/{self.name}" ]'
+        create_cmd = f'mkdir -p {self.location} && cd {self.location} && virtualenv -p {self.python} {self.name}'
+        noop_cmd = 'true'
+        return f'if {condition}; then {create_cmd}; else {noop_cmd}; fi'
 
     def activate_cmd(self, noop: Optional[str] = None) -> Optional[str]:
         return f"source {self.location}/{self.name}/bin/activate"
