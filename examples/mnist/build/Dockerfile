@@ -1,5 +1,5 @@
 FROM python:3.6
-MAINTAINER MLPerf MLBox Working Group
+MAINTAINER MLPerf MLCube Working Group
 
 # Remove all stopped containers: docker rm $(docker ps -a -q)
 # Remove containers like none:none: docker rmi $(docker images | grep none | awk '{print $3}')

@@ -15,8 +15,8 @@ def run(cmd, **kwargs):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-          "--mlbox_task", type=str,
-          help="The MLBox task to preform.",
+          "--mlcube_task", type=str,
+          help="The MLCube task to preform.",
           metavar="<TASK>")
     parser.add_argument(
           "--raw_dir", type=str, default=None,
@@ -52,23 +52,23 @@ def main():
           )
 
     FLAGS, unparsed = parser.parse_known_args()
-    if FLAGS.mlbox_task is None:
-        raise Exception('needs --mlbox_task')
+    if FLAGS.mlcube_task is None:
+        raise Exception('needs --mlcube_task')
 
-    if FLAGS.mlbox_task  == 'downloaddata':
-        return run('python3 -m mlbox_download_main --raw_dir={raw_dir}', raw_dir=FLAGS.raw_dir)
-    if FLAGS.mlbox_task  == 'preprocess':
-        return run('python3 -m mlbox_preprocess_main --raw_dir={raw_dir} --data_dir={data_dir}',
+    if FLAGS.mlcube_task  == 'downloaddata':
+        return run('python3 -m mlcube_download_main --raw_dir={raw_dir}', raw_dir=FLAGS.raw_dir)
+    if FLAGS.mlcube_task  == 'preprocess':
+        return run('python3 -m mlcube_preprocess_main --raw_dir={raw_dir} --data_dir={data_dir}',
                 raw_dir=FLAGS.raw_dir, data_dir=FLAGS.data_dir)
-    if FLAGS.mlbox_task  == 'train':
-        return run('python3 -m mlbox_train_main --data_dir={data_dir}'
+    if FLAGS.mlcube_task  == 'train':
+        return run('python3 -m mlcube_train_main --data_dir={data_dir}'
             '--parameter_file={parameter_file} --vocab_file={vocab_file}'
             '--model_dir={model_dir} --bleu_dir={bleu_dir} --mlperf_log_dir={mlperf_log_dir}',
             data_dir=FLAGS.data_dir, parameter_file=FLAGS.parameter_file,
             vocab_file=FLAGS.vocab_file,
             model_dir=FLAGS.model_dir, bleu_dir=FLAGS.bleu_dir,
             mlperf_log_dir=FLAGS.mlperf_log_dir)
-    raise Exception('No known task: {}'.format(FLAGS.mlbox_task))
+    raise Exception('No known task: {}'.format(FLAGS.mlcube_task))
 
 
 if __name__  == '__main__':

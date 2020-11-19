@@ -15,7 +15,7 @@ import logging
 import tensorflow as tf
 import yaml
 
-import mlbox_constants as constants
+import mlcube_constants as constants
 
 
 logging.basicConfig(format='%(levelname)s: %(message)s', level=logging.INFO)
