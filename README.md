@@ -1,6 +1,10 @@
 # MLCube
 
-MLCube is a project that reduces friction for machine learning by ensuring that models are easily portable and reproducible, e.g., between different stacks such as different clouds, between cloud and on-prem, etc.
+MLCube brings the concept of interchangeable parts to the world of machine learning models.  It is the shipping container that enables researchers and developers to easily share the software that powers machine learning. 
+
+MLCube is a set of common conventions for creating ML software that can just "plug-and-play" on many different systems. MLCube makes it easier for researchers to share innovative ML models, for a developer to experiment with many different models, and for software companies to create infrastructure for models. It creates opportunities by putting ML in the hands of more people.
+
+MLCube isn’t a new framework or service; MLCube is a consistent interface to machine learning models in containers like Docker.  Models published with the MLCube interface can be run on local machines, on a variety of major clouds, or in Kubernetes clusters - all using the same code. MLCommons provides open source “runners” for each of these environments that make training a model in an MLCube a single command. 
 
 Note: This project is still under development and some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
 
