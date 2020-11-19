@@ -442,21 +442,21 @@ file for the reference MNIST cube is the following:
 
 <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/singularity/mlperf_mlcube_mnist-0.01.simg</span>   <span class="c1"># Path to or name of a Singularity image.</span>
 </code></pre></div></p>
-<p>The <code>image</code> field above is a path to a singularity container. It is relative to <code>{MLCOMMONS_BOX_ROOT}/workspace</code>:
-- By default, containers are stored in <code>{MLCOMMONS_BOX_ROOT}/workspace</code> if image is a file name.
-- If it is a relative path, it is relative to <code>{MLCOMMONS_BOX_ROOT}/workspace</code>.
+<p>The <code>image</code> field above is a path to a singularity container. It is relative to <code>{MLCUBE_ROOT}/workspace</code>:
+- By default, containers are stored in <code>{MLCUBE_ROOT}/workspace</code> if image is a file name.
+- If it is a relative path, it is relative to <code>{MLCUBE_ROOT}/workspace</code>.
 - Absolute paths (starting with /) are used as is.</p>
-<p>In the example above, Singularity image is stored in the directory outside of the <code>{MLCOMMONS_BOX_ROOT}</code> to avoid
+<p>In the example above, Singularity image is stored in the directory outside of the <code>{MLCUBE_ROOT}</code> to avoid
 copying it back to a user host when using runners such as SSH.</p>
 <h2 id="build-command">Build command<a class="headerlink" href="#build-command" title="Permanent link">&para;</a></h2>
-<p>Singularity runner uses <code>{MLCOMMONS_BOX_ROOT}/build</code> directory as the build context directory. This implies that all
+<p>Singularity runner uses <code>{MLCUBE_ROOT}/build</code> directory as the build context directory. This implies that all
 files that must be packaged in a singularity image, must be located in that directory, including source files, python
 requirements, resource files, ML models etc. The singularity recipe must have the standard name <code>Singularity.recipe</code>.</p>
 <p>Singularity runner under the hood runs the following command line:<br />
 <div class="highlight"><pre><span></span><code>cd {build_path}; singularity build --fakeroot {image_path} Singularity.recipe
 </code></pre></div>
 where:<br />
-- <code>{build_path}</code> is <code>{MLCOMMONS_BOX_ROOT}/build</code> root directory.<br />
+- <code>{build_path}</code> is <code>{MLCUBE_ROOT}/build</code> root directory.<br />
 - <code>{image_path}</code> is the path to Singularity image that is computed as described above. </p>
 <h2 id="run-command">Run command<a class="headerlink" href="#run-command" title="Permanent link">&para;</a></h2>
 <p>Singularity runner runs the following command:  <br />

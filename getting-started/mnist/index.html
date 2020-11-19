@@ -263,11 +263,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mlcommons-box-implementation" class="md-nav__link">
-    MLCommons-Box implementation
+  <a href="#mlcube-implementation" class="md-nav__link">
+    MLCube implementation
   </a>
   
-    <nav class="md-nav" aria-label="MLCommons-Box implementation">
+    <nav class="md-nav" aria-label="MLCube implementation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -278,8 +278,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mlcommons-box-definition-file" class="md-nav__link">
-    MLCommons-Box definition file
+  <a href="#mlcube-definition-file" class="md-nav__link">
+    MLCube definition file
   </a>
   
 </li>
@@ -318,18 +318,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mnist-mlcommons-box-directory-structure-summary" class="md-nav__link">
-    MNIST MLCommons-Box directory structure summary
+  <a href="#mnist-mlcube-directory-structure-summary" class="md-nav__link">
+    MNIST MLCube directory structure summary
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-mnist-mlcommons-box" class="md-nav__link">
-    Running MNIST MLCommons-Box
+  <a href="#running-mnist-mlcube" class="md-nav__link">
+    Running MNIST MLCube
   </a>
   
-    <nav class="md-nav" aria-label="Running MNIST MLCommons-Box">
+    <nav class="md-nav" aria-label="Running MNIST MLCube">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -479,11 +479,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mlcommons-box-implementation" class="md-nav__link">
-    MLCommons-Box implementation
+  <a href="#mlcube-implementation" class="md-nav__link">
+    MLCube implementation
   </a>
   
-    <nav class="md-nav" aria-label="MLCommons-Box implementation">
+    <nav class="md-nav" aria-label="MLCube implementation">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -494,8 +494,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#mlcommons-box-definition-file" class="md-nav__link">
-    MLCommons-Box definition file
+  <a href="#mlcube-definition-file" class="md-nav__link">
+    MLCube definition file
   </a>
   
 </li>
@@ -534,18 +534,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#mnist-mlcommons-box-directory-structure-summary" class="md-nav__link">
-    MNIST MLCommons-Box directory structure summary
+  <a href="#mnist-mlcube-directory-structure-summary" class="md-nav__link">
+    MNIST MLCube directory structure summary
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-mnist-mlcommons-box" class="md-nav__link">
-    Running MNIST MLCommons-Box
+  <a href="#running-mnist-mlcube" class="md-nav__link">
+    Running MNIST MLCube
   </a>
   
-    <nav class="md-nav" aria-label="Running MNIST MLCommons-Box">
+    <nav class="md-nav" aria-label="Running MNIST MLCube">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -582,10 +582,10 @@
                 
                 <h1 id="mnist">MNIST<a class="headerlink" href="#mnist" title="Permanent link">&para;</a></h1>
 <p>The <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a> is a collection of 60,000 handwritten digits widely used for
-training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCommons-Box example demonstrates
+training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCube example demonstrates
 how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
-validation and inference code) as MLCommons-Box cubes. MLCommons-Box establishes a standard to package user workloads,
-and provides unified command line interface. In addition, MLCommons-Box provides a number of reference runners - python
+validation and inference code) as MLCube cubes. MLCube establishes a standard to package user workloads,
+and provides unified command line interface. In addition, MLCube provides a number of reference runners - python
 packages that can run cubes on different platforms including docker and singularity.</p>
 <blockquote>
 <p>A data scientist has been working on a machine learning project. The goal is to train a simple neural network to
@@ -621,16 +621,16 @@ where we run one script asking to perform various tasks. We run our script (mnis
 <div class="highlight"><pre><span></span><code>python mnist.py download --data_dir=PATH --log_dir=PATH
 python mnist.py train --data_dir=PATH --log_dir=PATH --model_dir=PATH --parameters_file=PATH
 </code></pre></div></p>
-<h2 id="mlcommons-box-implementation">MLCommons-Box implementation<a class="headerlink" href="#mlcommons-box-implementation" title="Permanent link">&para;</a></h2>
-<p>Packaging our MNIST training script as a MLCommons-Box is done in several steps. We will be using a directory-based 
-cube where a directory is structured in a certain way and contains specific files that make it MLCommons-Box compliant.
+<h2 id="mlcube-implementation">MLCube implementation<a class="headerlink" href="#mlcube-implementation" title="Permanent link">&para;</a></h2>
+<p>Packaging our MNIST training script as a MLCube is done in several steps. We will be using a directory-based 
+cube where a directory is structured in a certain way and contains specific files that make it MLCube compliant.
 We need to create an empty directory on a local disk. Let's assume we call it <code>mnist</code> and we'll use
-<code>{MLCOMMONS_BOX_ROOT}</code> to denote a full path to this directory. This is called a cube root directory. At this point this
+<code>{MLCUBE_ROOT}</code> to denote a full path to this directory. This is called a cube root directory. At this point this
 directory is empty:
 <div class="highlight"><pre><span></span><code>mnist/
 </code></pre></div></p>
 <h3 id="build-location">Build location<a class="headerlink" href="#build-location" title="Permanent link">&para;</a></h3>
-<p>The cube directory has a sub-directory called <code>build</code> (<code>{MLCOMMONS_BOX_ROOT}/build</code>) that stores project source files,
+<p>The cube directory has a sub-directory called <code>build</code> (<code>{MLCUBE_ROOT}/build</code>) that stores project source files,
 resources required for training, other files to recreate run time (such as requirements.txt, docker and singularity
 recipes etc.). We need to create the build directory and copy two files: mnist.py that implements training and
 requirements.txt that lists python dependencies. By doing so, we are enforcing reproducibility. A developer of this 
@@ -647,9 +647,9 @@ runtime such as docker or singularity. So, we'll provide both docker file and si
 </code></pre></div>
 A good test at this point would be ensure that project is runnable from the build directory, and docker and singularity
 images can be built.  </p>
-<h3 id="mlcommons-box-definition-file">MLCommons-Box definition file<a class="headerlink" href="#mlcommons-box-definition-file" title="Permanent link">&para;</a></h3>
+<h3 id="mlcube-definition-file">MLCube definition file<a class="headerlink" href="#mlcube-definition-file" title="Permanent link">&para;</a></h3>
 <p>At this point we are ready to create a cube definition file. This is the first definition file that makes some folder a
-MLCommons-Box folder. This is a YAML file that provides information such as name, author, version, named as <code>mlcube.yaml</code>
+MLCube folder. This is a YAML file that provides information such as name, author, version, named as <code>mlcube.yaml</code>
 and located in the cube root directory . The most important section is the one that lists what tasks are implemented in
 this cube:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>                            <span class="c1"># We use MLSpec library to validate YAML definition files. This is the</span>
@@ -738,7 +738,7 @@ At this point, the cube directory looks like:
   mlcube.yaml
 </code></pre></div></p>
 <h3 id="run-configurations">Run configurations<a class="headerlink" href="#run-configurations" title="Permanent link">&para;</a></h3>
-<p>The MLCommons-Box definition file (<code>mlcube.yaml</code>) provides paths to task definition files that formally define tasks
+<p>The MLCube definition file (<code>mlcube.yaml</code>) provides paths to task definition files that formally define tasks
 input/output parameters. A run configuration assigns values to task parameters. One reason to define and "implement" 
 parameters in different files is to be able to provide multiple configurations for the same task. One example could be 
 one-GPU training configuration and 8-GPU training configuration. Since we have two tasks - download and train - we need 
@@ -782,7 +782,7 @@ At this point, the cube directory looks like:
   mlcube.yaml
 </code></pre></div></p>
 <h3 id="platform-configurations">Platform configurations<a class="headerlink" href="#platform-configurations" title="Permanent link">&para;</a></h3>
-<p>Platform configurations define how MLCommons-Box cubes run. Docker, Singularity, SSH and cloud runners have their own 
+<p>Platform configurations define how MLCube cubes run. Docker, Singularity, SSH and cloud runners have their own 
 configurations. For instance, Docker platform configuration at minimum provides image name and docker executable 
 (docker / nvidia-docker). SSH platform configuration could provide IP address of a remote host, login credentials etc.
 Platform configurations are supposed to be used by runners, and each runner has its own platform schema. The <code>Runners</code>
@@ -813,7 +813,7 @@ At this point, the cube directory looks like:
     singularity.yaml
   mlcube.yaml
 </code></pre></div></p>
-<h2 id="mnist-mlcommons-box-directory-structure-summary">MNIST MLCommons-Box directory structure summary<a class="headerlink" href="#mnist-mlcommons-box-directory-structure-summary" title="Permanent link">&para;</a></h2>
+<h2 id="mnist-mlcube-directory-structure-summary">MNIST MLCube directory structure summary<a class="headerlink" href="#mnist-mlcube-directory-structure-summary" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span>                                   <span class="c1"># MLCube root directory.</span>
     <span class="l l-Scalar l-Scalar-Plain">build/</span>                               <span class="c1"># Project source code, resource files, Docker/Singularity recipes.</span>
         <span class="l l-Scalar l-Scalar-Plain">mnist.py</span>                         <span class="c1">#    Python source code training simple neural network using MNIST data set.</span>
@@ -834,13 +834,13 @@ At this point, the cube directory looks like:
         <span class="l l-Scalar l-Scalar-Plain">singularity.yaml</span>                 <span class="c1">#    Singularity runtime definition. </span>
   <span class="l l-Scalar l-Scalar-Plain">mlcube.yaml</span>                             <span class="c1"># MLCube definition file.</span>
 </code></pre></div>
-<h2 id="running-mnist-mlcommons-box">Running MNIST MLCommons-Box<a class="headerlink" href="#running-mnist-mlcommons-box" title="Permanent link">&para;</a></h2>
+<h2 id="running-mnist-mlcube">Running MNIST MLCube<a class="headerlink" href="#running-mnist-mlcube" title="Permanent link">&para;</a></h2>
 <p>We need to setup the Python virtual environment. These are the steps outlined in the <code>Introduction</code> section except we do
-not clone GitHub repository with the example MLCommons-Box cubes. 
+not clone GitHub repository with the example MLCube cubes. 
 <div class="highlight"><pre><span></span><code># Create Python Virtual Environment
 virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
 
-# Install MLCommons-Box Docker and Singularity runners 
+# Install MLCube Docker and Singularity runners 
 pip install mlcube-docker mlcube-singularity
 
 # Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.

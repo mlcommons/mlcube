@@ -445,7 +445,7 @@
                 
                 
                 <h1 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h1>
-<p>Docker runner uses docker/nvidia-docker to run MLCommons-Box cubes. It supports two mandatory commands - <code>configure</code> and
+<p>Docker runner uses docker/nvidia-docker to run MLCube cubes. It supports two mandatory commands - <code>configure</code> and
 <code>run</code> with standard arguments - <code>mlcube</code>, <code>platform</code> and <code>task</code>. Docker platform configuration is used to configure
 docker runner.</p>
 <h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
@@ -463,16 +463,16 @@ configure and run phases:<br />
 - <strong>configure</strong>: <code>docker build ... --build-args http_proxy=${http_proxy} --build-args https_proxy=${https_proxy} ...</code><br />
 - <strong>run</strong>: <code>docker run ... -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ...</code>  </p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
-<p>Docker runner uses <code>{MLCOMMONS_BOX_ROOT}/build</code> directory as the build context directory. This implies that all files
+<p>Docker runner uses <code>{MLCUBE_ROOT}/build</code> directory as the build context directory. This implies that all files
 that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
 resource files, ML models etc. The docker recipe must have the standard name <code>Dockerfile</code>.</p>
-<p>If <code>Dockerfile</code> file exists in <code>{MLCOMMONS_BOX_ROOT}/build</code>, the Docker runner assumes that it needs to <code>build</code> a docker
+<p>If <code>Dockerfile</code> file exists in <code>{MLCUBE_ROOT}/build</code>, the Docker runner assumes that it needs to <code>build</code> a docker
 image. If that file does not exists, the Docker runner will try to <code>pull</code> image with the specified name.</p>
 <p>Docker runner under the hood runs the following command line:<br />
 <div class="highlight"><pre><span></span><code>cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile .
 </code></pre></div>
 where:<br />
-- <code>{build_path}</code> is <code>{MLCOMMONS_BOX_ROOT}/build</code> root directory.<br />
+- <code>{build_path}</code> is <code>{MLCUBE_ROOT}/build</code> root directory.<br />
 - <code>{env_args}</code> is the arguments retrieved from user environment. Currently, only <code>http_proxy</code> and <code>https_proxy</code> are
   supported.<br />
 -  <code>{image_name}</code> is the image name defined in the platform configuration file.  </p>

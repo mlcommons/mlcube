@@ -258,25 +258,25 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-hello-world-mlcommons-box" class="md-nav__link">
-    Configuring Hello World MLCommons-Box
+  <a href="#configuring-hello-world-mlcube" class="md-nav__link">
+    Configuring Hello World MLCube
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-hello-world-mlcommons-box" class="md-nav__link">
-    Running Hello World MLCommons-Box
+  <a href="#running-hello-world-mlcube" class="md-nav__link">
+    Running Hello World MLCube
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modifying-mlcommons-box" class="md-nav__link">
-    Modifying MLCommons-Box
+  <a href="#modifying-mlcube" class="md-nav__link">
+    Modifying MLCube
   </a>
   
-    <nav class="md-nav" aria-label="Modifying MLCommons-Box">
+    <nav class="md-nav" aria-label="Modifying MLCube">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -445,25 +445,25 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-hello-world-mlcommons-box" class="md-nav__link">
-    Configuring Hello World MLCommons-Box
+  <a href="#configuring-hello-world-mlcube" class="md-nav__link">
+    Configuring Hello World MLCube
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#running-hello-world-mlcommons-box" class="md-nav__link">
-    Running Hello World MLCommons-Box
+  <a href="#running-hello-world-mlcube" class="md-nav__link">
+    Running Hello World MLCube
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#modifying-mlcommons-box" class="md-nav__link">
-    Modifying MLCommons-Box
+  <a href="#modifying-mlcube" class="md-nav__link">
+    Modifying MLCube
   </a>
   
-    <nav class="md-nav" aria-label="Modifying MLCommons-Box">
+    <nav class="md-nav" aria-label="Modifying MLCube">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -500,7 +500,7 @@
                 
                 <h1 id="hello-world">Hello World<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h1>
 <h2 id="docker-runtime">Docker runtime<a class="headerlink" href="#docker-runtime" title="Permanent link">&para;</a></h2>
-<p>Hello World MLCommons-Box is an example of a docker-based cube. Docker runtime must be installed in a system.
+<p>Hello World MLCube is an example of a docker-based cube. Docker runtime must be installed in a system.
 Installation guides for various operating systems can be found <a href="https://docs.docker.com/engine/install/">here</a>. This
 example was tested on a system where users are in the docker group and run docker without <code>sudo</code>. To add yourself to a
 docker group, run the following:
@@ -510,24 +510,24 @@ sudo service docker restart      # Restart the Docker daemon.
 newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the changes to groups.
 </code></pre></div></p>
 <h2 id="host-python-environment">Host python environment<a class="headerlink" href="#host-python-environment" title="Permanent link">&para;</a></h2>
-<p>Hello World is an example of a simple python program distributed as an MLCommons-Box docker-based cube. Follow the steps
-outlined in the <code>Introduction</code> section to create your Python virtual environment, download example MLCommons-Box cubes
-and install standard MLCommons-Box runners. Go to the folder containing MLCommons-Box example cubes and change directory
+<p>Hello World is an example of a simple python program distributed as an MLCube docker-based cube. Follow the steps
+outlined in the <code>Introduction</code> section to create your Python virtual environment, download example MLCube cubes
+and install standard MLCube runners. Go to the folder containing MLCube example cubes and change directory
 to Hello World Box:
 <div class="highlight"><pre><span></span><code>cd ./hello_world
 </code></pre></div></p>
-<h2 id="configuring-hello-world-mlcommons-box">Configuring Hello World MLCommons-Box<a class="headerlink" href="#configuring-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
-<p>Boxes need to be configured before they can run. To do so, users need to run a MLCommons-Box runner with <code>configure</code> 
+<h2 id="configuring-hello-world-mlcube">Configuring Hello World MLCube<a class="headerlink" href="#configuring-hello-world-mlcube" title="Permanent link">&para;</a></h2>
+<p>Boxes need to be configured before they can run. To do so, users need to run a MLCube runner with <code>configure</code> 
 command providing path to a cube root directory and path to a platform configuration file. The Hello World cube is a 
-docker-based cube, so users provide path to a MLCommons-Box Docker platform configuration file that sets a number of
+docker-based cube, so users provide path to a MLCube Docker platform configuration file that sets a number of
 parameters, including docker image name:
 <div class="highlight"><pre><span></span><code>mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 </code></pre></div>
 The Docker runner will build a docker image for the Hello World cube. In general, this step is optional and is only
-required when MLCommons-Box needs to be rebuild. This can happen when users change implementation files and want to
-re-package their ML project into MLCommons-Box. In other situations, MLCommons-Box runners can auto-detect if
+required when MLCube needs to be rebuild. This can happen when users change implementation files and want to
+re-package their ML project into MLCube. In other situations, MLCube runners can auto-detect if
 <code>configure</code> command needs to be run before running a MLCube task.</p>
-<h2 id="running-hello-world-mlcommons-box">Running Hello World MLCommons-Box<a class="headerlink" href="#running-hello-world-mlcommons-box" title="Permanent link">&para;</a></h2>
+<h2 id="running-hello-world-mlcube">Running Hello World MLCube<a class="headerlink" href="#running-hello-world-mlcube" title="Permanent link">&para;</a></h2>
 <p>In order to run the Hello World cube, users need to provide the path to the root directory of the cube, platform
 configuration file and path to a task definition file. Run the following two commands one at a time:
 <div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
@@ -537,7 +537,7 @@ Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 </code></pre></div></p>
-<h2 id="modifying-mlcommons-box">Modifying MLCommons-Box<a class="headerlink" href="#modifying-mlcommons-box" title="Permanent link">&para;</a></h2>
+<h2 id="modifying-mlcube">Modifying MLCube<a class="headerlink" href="#modifying-mlcube" title="Permanent link">&para;</a></h2>
 <h3 id="adding-new-user">Adding new user<a class="headerlink" href="#adding-new-user" title="Permanent link">&para;</a></h3>
 <p>Create a new file <code>workspace/names/donald.txt</code> with the following content: <code>Donald</code>.</p>
 <p>Create a new file <code>run/donald/hello.yaml</code> with the following content:
