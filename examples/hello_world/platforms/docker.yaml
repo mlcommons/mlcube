@@ -1,8 +1,0 @@
-schema_type: mlcube_platform
-schema_version: 0.1.0
-
-platform:
-  name: "docker"
-  version: ">=18.01"
-container:
-  image: "mlperf/mlcube_hello_world:0.0.1"
