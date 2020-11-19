@@ -16,11 +16,11 @@ class UnitTestsTest(ReleaseTest):
             )
         )
 
-    def test_mlcommons_box(self):
-        with SysPath(self.mlcommons_box_dir):
+    def test_mlcube(self):
+        with SysPath(self.mlcube_dir):
             results: unittest.TestResult = UnitTestsTest.run_unit_tests(
-                self.mlcommons_box_dir,
-                'mlcommons_box'
+                self.mlcube_dir,
+                'mlcube'
             )
         if not results.wasSuccessful():
             print(results.errors, results.failures)
@@ -28,7 +28,7 @@ class UnitTestsTest(ReleaseTest):
 
     def test_runners(self):
         failed_tests = []
-        with SysPath(self.mlcommons_box_dir):
+        with SysPath(self.mlcube_dir):
             for runner_dir in self.runner_dirs:
                 with SysPath(runner_dir):
                     test_result = UnitTestsTest.run_unit_tests(runner_dir, str(runner_dir.name))

@@ -4,9 +4,9 @@ import sys
 import os
 import re
 
-def mlbox_nvidia_smi(iomap):
+def mlcube_nvidia_smi(iomap):
   nvidia_smi = iomap["nvidia_smi"]
-  return os.system("python3 internal_docker_mlbox_task_nvidia_smi.py  {} ".format(nvidia_smi))
+  return os.system("python3 internal_docker_mlcube_task_nvidia_smi.py  {} ".format(nvidia_smi))
 
 
 
@@ -25,14 +25,14 @@ def parse_command_line():
 
 
 def main():
-  print('MLBox starting.')
+  print('MLCube starting.')
   task, iomap = parse_command_line()
 
   if task == "nvidia_smi":
-    if not mlbox_nvidia_smi(iomap):
+    if not mlcube_nvidia_smi(iomap):
       sys.exit(1)
   else:
-    print("No known MLBox task: {}".format(task))
+    print("No known MLCube task: {}".format(task))
     sys.exit(1)
 
 

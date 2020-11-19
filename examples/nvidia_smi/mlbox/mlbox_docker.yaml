@@ -1,7 +1,7 @@
 schema_version: 1.0.0
-schema_type: mlbox_docker
+schema_type: mlcube_docker
 
-image: mlperf/mlbox:nvidia_smi
+image: mlperf/mlcube:nvidia_smi
 docker_runtime: nvidia-docker
 
 

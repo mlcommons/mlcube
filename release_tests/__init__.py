@@ -39,8 +39,8 @@ class ReleaseTest(TestCase):
         return Path(__file__).resolve().parent.parent
 
     @property
-    def mlcommons_box_dir(self) -> Path:
-        return self.project_dir.joinpath('mlcommons_box')
+    def mlcube_dir(self) -> Path:
+        return self.project_dir.joinpath('mlcube')
 
     @property
     def runner_dirs(self) -> List[Path]:

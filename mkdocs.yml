@@ -1,5 +1,5 @@
-site_name: 'MLBox'
-site_description: 'Documentation site for MLBox'
+site_name: 'MLCube'
+site_description: 'Documentation site for MLCube'
 site_author: '<MLPerf.org> mlperf@googlegroups.com'
 docs_dir: 'docs/'
 
