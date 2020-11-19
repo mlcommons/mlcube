@@ -1,0 +1,15 @@
+# Platform configuration files define where and how runners run MLBoxes. This configuration file defines a Docker
+# runtime for MLBoxes. One field need to be updated here - `container.image`. This platform file defines local docker
+# execution environment.
+# MLCommons-Box Docker runner uses image name to either `pull` or `build` a docker image. The rule is the following:
+#   - If the following file exists (`build/Dockerfile`), Docker image will be built.
+#   - Else, docker runner will pull a docker image with the specified name.
+# Users provide platform files using `--platform` command line argument.
+schema_type: mlcommons_box_platform
+schema_version: 0.1.0
+
+platform:
+  name: "docker"
+  version: ">=18.01"
+container:
+  # image: "mlperf/mlbox_mnist:0.0.2"

@@ -1,0 +1,30 @@
+# This YAML file defines the task that this MLBox supports. A task is a piece of functionality that MLBox can run. Task
+# examples are `download data`, `pre-process data`, `train a model`, `test a model` etc. MLBox runtime invokes MLBox
+# entry point and provides (1) task name as the first argument, (2) task input/output parameters (--name=value) in no
+# particular order. Inputs, outputs or both can be empty lists. For instance, when MLBox runtime runs an MLBox task:
+#            python my_mlbox_entry_script.py download --data_dir=DATA_DIR_PATH --log_dir=LOG_DIR_PATH
+#    - `download` is the task name.
+#    - `data_dir` is the output parameter with value equal to DATA_DIR_PATH.
+#    - `log_dir` is the output parameter with value equal to LOG_DIR_PATH.
+# This file only defines parameters, and does not provide parameter values. This is internal MLBox file and is not
+# exposed to users via command line interface.
+schema_version: 1.0.0
+schema_type: mlbox_task
+
+# List of input parameters (list of dictionaries). For example, it's empty here.
+inputs: []
+
+# List of output parameters (list of dictionaries). Every parameter is a dictionary with two mandatory fields - `name`
+# and `type`. The `name` must have value that can be used as a command line parameter name (--data_dir, --log_dir). The
+# `type` is a categorical parameter that can be either `directory` or `file`. Every intput/output parameter is always
+# a file system path.
+# Only parameters with their types are defined in this file. Run configurations defined in the `run` sub-folder
+# associate parameter names and their values. There can be multiple run configurations for one task. One example is
+# 1-GPU and 8-GPU training configuration for some `train` task.
+# NEXT: study `run/task_name.yaml`.
+outputs:
+        # - name: data_dir
+        #   type: directory
+
+        # - name: log_dir
+        #   type: directory

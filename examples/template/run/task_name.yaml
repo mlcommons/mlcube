@@ -1,0 +1,25 @@
+# A run configuration assigns values to task parameters. Since there can be multiple run configurations for one
+# task (i.e., 1-GPU and 8-GPU training), run configuration files do not necessarily have to have the same name as their
+# tasks. Three sections need to be updated in this file - `task_name`, `input_binding` and `output_binding`.
+# Users use task configuration files to ask MLBox runtime run specific task using `--task` command line argument.
+schema_type: mlbox_invoke
+schema_version: 1.0.0
+
+# Name of a task.
+task_name: task_name
+
+# Dictionary of input bindings (dictionary mapping strings to strings). Parameters must correspond to those in task
+# file (`inputs` section). If not parameters are provided, the binding section must be an empty dictionary.
+input_binding: {}
+
+# Dictionary of output bindings (dictionary mapping strings to strings). Parameters must correspond to those in task
+# file (`outputs` section). Every parameter is a file system path (directory or a file name). Paths can be absolute
+# (starting with `/`) or relative. Relative paths are assumed to be relative to MLBox `workspace` directory.
+# Alternatively, a special variable `$WORKSPACE` can be used to explicitly refer to the MLBox `workspace` directory.
+# MLBox root directory (`--mlbox`) and run configuration file (`--task`) define MLBox task to run. One step left is
+# to specify where MLBox runs - on a local machine, remote machine in the cloud etc. This is done by providing platform
+# configuration files located in the MLBox `platforms` sub-folder.
+# NEXT: study `platforms/docker.yaml`.
+output_binding:
+        # data_dir: $WORKSPACE/data
+        # log_dir: $WORKSPACE/download_logs

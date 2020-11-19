@@ -1,0 +1,30 @@
+# This YAML file marks a directory to be an MLBox directory. When running MLBoxes with runners, MLBox path is
+# specified using `--mlbox` runner command line argument.
+# The most important parameters that are defined here are (1) name, (2) author and (3) list of MLBox tasks.
+schema_version: 1.0.0
+schema_type: mlbox_root
+
+# MLBox name (string). Replace it with your MLBox name (e.g. "MNIST").
+name: mlbox_name
+# MLBox author (string). Replace it with your MLBox name (e.g. "MLPerf Best Practices Working Group").
+author: mlbox_author
+
+version: 0.1.0
+mlbox_spec_version: 0.1.0
+
+# List of MLBox tasks supported by this MLBox (list of strings). Every task:
+#    - Has a unique name (e.g. "download").
+#    - Is defined in a YAML file in the `tasks` sub-folder (e.g. "tasks/download.yaml").
+#    - Task name is passed to an MLBox implementation file as the first argument (e.g. "python mnist.py download ...").
+# Every task is described by lists of input and output parameters. Every parameter is a file system path (directory or
+# file) characterized by two fields - name and value.
+# By default, if a file system path is a relative path (i.e. does not start with `/`), it is considered to be relative
+# to the `workspace` sub-folder.
+# Once all tasks are listed below, create a YAML file for each task in the 'tasks' sub-folder and change them
+# appropriately.
+# NEXT: study `tasks/task_name.yaml`.
+tasks:
+  - tasks/task_name.yaml
+  # - 'tasks/download.yaml'
+  # - 'tasks/train.yaml'
+
