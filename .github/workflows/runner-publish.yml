@@ -22,7 +22,7 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd runners/mlcommons_box_ssh
+        cd runners/mlcube_ssh
         python setup.py sdist bdist_wheel
     - name: Publish
       uses: sub-mod/gh-action-pypi-publish@master
@@ -31,7 +31,7 @@ jobs:
         verify_metadata: true
         skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcommons_box_ssh/dist/
+        packages_dir: runners/mlcube_ssh/dist/
         repository_url: https://upload.pypi.org/legacy/
       env:
         LOGLEVEL: DEBUG
@@ -50,7 +50,7 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd runners/mlcommons_box_docker
+        cd runners/mlcube_docker
         python setup.py sdist bdist_wheel
     - name: Publish
       uses: sub-mod/gh-action-pypi-publish@master
@@ -59,7 +59,7 @@ jobs:
         verify_metadata: true
         skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcommons_box_docker/dist/
+        packages_dir: runners/mlcube_docker/dist/
         repository_url: https://upload.pypi.org/legacy/
       env:
         LOGLEVEL: DEBUG
@@ -78,7 +78,7 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd runners/mlcommons_box_singularity
+        cd runners/mlcube_singularity
         python setup.py sdist bdist_wheel
     - name: Publish
       uses: sub-mod/gh-action-pypi-publish@master
@@ -87,7 +87,7 @@ jobs:
         verify_metadata: true
         skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcommons_box_singularity/dist/
+        packages_dir: runners/mlcube_singularity/dist/
         repository_url: https://upload.pypi.org/legacy/
       env:
         LOGLEVEL: DEBUG
@@ -106,7 +106,7 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd runners/mlcommons_box_k8s
+        cd runners/mlcube_k8s
         python setup.py sdist bdist_wheel
     - name: Publish
       uses: sub-mod/gh-action-pypi-publish@master
@@ -115,7 +115,7 @@ jobs:
         verify_metadata: true
         skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcommons_box_k8s/dist/
+        packages_dir: runners/mlcube_k8s/dist/
         repository_url: https://upload.pypi.org/legacy/
       env:
         LOGLEVEL: DEBUG

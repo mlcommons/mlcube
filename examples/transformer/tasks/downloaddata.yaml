@@ -1,6 +1,6 @@
 # Schema
 schema_version: 1.0.0
-schema_type: mlbox_task
+schema_type: mlcube_task
 
 # Task Inputs
 inputs: {}

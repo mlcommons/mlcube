@@ -2,7 +2,7 @@
 
 export PYTHONPATH=implementation/src/transformer:${PYTHONPATH}
 
-python3 -m mlbox_transformer_main \
+python3 -m mlcube_transformer_main \
 --mlperf_log_dir=workspace/log \
 --data_dir=workspace/data/translate_ende \
 --model_dir=workspace/model \

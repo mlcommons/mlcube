@@ -1,17 +1,17 @@
 # Singularity Runner
-Singularity runner uses singularity to run MLCommon-Box boxes. It supports two mandatory commands - `configure` and
-`run` with standard arguments - `mlbox`, `platform` and `task`. Singularity platform configuration is used to configure
+Singularity runner uses singularity to run MLCommon-Box cubes. It supports two mandatory commands - `configure` and
+`run` with standard arguments - `mlcube`, `platform` and `task`. Singularity platform configuration is used to configure
 Singularity runner.
 
 
 ## Platform Configuration File
-Singularity platform configuration file is a YAML file that follows `mlbox_singularity` ML schema. The configuration
-file for the reference MNIST box is the following:
+Singularity platform configuration file is a YAML file that follows `mlcube_singularity` ML schema. The configuration
+file for the reference MNIST cube is the following:
 ```yaml
 schema_version: 1.0.0
-schema_type: mlbox_singularity
+schema_type: mlcube_singularity
 
-image: /opt/singularity/mlperf_mlbox_mnist-0.01.simg   # Path to or name of a Singularity image.
+image: /opt/singularity/mlperf_mlcube_mnist-0.01.simg   # Path to or name of a Singularity image.
 ```
 
 The `image` field above is a path to a singularity container. It is relative to `{MLCOMMONS_BOX_ROOT}/workspace`:

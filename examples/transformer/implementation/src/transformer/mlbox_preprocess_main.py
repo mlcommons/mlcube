@@ -30,7 +30,7 @@ import tensorflow as tf
 import urllib.request
 import yaml
 
-import mlbox_constants as constants
+import mlcube_constants as constants
 from utils import tokenizer
 
 

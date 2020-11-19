@@ -2,7 +2,7 @@ BootStrap: docker
 From: ubuntu:18.04
 
 %labels
-    Maintainer MLPerf MLBox Working Group
+    Maintainer MLPerf MLCube Working Group
 
 %post
     apt-get update

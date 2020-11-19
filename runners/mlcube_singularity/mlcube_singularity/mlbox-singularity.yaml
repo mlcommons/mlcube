@@ -1,0 +1,19 @@
+mlspec_schema_version:
+  meta: 1.0.0
+
+mlspec_schema_type:
+  meta: mlcube_singularity
+
+schema_version:
+  # User provided: Identifies version of mlcube_input to use
+  type: semver
+  required: True
+
+schema_type:
+  # User provided: Identifies that this is a mlcube_input
+  type: string
+  required: True
+
+image:
+  type: string
+  required: True
