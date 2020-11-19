@@ -10,7 +10,7 @@ from mlcube_k8s.k8s_run import KubernetesRun
 @click.group(name='mlcube_k8s')
 def cli():
     """
-    MLCommons-Box k8s Runner runs cubes (packaged Machine Learning workloads) in a Kubernetes cluster.
+    MLCube k8s Runner runs cubes (packaged Machine Learning workloads) in a Kubernetes cluster.
     """
     pass
 

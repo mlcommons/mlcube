@@ -1,12 +1,12 @@
 # Kubernetes Runner
 
-The Kubernetes Runner runs a MLCommons-Box on a Kubernetes cluster.
+The Kubernetes Runner runs a MLCube on a Kubernetes cluster.
 
 [Skip over to the fun part.](#prepare-a-kubernetes-cluster)
 
 ## Why Kubernetes?
 
-One of the key goals of the MLCommons-Box project is to enable portability of ML models.
+One of the key goals of the MLCube project is to enable portability of ML models.
 Kubernetes offers the a good set of abstractions to enable model training to be portable
 across different compute platforms.
 

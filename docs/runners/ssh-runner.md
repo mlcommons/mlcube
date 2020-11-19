@@ -1,5 +1,5 @@
 # SSH Runner
-SSH runner uses other runners to run MLCommons-Box cubes on remote hosts. It uses `ssh` and `rsync` internally. It
+SSH runner uses other runners to run MLCube cubes on remote hosts. It uses `ssh` and `rsync` internally. It
 supports two mandatory commands - `configure` and `run` with standard arguments - `mlcube`, `platform` and `task`. SSH
 platform configuration is used to configure SSH runner.
 
@@ -27,7 +27,7 @@ authentication:
 
 # The platform field points to a platform configuration to be used on a remote host. This file must be located inside 
 # $mlcube_root/platforms directory. The idea is that the SSH runner delivers an MLCube to a remote host and then use 
-# another MLCommons-Box runner such as Docker or Singularity runner to run that MLCube there.
+# another MLCube runner such as Docker or Singularity runner to run that MLCube there.
 platform: docker.yaml
 
 
@@ -57,8 +57,8 @@ interpreter:
 SSH runner uses IP or name of a remote host (`host`) and ssh tool to login and execute shell commands on remote hosts. 
 If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  
   
-SSH runner depends on other runners to run MLCommons-Box cubes. The `platform` field specifies what runner should be
-used on a remote host. This is a file name located in `{MLCOMMONS_BOX_ROOT}/platforms`.  
+SSH runner depends on other runners to run MLCube cubes. The `platform` field specifies what runner should be
+used on a remote host. This is a file name located in `{MLCUBE_ROOT}/platforms`.  
 
 In current implementation, SSH runner synchronizes only an mlcube workload between local and remote hosts. Runners
 are assumed to be either available on remote hosts or specified as package dependencies in python interpreter 
@@ -77,4 +77,4 @@ During the `build` phase, the following steps are performed.
 ## Run command
 During the run phase, the SSH runner performs the following steps:  
 1. It uses `ssh` to run standard `run` command on a remote host.  
-2. It uses `rsync` to synchronize back the content of the `{MLCOMMONS_BOX_ROOT}/workspace` directory.   
+2. It uses `rsync` to synchronize back the content of the `{MLCUBE_ROOT}/workspace` directory.   

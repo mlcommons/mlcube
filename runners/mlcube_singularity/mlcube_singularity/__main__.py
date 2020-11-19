@@ -10,13 +10,13 @@ from mlcube_singularity.singularity_run import SingularityRun
 @click.group(name='mlcube_singularity')
 def cli():
     """
-    MLCommons-Box Singularity Runner runs cubes (packaged Machine Learning (ML) workloads) in the singularity
+    MLCube Singularity Runner runs cubes (packaged Machine Learning (ML) workloads) in the singularity
     environment.
     """
     pass
 
 
-@cli.command(name='configure', help='Configure singularity environment for MLCommons-Box ML workload.')
+@cli.command(name='configure', help='Configure singularity environment for MLCube ML workload.')
 @click.option('--mlcube', required=True, type=click.Path(exists=True), help='Path to MLCube directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLCube Platform definition file.')
 def configure(mlcube: str, platform: str):
@@ -28,7 +28,7 @@ def configure(mlcube: str, platform: str):
     runner.configure()
 
 
-@cli.command(name='run', help='Run MLCommons-Box ML workload in the singularity environment.')
+@cli.command(name='run', help='Run MLCube ML workload in the singularity environment.')
 @click.option('--mlcube', required=True, type=click.Path(exists=True), help='Path to MLCube directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLCube Platform definition file.')
 @click.option('--task', required=True, type=click.Path(exists=True), help='Path to MLCube Task definition file.')
