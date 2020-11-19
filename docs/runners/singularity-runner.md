@@ -14,17 +14,17 @@ schema_type: mlcube_singularity
 image: /opt/singularity/mlperf_mlcube_mnist-0.01.simg   # Path to or name of a Singularity image.
 ```
 
-The `image` field above is a path to a singularity container. It is relative to `{MLCOMMONS_BOX_ROOT}/workspace`:
-- By default, containers are stored in `{MLCOMMONS_BOX_ROOT}/workspace` if image is a file name.
-- If it is a relative path, it is relative to `{MLCOMMONS_BOX_ROOT}/workspace`.
+The `image` field above is a path to a singularity container. It is relative to `{MLCUBE_ROOT}/workspace`:
+- By default, containers are stored in `{MLCUBE_ROOT}/workspace` if image is a file name.
+- If it is a relative path, it is relative to `{MLCUBE_ROOT}/workspace`.
 - Absolute paths (starting with /) are used as is.
 
-In the example above, Singularity image is stored in the directory outside of the `{MLCOMMONS_BOX_ROOT}` to avoid
+In the example above, Singularity image is stored in the directory outside of the `{MLCUBE_ROOT}` to avoid
 copying it back to a user host when using runners such as SSH.
 
 
 ## Build command
-Singularity runner uses `{MLCOMMONS_BOX_ROOT}/build` directory as the build context directory. This implies that all
+Singularity runner uses `{MLCUBE_ROOT}/build` directory as the build context directory. This implies that all
 files that must be packaged in a singularity image, must be located in that directory, including source files, python
 requirements, resource files, ML models etc. The singularity recipe must have the standard name `Singularity.recipe`.
 
@@ -33,7 +33,7 @@ Singularity runner under the hood runs the following command line:
 cd {build_path}; singularity build --fakeroot {image_path} Singularity.recipe
 ```  
 where:  
-- `{build_path}` is `{MLCOMMONS_BOX_ROOT}/build` root directory.  
+- `{build_path}` is `{MLCUBE_ROOT}/build` root directory.  
 - `{image_path}` is the path to Singularity image that is computed as described above. 
 
 
