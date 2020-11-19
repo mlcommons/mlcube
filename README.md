@@ -24,7 +24,7 @@ pip uninstall mlcube
 
 ## Usage Examples
 
-Check out the [examples directory](examples) for detailed examples and [MLCube wiki](https://mlperf.github.io/mlcube).
+Check out the [examples](https://github.com/mlperf/mlcube_examples) for detailed examples and [MLCube wiki](https://mlperf.github.io/mlcube).
 
 ## License
 [MLCube](https://github.com/mlperf/mlcube/) is licensed under the Apache License 2.0. 
