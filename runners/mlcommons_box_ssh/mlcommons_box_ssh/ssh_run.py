@@ -15,8 +15,9 @@ class Shell(object):
     @staticmethod
     def run_or_die(cmd):
         print(cmd)
-        if os.system(cmd) != 0:
-            raise Exception('Command failed: {}'.format(cmd))
+        return_code = os.system(cmd)
+        if return_code != 0:
+            raise Exception(f'[COMMAND FAILED] return_code={return_code}, command="{cmd}"')
 
     @staticmethod
     def ssh(conn: str, cmd: Optional[str]):
