@@ -1,5 +1,5 @@
 click==7.1.2
 mlspeclib==1.0.0
-mlcube==0.0.1
+mlcube==0.0.2
 kubernetes==12.0.0
 diagrams==0.17.0
