@@ -1,0 +1,13 @@
+black==v19.10b0
+flake8>=3.7.9, <4.0
+pytest-cov>=2.5, <3.0
+pytest-mock>=1.7.1,<2.0
+pytest>=5.0, <6.0
+wheel==0.32.2
+click==7.1.2
+halo==0.0.30
+mlspeclib==1.0.0
+coloredlogs==14.0
+cookiecutter==1.7.2
+docker==4.3.1
+pyyaml==5.3.1

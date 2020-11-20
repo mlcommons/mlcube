@@ -1,46 +1,36 @@
-# MLBox
+# MLCube
 
-This is the MLBox Prototype. This is  still under construction, some parts probably dont work yet.
+MLCube brings the concept of interchangeable parts to the world of machine learning models.  It is the shipping container that enables researchers and developers to easily share the software that powers machine learning. 
 
-## Running Locally
+MLCube is a set of common conventions for creating ML software that can just "plug-and-play" on many different systems. MLCube makes it easier for researchers to share innovative ML models, for a developer to experiment with many different models, and for software companies to create infrastructure for models. It creates opportunities by putting ML in the hands of more people.
 
-```
-cd mlbox/
-python mlbox_local_run.py ../examples/transformer:downloaddata/default
-python mlbox_local_run.py ../examples/transformer:preprocess/default
-python mlbox_local_run.py ../examples/transformer:train/default
-```
+MLCube isn’t a new framework or service; MLCube is a consistent interface to machine learning models in containers like Docker.  Models published with the MLCube interface can be run on local machines, on a variety of major clouds, or in Kubernetes clusters - all using the same code. MLCommons provides open source “runners” for each of these environments that make training a model in an MLCube a single command. 
 
-## Old Documentation (Ignore below)
+Note: This project is still in beta and some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
 
-To install:
+## Installing MLCube
 
+Install from PyPI:  
 ```sh
-git clone https://github.com/xyhuang/mlbox.git
-cd mlbox
-
-pip install .
+pip install mlcube
 ```
 
 To uninstall:
 
 ```sh
-pip uninstall mlbox
+pip uninstall mlcube
 ```
 
-## Run an MLBox
 
-TO run an example, such as our toy "fake model", 
+## Usage Examples
 
-```# NOTICE: This is not yet fully implemented. This will print a docker command simliar to what will be run.
-cd mlbox
-python mlbox_run.py ../examples/fake_model:train/small_batch
-```
+Check out the [examples](https://github.com/mlperf/mlcube_examples) for detailed examples and [MLCube wiki](https://mlperf.github.io/mlcube).
 
-```# To override and specify different files, 
---log_file=/tmp/my_log_file
-```
+## License
+[MLCube](https://github.com/mlperf/mlcube/) is licensed under the Apache License 2.0. 
 
-## Examples
+See [LICENSE](https://github.com/mlperf/mlcube/blob/master/LICENSE) for more information.
 
-Check out the [examples directory](examples) for detailed examples.
+## Support
+
+[Create a GitHub issue](https://github.com/mlperf/mlcube/issues/new/choose)

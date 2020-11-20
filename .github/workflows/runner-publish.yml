@@ -1,0 +1,121 @@
+# This workflows will upload a Python Package using Twine when a release is created
+# For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
+
+name: Upload Python Package
+
+on:
+  repository_dispatch:
+    types: publish-runners
+
+jobs:
+  ssh_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcube_ssh
+        python setup.py sdist bdist_wheel
+    - name: Publish
+      uses: sub-mod/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: runners/mlcube_ssh/dist/
+        repository_url: https://upload.pypi.org/legacy/
+      env:
+        LOGLEVEL: DEBUG
+
+  docker_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcube_docker
+        python setup.py sdist bdist_wheel
+    - name: Publish
+      uses: sub-mod/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: runners/mlcube_docker/dist/
+        repository_url: https://upload.pypi.org/legacy/
+      env:
+        LOGLEVEL: DEBUG
+
+  singularity_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcube_singularity
+        python setup.py sdist bdist_wheel
+    - name: Publish
+      uses: sub-mod/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: runners/mlcube_singularity/dist/
+        repository_url: https://upload.pypi.org/legacy/
+      env:
+        LOGLEVEL: DEBUG
+
+  kubernetes_runner_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcube_k8s
+        python setup.py sdist bdist_wheel
+    - name: Publish
+      uses: sub-mod/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: runners/mlcube_k8s/dist/
+        repository_url: https://upload.pypi.org/legacy/
+      env:
+        LOGLEVEL: DEBUG
