@@ -1,6 +1,36 @@
 # Hello World
-## Docker runtime
-Hello World MLCube is an example of a docker-based cube. Docker runtime must be installed in a system.
+Hello World MLCube is an example of a docker-based cube.  
+
+
+## QuickStart
+Get started with MLCube Docker runner with below commands.   
+
+### Create python environment
+```
+virtualenv -p python3 ./env && source ./env/bin/activate
+```
+
+### Install MLCube Docker runner
+```
+pip install mlcube-docker
+```
+
+### Run Hello World MLCube example
+```
+# hello_world MLCube is present in mlcube_examples repo.
+git clone https://github.com/mlperf/mlcube_examples.git && cd ./mlcube_examples/hello_world
+
+Run Hello World MLCube on a local machine with Docker runner
+# Configure Hello World MLCube
+mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
+
+# Run Hello World training tasks: download data and train the model
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/bye.yaml
+```
+
+## Setup Docker
+MLCube Docker runner used Docker runtime and they must be available in the system.
 Installation guides for various operating systems can be found [here](https://docs.docker.com/engine/install/). This
 example was tested on a system where users are in the docker group and run docker without `sudo`. To add yourself to a
 docker group, run the following:
@@ -11,19 +41,8 @@ sudo service docker restart      # Restart the Docker daemon.
 newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the changes to groups.
 ```
 
- 
-## Host python environment
-Hello World is an example of a simple python program distributed as an MLCube docker-based cube. Follow the steps
-outlined in the `Introduction` section to create your Python virtual environment, download example MLCube cubes
-and install standard MLCube runners. Go to the folder containing MLCube example cubes and change directory
-to Hello World Box:
-```
-cd ./hello_world
-```
-
-
 ## Configuring Hello World MLCube
-Boxes need to be configured before they can run. To do so, users need to run a MLCube runner with `configure` 
+Cubes need to be configured before they can run. To do so, users need to run a MLCube runner with `configure` 
 command providing path to a cube root directory and path to a platform configuration file. The Hello World cube is a 
 docker-based cube, so users provide path to a MLCube Docker platform configuration file that sets a number of
 parameters, including docker image name:
@@ -49,12 +68,12 @@ Hello World creates a file `workspace/chats/chat_with_alice.txt` that contains t
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 ```
  
-## Modifying MLCube
+## Modifying MLCube tasks
 
 ### Adding new user 
-Create a new file `workspace/names/donald.txt` with the following content: `Donald`.
+Create a new file `workspace/names/foo.txt` with the following content: `Foo`.
 
-Create a new file `run/donald/hello.yaml` with the following content:
+Create a new file `run/foo/hello.yaml` with the following content:
 ```yaml
 schema_type: mlcube_invoke
 schema_version: 1.0.0
@@ -62,13 +81,13 @@ schema_version: 1.0.0
 task_name: hello
 
 input_binding:
-        name: $WORKSPACE/names/donald.txt
+        name: $WORKSPACE/names/foo.txt
 
 output_binding:
-        chat: $WORKSPACE/chats/chat_with_donald.txt
+        chat: $WORKSPACE/chats/chat_with_foo.txt
 ```
   
-Create a new file `run/donald/bye.yaml` with the following content:
+Create a new file `run/foo/bye.yaml` with the following content:
 ```yaml
 schema_type: mlcube_invoke
 schema_version: 1.0.0
@@ -76,22 +95,22 @@ schema_version: 1.0.0
 task_name: bye
 
 input_binding:
-        name: $WORKSPACE/names/donald.txt
+        name: $WORKSPACE/names/foo.txt
 
 output_binding:
-        chat: $WORKSPACE/chats/chat_with_donald.txt
+        chat: $WORKSPACE/chats/chat_with_foo.txt
 ```
 
 Run the following two commands one at a time:
 ```
-mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/donald/hello.yaml
-mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/donald/bye.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/foo/hello.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/foo/bye.yaml
 ```
-The Hello World cube creates a file `workspace/chats/chat_with_donald.txt` that contains the
+The Hello World cube creates a file `workspace/chats/chat_with_foo.txt` that contains the
 following:
 ```
-[2020-09-03 09:23:09.569558]  Hi, Donald! Nice to meet you.
-[2020-09-03 09:23:20.076845]  Bye, Donald! It was great talking to you.
+[2020-09-03 09:23:09.569558]  Hi, Foo! Nice to meet you.
+[2020-09-03 09:23:20.076845]  Bye, Foo! It was great talking to you.
 ```
 
 

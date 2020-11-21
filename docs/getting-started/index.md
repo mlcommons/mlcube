@@ -1,25 +1,15 @@
-# Getting Started
+# Installation
 
-This section describes some of the example MLCommon-Box cubes, in particular it covers the following topics:
+Here is the step by step guide to run simple MLCube cubes.
 
-- Setting up python environment.
-- Running simple MLCommon-Box cubes.
-- Detailed description of the internal structure of MLCube cubes.
-
-
-## Repository of MLCube examples.
-MLCommons hosts a simple GitHub-based repository with example MLCube cubes. It is located [here](https://github.com/mlperf/cube_examples).
-
-
-## Setting-up python environment
-In various tutorials we start with setting up Python environment and downloading MLCube cubes. Here is the step by step guide:
+## Create a python environment
 ```
-# Clone MLCube Examples
-git clone https://github.com/mlperf/cube_examples.git && cd ./cube_examples
-
 # Create Python Virtual Environment
 virtualenv -p python3 ./env && source ./env/bin/activate
+```
 
+## Install MLCube Runners
+```
 # Install MLCube Docker runner 
 pip install mlcube-docker
 
@@ -30,4 +20,12 @@ pip install mlcube-docker
 # Optionally, install other runners
 # pip install mlcube-singularity
 # pip install mlcube-ssh
+# pip install mlcube-k8s
 ``` 
+
+## Explore with examples
+```
+git clone https://github.com/mlperf/mlcube_examples.git && cd ./mlcube_examples
+```
+A great way to learn about MLCube is try out the example MLCube cubes located [here](https://github.com/mlperf/mlcube_examples).
+
