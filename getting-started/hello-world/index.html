@@ -202,7 +202,7 @@
 
   <li class="md-nav__item">
     <a href="../" class="md-nav__link">
-      Introduction
+      Installation
     </a>
   </li>
 
@@ -244,15 +244,42 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#docker-runtime" class="md-nav__link">
-    Docker runtime
+  <a href="#quickstart" class="md-nav__link">
+    QuickStart
   </a>
+  
+    <nav class="md-nav" aria-label="QuickStart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-python-environment" class="md-nav__link">
+    Create python environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-mlcube-docker-runner" class="md-nav__link">
+    Install MLCube Docker runner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-hello-world-mlcube-example" class="md-nav__link">
+    Run Hello World MLCube example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#host-python-environment" class="md-nav__link">
-    Host python environment
+  <a href="#setup-docker" class="md-nav__link">
+    Setup Docker
   </a>
   
 </li>
@@ -272,11 +299,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#modifying-mlcube" class="md-nav__link">
-    Modifying MLCube
+  <a href="#modifying-mlcube-tasks" class="md-nav__link">
+    Modifying MLCube tasks
   </a>
   
-    <nav class="md-nav" aria-label="Modifying MLCube">
+    <nav class="md-nav" aria-label="Modifying MLCube tasks">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -431,15 +458,42 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#docker-runtime" class="md-nav__link">
-    Docker runtime
+  <a href="#quickstart" class="md-nav__link">
+    QuickStart
   </a>
+  
+    <nav class="md-nav" aria-label="QuickStart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#create-python-environment" class="md-nav__link">
+    Create python environment
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install-mlcube-docker-runner" class="md-nav__link">
+    Install MLCube Docker runner
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#run-hello-world-mlcube-example" class="md-nav__link">
+    Run Hello World MLCube example
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#host-python-environment" class="md-nav__link">
-    Host python environment
+  <a href="#setup-docker" class="md-nav__link">
+    Setup Docker
   </a>
   
 </li>
@@ -459,11 +513,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#modifying-mlcube" class="md-nav__link">
-    Modifying MLCube
+  <a href="#modifying-mlcube-tasks" class="md-nav__link">
+    Modifying MLCube tasks
   </a>
   
-    <nav class="md-nav" aria-label="Modifying MLCube">
+    <nav class="md-nav" aria-label="Modifying MLCube tasks">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -499,8 +553,29 @@
                 
                 
                 <h1 id="hello-world">Hello World<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h1>
-<h2 id="docker-runtime">Docker runtime<a class="headerlink" href="#docker-runtime" title="Permanent link">&para;</a></h2>
-<p>Hello World MLCube is an example of a docker-based cube. Docker runtime must be installed in a system.
+<p>Hello World MLCube is an example of a docker-based cube.  </p>
+<h2 id="quickstart">QuickStart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
+<p>Get started with MLCube Docker runner with below commands.   </p>
+<h3 id="create-python-environment">Create python environment<a class="headerlink" href="#create-python-environment" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
+</code></pre></div>
+<h3 id="install-mlcube-docker-runner">Install MLCube Docker runner<a class="headerlink" href="#install-mlcube-docker-runner" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code>pip install mlcube-docker
+</code></pre></div>
+<h3 id="run-hello-world-mlcube-example">Run Hello World MLCube example<a class="headerlink" href="#run-hello-world-mlcube-example" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code># hello_world MLCube is present in mlcube_examples repo.
+git clone https://github.com/mlperf/mlcube_examples.git &amp;&amp; cd ./mlcube_examples/hello_world
+
+Run Hello World MLCube on a local machine with Docker runner
+# Configure Hello World MLCube
+mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
+
+# Run Hello World training tasks: download data and train the model
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/hello.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/bye.yaml
+</code></pre></div>
+<h2 id="setup-docker">Setup Docker<a class="headerlink" href="#setup-docker" title="Permanent link">&para;</a></h2>
+<p>MLCube Docker runner used Docker runtime and they must be available in the system.
 Installation guides for various operating systems can be found <a href="https://docs.docker.com/engine/install/">here</a>. This
 example was tested on a system where users are in the docker group and run docker without <code>sudo</code>. To add yourself to a
 docker group, run the following:
@@ -509,15 +584,8 @@ sudo gpasswd -a ${USER} docker   # Add the connected user &quot;${USER}&quot; to
 sudo service docker restart      # Restart the Docker daemon.
 newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the changes to groups.
 </code></pre></div></p>
-<h2 id="host-python-environment">Host python environment<a class="headerlink" href="#host-python-environment" title="Permanent link">&para;</a></h2>
-<p>Hello World is an example of a simple python program distributed as an MLCube docker-based cube. Follow the steps
-outlined in the <code>Introduction</code> section to create your Python virtual environment, download example MLCube cubes
-and install standard MLCube runners. Go to the folder containing MLCube example cubes and change directory
-to Hello World Box:
-<div class="highlight"><pre><span></span><code>cd ./hello_world
-</code></pre></div></p>
 <h2 id="configuring-hello-world-mlcube">Configuring Hello World MLCube<a class="headerlink" href="#configuring-hello-world-mlcube" title="Permanent link">&para;</a></h2>
-<p>Boxes need to be configured before they can run. To do so, users need to run a MLCube runner with <code>configure</code> 
+<p>Cubes need to be configured before they can run. To do so, users need to run a MLCube runner with <code>configure</code> 
 command providing path to a cube root directory and path to a platform configuration file. The Hello World cube is a 
 docker-based cube, so users provide path to a MLCube Docker platform configuration file that sets a number of
 parameters, including docker image name:
@@ -537,41 +605,41 @@ Hello World creates a file <code>workspace/chats/chat_with_alice.txt</code> that
 <div class="highlight"><pre><span></span><code>[2020-09-03 09:13:14.236945]  Hi, Alice! Nice to meet you.
 [2020-09-03 09:13:20.749831]  Bye, Alice! It was great talking to you.
 </code></pre></div></p>
-<h2 id="modifying-mlcube">Modifying MLCube<a class="headerlink" href="#modifying-mlcube" title="Permanent link">&para;</a></h2>
+<h2 id="modifying-mlcube-tasks">Modifying MLCube tasks<a class="headerlink" href="#modifying-mlcube-tasks" title="Permanent link">&para;</a></h2>
 <h3 id="adding-new-user">Adding new user<a class="headerlink" href="#adding-new-user" title="Permanent link">&para;</a></h3>
-<p>Create a new file <code>workspace/names/donald.txt</code> with the following content: <code>Donald</code>.</p>
-<p>Create a new file <code>run/donald/hello.yaml</code> with the following content:
+<p>Create a new file <code>workspace/names/foo.txt</code> with the following content: <code>Foo</code>.</p>
+<p>Create a new file <code>run/foo/hello.yaml</code> with the following content:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">hello</span>
 
 <span class="nt">input_binding</span><span class="p">:</span>
-        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/names/donald.txt</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/names/foo.txt</span>
 
 <span class="nt">output_binding</span><span class="p">:</span>
-        <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
+        <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_foo.txt</span>
 </code></pre></div></p>
-<p>Create a new file <code>run/donald/bye.yaml</code> with the following content:
+<p>Create a new file <code>run/foo/bye.yaml</code> with the following content:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_invoke</span>
 <span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 
 <span class="nt">task_name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">bye</span>
 
 <span class="nt">input_binding</span><span class="p">:</span>
-        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/names/donald.txt</span>
+        <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/names/foo.txt</span>
 
 <span class="nt">output_binding</span><span class="p">:</span>
-        <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_donald.txt</span>
+        <span class="nt">chat</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">$WORKSPACE/chats/chat_with_foo.txt</span>
 </code></pre></div></p>
 <p>Run the following two commands one at a time:
-<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/donald/hello.yaml
-mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/donald/bye.yaml
+<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/foo/hello.yaml
+mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/foo/bye.yaml
 </code></pre></div>
-The Hello World cube creates a file <code>workspace/chats/chat_with_donald.txt</code> that contains the
+The Hello World cube creates a file <code>workspace/chats/chat_with_foo.txt</code> that contains the
 following:
-<div class="highlight"><pre><span></span><code>[2020-09-03 09:23:09.569558]  Hi, Donald! Nice to meet you.
-[2020-09-03 09:23:20.076845]  Bye, Donald! It was great talking to you.
+<div class="highlight"><pre><span></span><code>[2020-09-03 09:23:09.569558]  Hi, Foo! Nice to meet you.
+[2020-09-03 09:23:20.076845]  Bye, Foo! It was great talking to you.
 </code></pre></div></p>
 <h3 id="providing-a-better-greeting-message">Providing a better greeting message<a class="headerlink" href="#providing-a-better-greeting-message" title="Permanent link">&para;</a></h3>
 <p>Because how Hello World cube was implemented, the greeting message is always the following: <code>Nice to meet you.</code>. We will
@@ -620,7 +688,7 @@ The MLCube recognized it was not the first time it talked to Alice, and changed 
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Introduction
+                Installation
               </div>
             </div>
           </a>

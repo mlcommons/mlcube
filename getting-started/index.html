@@ -18,7 +18,7 @@
     
     
       
-        <title>Introduction - MLCube</title>
+        <title>Installation - MLCube</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#getting-started" class="md-skip">
+        <a href="#installation" class="md-skip">
           Skip to content
         </a>
       
@@ -93,7 +93,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              Introduction
+              Installation
             
           </span>
         </div>
@@ -210,12 +210,12 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Introduction
+        Installation
         <span class="md-nav__icon md-icon"></span>
       </label>
     
     <a href="./" class="md-nav__link md-nav__link--active">
-      Introduction
+      Installation
     </a>
     
       
@@ -232,15 +232,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#repository-of-mlcube-examples" class="md-nav__link">
-    Repository of MLCube examples.
+  <a href="#create-a-python-environment" class="md-nav__link">
+    Create a python environment
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#setting-up-python-environment" class="md-nav__link">
-    Setting-up python environment
+  <a href="#install-mlcube-runners" class="md-nav__link">
+    Install MLCube Runners
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explore-with-examples" class="md-nav__link">
+    Explore with examples
   </a>
   
 </li>
@@ -390,15 +397,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#repository-of-mlcube-examples" class="md-nav__link">
-    Repository of MLCube examples.
+  <a href="#create-a-python-environment" class="md-nav__link">
+    Create a python environment
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#setting-up-python-environment" class="md-nav__link">
-    Setting-up python environment
+  <a href="#install-mlcube-runners" class="md-nav__link">
+    Install MLCube Runners
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explore-with-examples" class="md-nav__link">
+    Explore with examples
   </a>
   
 </li>
@@ -416,24 +430,14 @@
               
                 
                 
-                <h1 id="getting-started">Getting Started<a class="headerlink" href="#getting-started" title="Permanent link">&para;</a></h1>
-<p>This section describes some of the example MLCommon-Box cubes, in particular it covers the following topics:</p>
-<ul>
-<li>Setting up python environment.</li>
-<li>Running simple MLCommon-Box cubes.</li>
-<li>Detailed description of the internal structure of MLCube cubes.</li>
-</ul>
-<h2 id="repository-of-mlcube-examples">Repository of MLCube examples.<a class="headerlink" href="#repository-of-mlcube-examples" title="Permanent link">&para;</a></h2>
-<p>MLCommons hosts a simple GitHub-based repository with example MLCube cubes. It is located <a href="https://github.com/mlperf/cube_examples">here</a>.</p>
-<h2 id="setting-up-python-environment">Setting-up python environment<a class="headerlink" href="#setting-up-python-environment" title="Permanent link">&para;</a></h2>
-<p>In various tutorials we start with setting up Python environment and downloading MLCube cubes. Here is the step by step guide:
-<div class="highlight"><pre><span></span><code># Clone MLCube Examples
-git clone https://github.com/mlperf/cube_examples.git &amp;&amp; cd ./cube_examples
-
-# Create Python Virtual Environment
+                <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
+<p>Here is the step by step guide to run simple MLCube cubes.</p>
+<h2 id="create-a-python-environment">Create a python environment<a class="headerlink" href="#create-a-python-environment" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code># Create Python Virtual Environment
 virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
-
-# Install MLCube Docker runner 
+</code></pre></div>
+<h2 id="install-mlcube-runners">Install MLCube Runners<a class="headerlink" href="#install-mlcube-runners" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code># Install MLCube Docker runner 
 pip install mlcube-docker
 
 # Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
@@ -443,7 +447,12 @@ pip install mlcube-docker
 # Optionally, install other runners
 # pip install mlcube-singularity
 # pip install mlcube-ssh
-</code></pre></div></p>
+# pip install mlcube-k8s
+</code></pre></div>
+<h2 id="explore-with-examples">Explore with examples<a class="headerlink" href="#explore-with-examples" title="Permanent link">&para;</a></h2>
+<p><div class="highlight"><pre><span></span><code>git clone https://github.com/mlperf/mlcube_examples.git &amp;&amp; cd ./mlcube_examples
+</code></pre></div>
+A great way to learn about MLCube is try out the example MLCube cubes located <a href="https://github.com/mlperf/mlcube_examples">here</a>.</p>
                 
               
               
