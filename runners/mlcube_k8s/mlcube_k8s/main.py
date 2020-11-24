@@ -7,12 +7,44 @@ from mlcube.common.objects import platform_config
 from mlcube_k8s.k8s_run import KubernetesRun
 
 
+def configure(mlcube: str, platform: str):
+    pass
+
+
+def run(mlcube: str, platform: str, task: str, loglevel: str):
+    """
+    Runs a MLCube in a Kubernetes cluster.
+    """
+    # set loglevel for CLI
+    logging.basicConfig(format='%(asctime)s - %(message)s',
+                        datefmt='%d-%b-%y-%H:%M:%S',
+                        level=loglevel)
+    logger = logging.getLogger(__name__)
+
+    logger.info("Configuring MLCube platform, task for Kubernetes...")
+    mlcube: mlcube_metadata.MLCube = mlcube_metadata.MLCube(path=mlcube)
+    mlcube.platform = objects.load_object_from_file(
+        file_path=platform, obj_class=platform_config.PlatformConfig)
+    mlcube.invoke = mlcube_metadata.MLCubeInvoke(task)
+    logger.info("MLCube: %s", mlcube)
+
+    runner = KubernetesRun(mlcube, loglevel)
+    runner.run()
+
+
 @click.group(name='mlcube_k8s')
 def cli():
     """
     MLCube k8s Runner runs cubes (packaged Machine Learning workloads) in a Kubernetes cluster.
     """
     pass
+
+
+@cli.command(name='configure', help='Configure K8S environment for MLCube ML workload.')
+@click.option('--mlcube', required=True, type=click.Path(exists=True), help='MLCube root directory.')
+@click.option('--platform', required=True, type=click.Path(exists=True), help='MLCube Platform definition file.')
+def configure_cli(mlcube: str, platform: str):
+    configure(mlcube, platform)
 
 
 @cli.command(name="run")
@@ -33,22 +65,8 @@ def cli():
               type=click.STRING,
               default="DEBUG",
               help='Log level for the CLI app.')
-def run(mlcube: str, platform: str, task: str, loglevel: str):
+def run_cli(mlcube: str, platform: str, task: str, loglevel: str):
     """
     Runs a MLCube in a Kubernetes cluster.
     """
-    # set loglevel for CLI
-    logging.basicConfig(format='%(asctime)s - %(message)s',
-                        datefmt='%d-%b-%y-%H:%M:%S',
-                        level=loglevel)
-    logger = logging.getLogger(__name__)
-
-    logger.info("Configuring MLCube platform, task for Kubernetes...")
-    mlcube: mlcube_metadata.MLCube = mlcube_metadata.MLCube(path=mlcube)
-    mlcube.platform = objects.load_object_from_file(
-        file_path=platform, obj_class=platform_config.PlatformConfig)
-    mlcube.invoke = mlcube_metadata.MLCubeInvoke(task)
-    logger.info("MLCube: %s", mlcube)
-
-    runner = KubernetesRun(mlcube, loglevel)
-    runner.run()
+    run(mlcube, platform, task, loglevel)
