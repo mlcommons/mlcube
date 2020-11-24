@@ -19,6 +19,8 @@ class StandardPaths(object):
     BOXES = ROOT + '/cubes'
     # Default path for user python environments for runners such as SSH.
     ENVIRONMENTS = ROOT + '/environments'
+    # Cache for downloaded projects (for instance, GitHub)
+    CACHE = ROOT + '/cache'
 
 
 class Utils(object):

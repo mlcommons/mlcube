@@ -1,6 +1,6 @@
 import os
 from mlspeclib import MLObject
-from typing import (Any, Optional, Tuple)
+from typing import (Any, Optional, List)
 
 
 class MLCubeInvoke(object):
@@ -77,3 +77,22 @@ class MLCube(object):
     def __str__(self) -> str:
         return f"MLCube(root={self.root}, name={self.name}, version={self.version}, task={self.task}, "\
                f"invoke={self.invoke}, platform={self.platform})"
+
+    def get_files(self, location: str, recursive: bool = False) -> List[str]:
+        """ Return list of full paths to YAML files located in the $location sub-directory of the MLCube root directory.
+        Args:
+            location (str): MLCube sub-directory, such as `platforms`, `tasks` or `run`.
+            recursive (bool): If true search for files recursively.
+
+        Returns:
+             List of full paths to YAML files (list of strings).
+        """
+        def _walk(location_: str, recursive_: bool) -> List[str]:
+            files = [os.path.join(location_, file_) for file_ in os.listdir(location_) if file_.endswith('.yaml')]
+            if recursive_:
+                folders = [folder for folder in os.listdir(location_) if os.path.isdir(os.path.join(location_, folder))]
+                for folder in folders:
+                    files.extend(_walk(os.path.join(location_, folder), recursive_))
+            return files
+
+        return _walk(os.path.join(self.root, location), recursive_=recursive)
