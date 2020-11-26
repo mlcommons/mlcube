@@ -20,48 +20,48 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-      - name: Install MLCommons Box
+      - name: Install MLCube
         run: |
-          cd mlcommons_box
+          cd mlcube
           pip install -r requirements.txt
           python setup.py sdist bdist_wheel
-          pip install dist/mlcommons_box*.whl
-      - name: Test MLCommons Box CLI
+          pip install dist/mlcube*.whl
+      - name: Test MLCube CLI
         run: |
-          cd mlcommons_box
+          cd mlcube
           pytest
-      - name: Install MLCommons Box Docker Runner
+      - name: Install MLCube Docker Runner
         run: |
-          cd runners/mlcommons_box_docker
+          cd runners/mlcube_docker
           pip install -r requirements.txt
           python setup.py sdist bdist_wheel
-      - name: Test MLCommons Box Docker CLI
+      - name: Test MLCube Docker CLI
         run: |
-          cd runners/mlcommons_box_docker
+          cd runners/mlcube_docker
           pytest
-      - name: Install MLCommons Box Singularity Runner
+      - name: Install MLCube Singularity Runner
         run: |
-          cd runners/mlcommons_box_singularity
+          cd runners/mlcube_singularity
           pip install -r requirements.txt
           python setup.py sdist bdist_wheel
-      - name: Test MLCommons Box Singularity CLI
+      - name: Test MLCube Singularity CLI
         run: |
-          cd runners/mlcommons_box_singularity
+          cd runners/mlcube_singularity
           pytest
-      - name: Install MLCommons Box SSH Runner
+      - name: Install MLCube SSH Runner
         run: |
-          cd runners/mlcommons_box_ssh
+          cd runners/mlcube_ssh
           pip install -r requirements.txt
           python setup.py sdist bdist_wheel
-      - name: Test MLCommons Box SSH CLI
+      - name: Test MLCube SSH CLI
         run: |
-          cd runners/mlcommons_box_ssh
+          cd runners/mlcube_ssh
           pytest
-      - name: Install MLCommons Box Kubernetes Runner
+      - name: Install MLCube Kubernetes Runner
         run: |
-          cd runners/mlcommons_box_k8s
+          cd runners/mlcube_k8s
           python setup.py install
-      - name: Test MLCommons Box Kubernetes CLI
+      - name: Test MLCube Kubernetes CLI
         run: |
-          cd runners/mlcommons_box_k8s
+          cd runners/mlcube_k8s
           pytest

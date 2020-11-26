@@ -22,17 +22,18 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd mlcommons_box
+        cd mlcube
         python setup.py sdist bdist_wheel
     - name: Publish
-      uses: sub-mod/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@master
       with:
         user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
         skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: mlcommons_box/dist/
+        packages_dir: mlcube/dist/
         repository_url: https://upload.pypi.org/legacy/
+        verbose: true
       env:
         LOGLEVEL: DEBUG
 
@@ -44,5 +45,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
-          repository: mlperf/mlbox
+          repository: mlperf/mlcube
           event-type: publish-runners

@@ -1,31 +1,31 @@
 # Kubernetes Runner
 
-The Kubernetes Runner runs a MLCommons-Box on a Kubernetes cluster.
+The Kubernetes Runner runs a MLCube on a Kubernetes cluster.
 
 [Skip over to the fun part.](#prepare-a-kubernetes-cluster)
 
 ## Why Kubernetes?
 
-One of the key goals of the MLCommons-Box project is to enable portability of ML models.
+One of the key goals of the MLCube project is to enable portability of ML models.
 Kubernetes offers the a good set of abstractions to enable model training to be portable
 across different compute platforms.
 
 ## Design
 
-[Kubernetes Runner Proposal Doc](http://bit.ly/box-k8s-runner)
+[Kubernetes Runner Proposal Doc](http://bit.ly/cube-k8s-runner)
 
 The Kubernetes runner takes in a kubernetes specific task file in the `run` directory and re-uses the Docker runner
 platform config and prepares a Kubernetes Job manifest. The runner then creates the job on the Kubernetes cluster.
 
-![Design](../assets/mlcommons-box-k8s.png)
+![Design](../assets/mlcube-k8s.png)
 
 
-The Kubernetes Runner takes in a MLBox run configuration file similar to other runners. With clear definitions of input
+The Kubernetes Runner takes in a MLCube run configuration file similar to other runners. With clear definitions of input
 and output bindings.
 Here's an example:
 
 ```yaml
-schema_type: mlbox_invoke
+schema_type: mlcube_invoke
 schema_version: 1.0.0
 
 task_name: kubernetes   # task name set to 'kubernetes'
@@ -34,13 +34,13 @@ input_binding:  # input parameters (name: value)
   data_dir:
     path: workspace/data
     k8s:
-      pvc: mlbox-input
+      pvc: mlcube-input
 ...
 output_binding: # output parameters (name: value)
   model_dir:
     path: workspace/model
     k8s:
-      pvc: mlbox-output
+      pvc: mlcube-output
 ...
 ```
 
@@ -48,14 +48,14 @@ The Runner also re-uses the Docker platform config file. So it needs a Docker pl
 revisit the Docker platform config.
 
 ```yaml
-schema_type: mlcommons_box_platform
+schema_type: mlcube_platform
 schema_version: 0.1.0
 
 platform:
   name: "docker"
   version: ">=18.01"
 container:
-  image: "mlperf/mlbox:mnist"
+  image: "mlperf/mlcube:mnist"
 ```
 
 With these two config files, the runner then constructs the following Kubernetes Job manifest. 
@@ -65,28 +65,28 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: default
-  generateName: mlcommons-box-mnist-
+  generateName: mlcube-mnist-
 spec:
   template:
     spec:
       containers:
-      - name: mlcommons-box-container
-        image: mlperf/mlbox:mnist
+      - name: mlcube-container
+        image: mlperf/mlcube:mnist
         args:
-        - --data_dir=/mnt/mlbox/mlbox-input/workspace/data
-        - --model_dir=/mnt/mlbox/mlbox-output/workspace/model
+        - --data_dir=/mnt/mlcube/mlcube-input/workspace/data
+        - --model_dir=/mnt/mlcube/mlcube-output/workspace/model
         volumeMounts:
-        - name: mlbox-input
-          mountPath: /mnt/mlbox/mlbox-input
-        - name: mlbox-output
-          mountPath: /mnt/mlbox/mlbox-output
+        - name: mlcube-input
+          mountPath: /mnt/mlcube/mlcube-input
+        - name: mlcube-output
+          mountPath: /mnt/mlcube/mlcube-output
       volumes:
-      - name: mlbox-input
+      - name: mlcube-input
         persistentVolumeClaim:
-          claimName: mlbox-input
-      - name: mlbox-output
+          claimName: mlcube-input
+      - name: mlcube-output
         persistentVolumeClaim:
-          claimName: mlbox-output
+          claimName: mlcube-output
       restartPolicy: Never
   backoffLimit: 4
 ```
@@ -112,7 +112,7 @@ touch run/kubernetes.yaml
 #### Set Schema for Task
 
 ```yaml
-schema_type: mlbox_invoke
+schema_type: mlcube_invoke
 schema_version: 1.0.0
 ```
 
@@ -129,21 +129,21 @@ input_binding:  # input parameters (name: value)
   data_dir:
     path: workspace/data
     k8s:
-      pvc: mlbox-input
+      pvc: mlcube-input
 
 output_binding: # output parameters (name: value)
   model_dir:
     path: workspace/model
     k8s:
-      pvc: mlbox-output
+      pvc: mlcube-output
 ```
 
-## Run a box with the CLI
+## Run a cube with the CLI
 
 ```bash
-pip install mlcommons-box-k8s
-mlcommons_box_k8s run \
-  --mlbox=examples/mnist \
+pip install mlcube-k8s
+mlcube_k8s run \
+  --mlcube=examples/mnist \
   --platform=examples/mnist/platforms/docker.yaml \
   --task=examples/mnist/run/kubernetes.yaml  \
   --loglevel INFO

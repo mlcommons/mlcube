@@ -1,3 +1,0 @@
-click==7.1.2
-mlspeclib==1.0.0
-mlcommons-box==0.2.2
