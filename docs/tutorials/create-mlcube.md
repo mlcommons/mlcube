@@ -1,6 +1,6 @@
 # Tutorial Create an MLCube 
 <div style="text-align:center"><span style="color:black; font-family:Georgia; font-size:2em;">Interested in getting started with MLCube? Follow the instructions in this tutorial, or watch the video below.</span></div>
-[![Watch the video](http://img.youtube.com/vi/hQRBLW6giRc/0.jpg)](https://www.youtube.com/embed/hQRBLW6giRc)
+[![Watch the video](http://img.youtube.com/vi/hQRBLW6giRc/0.jpg)](https://www.youtube.com/embed/hQRBLW6giRc).  
 ## Step 1: SETUP   
 Create a python environment and get MLCube.
 ```
