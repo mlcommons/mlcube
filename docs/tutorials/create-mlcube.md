@@ -1,5 +1,5 @@
 # Tutorial Create an MLCube 
-<div style="text-align:center"><span style="color:black; font-family:Georgia; font-size:2em;">Interested in getting started with MLCube? Follow the instructions in this tutorial.    
+Interested in getting started with MLCube? Follow the instructions in this tutorial.    
 ## Step 1: SETUP   
 Create a python environment and get MLCube.
 ```
