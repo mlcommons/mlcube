@@ -9,6 +9,8 @@ nav:
     - Installation: getting-started/index.md
     - Hello World: getting-started/hello-world.md
     - MNIST: getting-started/mnist.md
+  - Tutorials:
+    - How to Create an MLCube: tutorials/create-mlcube.md
   - Runners:
     - Runners: runners/index.md
     - Docker Runner: runners/docker-runner.md
