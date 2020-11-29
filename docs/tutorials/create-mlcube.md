@@ -78,7 +78,7 @@ Now we will edit file ./my_mlcube/tasks/task_name.yaml and save it to file  matm
 ```
 cd ./tasks
 ```
-The lines you need to edit are shown in **bold** in the task_name.yaml file shown here:
+The lines you need to edit are shown in **bold** in the task_name.yaml file shown here:  
 <sub><sup><span style="color:blue">After editing task_name.yml save the file to matmul.yaml.</span></sup></sub>   
 <pre><code> 
 # This YAML file defines the task that this MLCube supports. A task is a piece of functionality that MLCube can run. Task
@@ -117,7 +117,8 @@ Now we will edit file ./my_mlcube/run/docker.yaml and save it to file matmul.yam
 cd ../run
 ```
 
-The lines you need to edit are shown in **bold** in the task_name.yaml file shown here:
+The lines you need to edit are shown in **bold** in the task_name.yaml file shown here:  
+<sub><sup><span style="color:blue">After editing task_name.yml save the file to matmul.yaml.</span></sup></sub>   
 <pre><code> 
 # A run configuration assigns values to task parameters. Since there can be multiple run configurations for one
 # task (i.e., 1-GPU and 8-GPU training), run configuration files do not necessarily have to have the same name as their
