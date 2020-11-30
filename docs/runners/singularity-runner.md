@@ -11,7 +11,7 @@ file for the reference MNIST cube is the following:
 schema_version: 1.0.0
 schema_type: mlcube_singularity
 
-image: /opt/singularity/mlperf_mlcube_mnist-0.01.simg   # Path to or name of a Singularity image.
+image: /opt/singularity/mlcommons_mlcube_mnist-0.01.simg   # Path to or name of a Singularity image.
 ```
 
 The `image` field above is a path to a singularity container. It is relative to `{MLCUBE_ROOT}/workspace`:

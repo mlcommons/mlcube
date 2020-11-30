@@ -10,7 +10,7 @@ reference MNIST cube is the following:
 schema_version: 1.0.0
 schema_type: mlcube_docker
 
-image: mlperf/mlcube:mnist   # Docker image name
+image: mlcommons/mlcube:mnist   # Docker image name
 docker_runtime: docker      # Docker executable: docker or nvidia-docker
 ```
 
