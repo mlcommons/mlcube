@@ -11,10 +11,10 @@
       
       
       
-        <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
+        <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.21aed14c.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6910b76c.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
@@ -580,7 +580,7 @@ revisit the Docker platform config.</p>
   <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;docker&quot;</span>
   <span class="nt">version</span><span class="p">:</span> <span class="s">&quot;&gt;=18.01&quot;</span>
 <span class="nt">container</span><span class="p">:</span>
-  <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;mlperf/mlcube:mnist&quot;</span>
+  <span class="nt">image</span><span class="p">:</span> <span class="s">&quot;mlcommons/mlcube:mnist&quot;</span>
 </code></pre></div>
 <p>With these two config files, the runner then constructs the following Kubernetes Job manifest. </p>
 <div class="highlight"><pre><span></span><code><span class="nt">apiVersion</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">batch/v1</span>
@@ -593,7 +593,7 @@ revisit the Docker platform config.</p>
     <span class="nt">spec</span><span class="p">:</span>
       <span class="nt">containers</span><span class="p">:</span>
       <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube-container</span>
-        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlcube:mnist</span>
+        <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons/mlcube:mnist</span>
         <span class="nt">args</span><span class="p">:</span>
         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--data_dir=/mnt/mlcube/mlcube-input/workspace/data</span>
         <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">--model_dir=/mnt/mlcube/mlcube-output/workspace/model</span>
@@ -704,8 +704,8 @@ mlcube_k8s run <span class="se">\</span>
       
     </div>
     
-      <script src="../../assets/javascripts/vendor.7e0ee788.min.js"></script>
-      <script src="../../assets/javascripts/bundle.b3a72adc.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({

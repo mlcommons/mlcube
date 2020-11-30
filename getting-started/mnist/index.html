@@ -11,10 +11,10 @@
       
       
       
-        <meta name="author" content="<MLPerf.org> mlperf@googlegroups.com">
+        <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
       
       <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.5">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.21aed14c.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6910b76c.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
@@ -793,14 +793,14 @@ the following:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 <span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span>
 
-<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlperf/mlcube:mnist</span>   <span class="c1"># Docker image name</span>
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons/mlcube:mnist</span>   <span class="c1"># Docker image name</span>
 <span class="nt">docker_runtime</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>      <span class="c1"># Docker executable: docker or nvidia-docker</span>
 </code></pre></div></p>
 <p>Singularity platform configuration is the following:
 <div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
 <span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_singularity</span>
 
-<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/singularity/mlperf_mlcube_mnist-0.01.simg</span>   <span class="c1"># Path to or name of a Singularity image.</span>
+<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/singularity/mlcommons_mlcube_mnist-0.01.simg</span>   <span class="c1"># Path to or name of a Singularity image.</span>
 </code></pre></div>
 At this point, the cube directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
@@ -862,7 +862,7 @@ mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/train.y
 </code></pre></div></p>
 <h3 id="singularity-runner">Singularity Runner<a class="headerlink" href="#singularity-runner" title="Permanent link">&para;</a></h3>
 <p>Update path to store Singularity image. Open <code>platforms/singularity.yaml</code> and update the <code>image</code> value
-that is set by default to <code>/opt/singularity/mlperf_mlcube_mnist-0.01.simg</code> (relative paths are supported, they are
+that is set by default to <code>/opt/singularity/mlcommons_mlcube_mnist-0.01.simg</code> (relative paths are supported, they are
 relative to <code>workspace</code>).  </p>
 <p>Configure MNIST cube:
 <div class="highlight"><pre><span></span><code>mlcube_singularity configure --mlcube=. --platform=platforms/singularity.yaml
@@ -937,8 +937,8 @@ mlcube_singularity run --mlcube=. --platform=platforms/singularity.yaml --task=r
       
     </div>
     
-      <script src="../../assets/javascripts/vendor.7e0ee788.min.js"></script>
-      <script src="../../assets/javascripts/bundle.b3a72adc.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      <script src="../../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
       
       <script>
         app = initialize({
