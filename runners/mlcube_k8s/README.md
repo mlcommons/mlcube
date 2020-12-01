@@ -1,3 +1,3 @@
 # Kubernetes Runner
 
-[Documentation](https://mlperf.github.io/mlcube/runners/kubernetes/)
+[Documentation](https://mlcommons.github.io/mlcube/runners/kubernetes/)

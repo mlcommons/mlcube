@@ -1,6 +1,6 @@
 site_name: 'MLCube'
 site_description: 'Documentation site for MLCube'
-site_author: '<MLPerf.org> mlperf@googlegroups.com'
+site_author: '<MLPerf.org> mlcommons@googlegroups.com'
 docs_dir: 'docs/'
 
 nav:

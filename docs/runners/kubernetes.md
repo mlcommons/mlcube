@@ -55,7 +55,7 @@ platform:
   name: "docker"
   version: ">=18.01"
 container:
-  image: "mlperf/mlcube:mnist"
+  image: "mlcommons/mlcube:mnist"
 ```
 
 With these two config files, the runner then constructs the following Kubernetes Job manifest. 
@@ -71,7 +71,7 @@ spec:
     spec:
       containers:
       - name: mlcube-container
-        image: mlperf/mlcube:mnist
+        image: mlcommons/mlcube:mnist
         args:
         - --data_dir=/mnt/mlcube/mlcube-input/workspace/data
         - --model_dir=/mnt/mlcube/mlcube-output/workspace/model

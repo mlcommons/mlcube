@@ -25,7 +25,7 @@ pip install mlcube-docker
 
 ## Explore with examples
 ```
-git clone https://github.com/mlperf/mlcube_examples.git && cd ./mlcube_examples
+git clone https://github.com/mlcommons/mlcube_examples.git && cd ./mlcube_examples
 ```
-A great way to learn about MLCube is try out the example MLCube cubes located [here](https://github.com/mlperf/mlcube_examples).
+A great way to learn about MLCube is try out the example MLCube cubes located [here](https://github.com/mlcommons/mlcube_examples).
 

@@ -45,5 +45,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
-          repository: mlperf/mlcube
+          repository: mlcommons/mlcube
           event-type: publish-runners
