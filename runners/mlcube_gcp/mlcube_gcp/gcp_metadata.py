@@ -1,5 +1,5 @@
 import os
-from mlcommons_box.common.utils import Utils
+from mlcube.common.utils import Utils
 
 
 class GCP(object):

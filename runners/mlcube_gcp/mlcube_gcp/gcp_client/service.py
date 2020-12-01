@@ -2,7 +2,7 @@ import time
 from typing import (Optional, Union)
 import googleapiclient.discovery
 from google.oauth2 import service_account
-from mlcommons_box_gcp.gcp_client.operation import Operation
+from mlcube_gcp.gcp_client.operation import Operation
 
 
 class Service(object):

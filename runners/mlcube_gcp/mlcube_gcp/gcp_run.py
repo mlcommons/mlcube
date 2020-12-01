@@ -2,31 +2,31 @@ import os
 import logging
 from pathlib import Path
 from ssh_config.client import SSHConfig, Host
-from mlcommons_box.common import mlbox_metadata
-from mlcommons_box_gcp.gcp_client.instance import Instance as GCPInstance, Status as GCPInstanceStatus
-from mlcommons_box_gcp.gcp_client.service import Service
-from mlcommons_box_gcp.gcp_metadata import Platform
-from mlcommons_box_ssh.ssh_run import Shell
-from mlcommons_box_ssh.__main__ import (configure_ as configure_ssh, run_ as run_ssh)
+from mlcube.common import mlcube_metadata
+from mlcube_gcp.gcp_client.instance import Instance as GCPInstance, Status as GCPInstanceStatus
+from mlcube_gcp.gcp_client.service import Service
+from mlcube_gcp.gcp_metadata import Platform
+from mlcube_ssh.ssh_run import Shell
+from mlcube_ssh.__main__ import (configure_ as configure_ssh, run_ as run_ssh)
 
 logger = logging.getLogger(__name__)
 
 
 class GCPRun(object):
-    def __init__(self, mlbox: mlbox_metadata.MLBox) -> None:
+    def __init__(self, mlcube: mlcube_metadata.MLCube) -> None:
         """Docker Runner.
         Args:
-            mlbox (mlbox_metadata.MLBox): MLBox specification including platform configuration for Docker.
+            mlcube (mlcube_metadata.MLCube): MLCube specification including platform configuration for Docker.
         """
-        self.mlbox: mlbox_metadata.MLBox = mlbox
+        self.mlcube: mlcube_metadata.MLCube = mlcube
 
     def configure(self) -> None:
         """  """
-        platform: Platform = self.mlbox.platform
+        platform: Platform = self.mlcube.platform
 
         # Check that SSH is configured.
+        ssh_config_file = os.path.join(Path.home(), '.ssh', 'config')
         try:
-            ssh_config_file = os.path.join(Path.home(), '.ssh', 'config')
             ssh_config = SSHConfig.load(ssh_config_file)
             gcp_host: Host = ssh_config.get(platform.instance.name)
         except KeyError:
@@ -38,7 +38,8 @@ class GCPRun(object):
 
         # Connect to GCP
         logger.info("Connecting to GCP ...")
-        service = Service(project_id=platform.gcp.project_id, zone=platform.gcp.zone)
+        service = Service(project_id=platform.gcp.project_id, zone=platform.gcp.zone,
+                          credentials=platform.gcp.credentials)
 
         # Figure out if an instance needs to be created
         instance = GCPInstance(service.get_instance(platform.instance.name))
@@ -79,13 +80,13 @@ class GCPRun(object):
 
         # Should be as simple as invoking SSH configure.
         configure_ssh(
-            mlbox=self.mlbox.root,
-            platform=os.path.join(self.mlbox.root, 'platforms', platform.platform)
+            mlcube=self.mlcube.root,
+            platform=os.path.join(self.mlcube.root, 'platforms', platform.platform)
         )
 
     def run(self, task_file: str) -> None:
         run_ssh(
-            mlbox=self.mlbox.root,
-            platform=os.path.join(self.mlbox.root, 'platforms', self.mlbox.platform.platform),
+            mlcube=self.mlcube.root,
+            platform=os.path.join(self.mlcube.root, 'platforms', self.mlcube.platform.platform),
             task=task_file
         )

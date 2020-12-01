@@ -17,6 +17,7 @@ nav:
     - Singularity Runner: runners/singularity-runner.md
     - SSH Runner: runners/ssh-runner.md
     - Kubernetes Runner: runners/kubernetes.md
+    - GCP Runner: runners/gcp-runner.md
 
 theme:
   name: 'material'
