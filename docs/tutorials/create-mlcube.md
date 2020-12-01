@@ -1,28 +1,34 @@
 # Tutorial: Create an MLCube 
 Interested in getting started with MLCube? Follow the instructions in this tutorial.    
-## Step 1: SETUP   
+## Step 1: Setup   
 Get MLCube, MLCube examples and MLCube Templates, and CREATE a Python environment.
 ```
 # You can clone the mlcube examples and templates from GtiHub
 git clone https://github.com/mlcommons/mlcube_examples
+
 # Create a python environment
 virtualenv -p python3 ./env && source ./env/bin/activate
+
 # Install mlcube, mlcube-docker and cookiecutter 
 pip install mlcube mlcube-docker cookiecutter 
 ```
 
-## Step 2: CONFIGURE MLCUBE USING THE TEMPLATE FILES 
+## Step 2: Configure MLCube using the mlcube_cookiecutter 
 Let's use the 'matmult' example, that we downloaded in the previous step, to illustrate how to make an MLCube. Matmul is a simple matrix multiply example written in Python with TensorFlow. 
 When you create an MLCube for your own model you will use your own code, data and dockerfile.
  
 ```
 cd mlcube_examples
 # rename matmul reference implementaion from matmul to matmul_reference
+
 mv ./matmul ./matmul_reference
+
 # create a mlcube directory using mlcube template(note: do not use quotes in your input to cookiecutter): name = matmul, author = MLPerf Best Practices Working Group  
 cookiecutter https://github.com/mlcommons/mlcube_cookiecutter.git
+
 # copy the matmul.py,Dockerfile and requirements.txt to your mlcube_matmul/build directory
 cp -R  matmul_reference/build  matmul
+
 # copy input file for matmul to workspace directory
 cp -R  matmul_reference/workspace  matmul
 ```
@@ -173,7 +179,7 @@ container:
 <strong>   image: "mlcommons/matmul:v1.0"</strong> 
 </code></pre>
 
-## Step 3. DEFINE A CONTAINER FOR YOUR MODEL WITH A DOCKERFILE
+## Step 3. Create a Dockerfile for your model container image
 You will need a docker image to create an MLCube.  We will use the Dockerfile for 'matmul' to create a docker container image:   
 <sub><sup><span style="color:blue">Note: the last line of the Dockerfile must be    
 "ENTRYPOINT ["python3", "/workspace/your_mlcube_name.py"]" as shown below.</span></sup></sub> 
@@ -208,13 +214,13 @@ RUN pip3 install --no-cache-dir -r /requirements.txt
 <strong>ENTRYPOINT ["python3", "/workspace/matmul.py"]</strong>
 </code></pre>
 
-## Step 4: BUILD THE DOCKER IMAGE
+## Step 4: Build Docker container Image
 ```
 cd ..
 mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 ```
 
-## Step 5: TEST YOUR MLCUBE
+## Step 5: Test your MLCube
 ```
 mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/matmul.yaml
 ls ./workspace
