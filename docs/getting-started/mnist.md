@@ -249,7 +249,7 @@ the following:
 schema_version: 1.0.0
 schema_type: mlcube_docker
 
-image: mlperf/mlcube:mnist   # Docker image name
+image: mlcommons/mlcube:mnist   # Docker image name
 docker_runtime: docker      # Docker executable: docker or nvidia-docker
 
 ```
@@ -259,7 +259,7 @@ Singularity platform configuration is the following:
 schema_version: 1.0.0
 schema_type: mlcube_singularity
 
-image: /opt/singularity/mlperf_mlcube_mnist-0.01.simg   # Path to or name of a Singularity image.
+image: /opt/singularity/mlcommons_mlcube_mnist-0.01.simg   # Path to or name of a Singularity image.
 ```
 At this point, the cube directory looks like:
 ```
@@ -334,7 +334,7 @@ mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/train.y
 
 ### Singularity Runner
 Update path to store Singularity image. Open `platforms/singularity.yaml` and update the `image` value
-that is set by default to `/opt/singularity/mlperf_mlcube_mnist-0.01.simg` (relative paths are supported, they are
+that is set by default to `/opt/singularity/mlcommons_mlcube_mnist-0.01.simg` (relative paths are supported, they are
 relative to `workspace`).  
 
 

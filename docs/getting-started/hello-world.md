@@ -18,7 +18,7 @@ pip install mlcube-docker
 ### Run Hello World MLCube example
 ```
 # hello_world MLCube is present in mlcube_examples repo.
-git clone https://github.com/mlperf/mlcube_examples.git && cd ./mlcube_examples/hello_world
+git clone https://github.com/mlcommons/mlcube_examples.git && cd ./mlcube_examples/hello_world
 
 Run Hello World MLCube on a local machine with Docker runner
 # Configure Hello World MLCube
