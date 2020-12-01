@@ -8,8 +8,6 @@ Follow the Getting Started instructions, or watch the video below.
 
 MLCube is a project that reduces friction for machine learning by ensuring that models are easily portable and reproducible, e.g., between different stacks such as different clouds, between cloud and on-prem, etc.
 
-Note: This project is still under development and some parts probably don't work yet, or may have unexpected/inconsistent behaviours.
-
 ## Installing MLCube
 
 Install from PyPI:  
