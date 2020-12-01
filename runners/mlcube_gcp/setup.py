@@ -26,7 +26,7 @@ class Clean(Command):
 
 def schemas():
     paths = []
-    for (path, _, filenames) in os.walk("mlcommons_box_gcp/"):
+    for (path, _, filenames) in os.walk("mlcube_gcp/"):
         for filename in filenames:
             if filename.endswith(".yaml") or filename.endswith(".template"):
                 paths.append(os.path.join("..", path, filename))
@@ -37,13 +37,13 @@ extra_files = schemas()
 
 
 setup(
-    name="mlcommons_box_gcp",
-    version="0.2.2",
+    name="mlcube_gcp",
+    version="0.0.2",
     packages=find_packages(exclude=["tests"]),
     license="Apache 2.0",
     entry_points='''
         [console_scripts]
-        mlcommons_box_gcp=mlcommons_box_gcp.__main__:cli
+        mlcube_gcp=mlcube_gcp.__main__:cli
     ''',
     install_requires=requires,
     python_requires='>=3.6',

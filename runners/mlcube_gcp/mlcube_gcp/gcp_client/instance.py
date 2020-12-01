@@ -1,5 +1,5 @@
 from typing import Optional
-from mlcommons_box.common.utils import Utils
+from mlcube.common.utils import Utils
 
 
 class Status(object):

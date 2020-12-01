@@ -1,9 +1,9 @@
 import click
-from mlcommons_box_gcp.gcp_client.instance import (Instance, Status)
-from mlcommons_box_gcp.gcp_client.service import Service
+from mlcube_gcp.gcp_client.instance import (Instance, Status)
+from mlcube_gcp.gcp_client.service import Service
 
 
-@click.group(name='mlcommons_box_gcp_client')
+@click.group(name='mlcube_gcp_client')
 def cli():
     """ """
     pass
