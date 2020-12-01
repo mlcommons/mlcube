@@ -65,3 +65,11 @@ jobs:
         run: |
           cd runners/mlcube_k8s
           pytest
+      - name: Install MLCube GCP Runner
+        run: |
+          cd runners/mlcube_gcp
+          python setup.py install
+      - name: Test MLCube GCP CLI
+        run: |
+          cd runners/mlcube_gcp
+          pytest
