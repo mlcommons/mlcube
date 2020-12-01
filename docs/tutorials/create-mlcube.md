@@ -7,7 +7,7 @@ Get MLCube, MLCube examples and MLCube Templates, and CREATE a Python environmen
 git clone https://github.com/mlcommons/mlcube_examples
 # Create a python environment
 virtualenv -p python3 ./env && source ./env/bin/activate
-# Install mlcube, mlcube-docker  
+# Install mlcube, mlcube-docker and cookiecutter 
 pip install mlcube mlcube-docker cookiecutter 
 ```
 
