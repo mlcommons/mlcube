@@ -18,7 +18,7 @@
     
     
       
-        <title>SSH Runner - MLCube</title>
+        <title>GCP Runner - MLCube</title>
       
     
     
@@ -63,7 +63,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ssh-runner" class="md-skip">
+        <a href="#google-compute-platform-gcp-runner" class="md-skip">
           Skip to content
         </a>
       
@@ -93,7 +93,7 @@
           </span>
           <span class="md-header-nav__topic md-ellipsis">
             
-              SSH Runner
+              GCP Runner
             
           </span>
         </div>
@@ -333,63 +333,11 @@
           
           
 
-  
 
-
-  <li class="md-nav__item md-nav__item--active">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-    
-      
-    
-    
-      <label class="md-nav__link md-nav__link--active" for="__toc">
-        SSH Runner
-        <span class="md-nav__icon md-icon"></span>
-      </label>
-    
-    <a href="./" class="md-nav__link md-nav__link--active">
+  <li class="md-nav__item">
+    <a href="../ssh-runner/" class="md-nav__link">
       SSH Runner
     </a>
-    
-      
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#platform-configuration-file" class="md-nav__link">
-    Platform Configuration File
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#configure-command" class="md-nav__link">
-    Configure command
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#run-command" class="md-nav__link">
-    Run command
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-    
   </li>
 
         
@@ -409,11 +357,84 @@
           
           
 
+  
 
-  <li class="md-nav__item">
-    <a href="../gcp-runner/" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        GCP Runner
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
       GCP Runner
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pre-requisites" class="md-nav__link">
+    Pre-requisites
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-remote-instances" class="md-nav__link">
+    Creating remote instances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#platform-configuration-file" class="md-nav__link">
+    Platform configuration file
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcp-runner-configure-phase" class="md-nav__link">
+    GCP runner configure phase
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcp-runner-run-phase" class="md-nav__link">
+    GCP runner run phase
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations" class="md-nav__link">
+    Recommendations
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
         
@@ -446,22 +467,43 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#pre-requisites" class="md-nav__link">
+    Pre-requisites
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#creating-remote-instances" class="md-nav__link">
+    Creating remote instances
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#platform-configuration-file" class="md-nav__link">
-    Platform Configuration File
+    Platform configuration file
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configure-command" class="md-nav__link">
-    Configure command
+  <a href="#gcp-runner-configure-phase" class="md-nav__link">
+    GCP runner configure phase
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#run-command" class="md-nav__link">
-    Run command
+  <a href="#gcp-runner-run-phase" class="md-nav__link">
+    GCP runner run phase
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommendations" class="md-nav__link">
+    Recommendations
   </a>
   
 </li>
@@ -479,77 +521,102 @@
               
                 
                 
-                <h1 id="ssh-runner">SSH Runner<a class="headerlink" href="#ssh-runner" title="Permanent link">&para;</a></h1>
-<p>SSH runner uses other runners to run MLCube cubes on remote hosts. It uses <code>ssh</code> and <code>rsync</code> internally. It
-supports two mandatory commands - <code>configure</code> and <code>run</code> with standard arguments - <code>mlcube</code>, <code>platform</code> and <code>task</code>. SSH
-platform configuration is used to configure SSH runner.</p>
+                <h1 id="google-compute-platform-gcp-runner">Google Compute Platform (GCP) Runner<a class="headerlink" href="#google-compute-platform-gcp-runner" title="Permanent link">&para;</a></h1>
 <blockquote>
-<p>This runner is being actively developed and not all features described on this page may be supported.</p>
+<p><strong>DISCLAIMER</strong> MLCube is under active development. Allocating and using instances in clouds are associated with
+costs. Users of GCP runners should be aware about it, especially, taking into account capability of GCP runners to
+automatically create and start remote instances. GCP RUNNERS in current implementation DO NOT stop/destroy remote
+instances. Users are encouraged to visit web consoles to identify what virtual instances exist and run.</p>
+<p>GCP runner can update users' <code>${HOME}/.ssh/config</code> configuration files.</p>
 </blockquote>
-<h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
-<p>SSH platform configuration file is a YAML file. The configuration file for the reference MNIST cube is the following:
-<div class="highlight"><pre><span></span><code><span class="c1"># Possible values are hostname or IP address. It can also be a host alias if there is a corresponding section</span>
-<span class="c1"># exists in ~/.ssh/config. The hostname should be possible to use with tools like ssh, rsync and scp.</span>
-<span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">REMOTE_HOST</span>
+<p>GCP runner is a frontend runner for running MLCubes in Google cloud. It is called a frontend runner because it does not
+actually run cubes, but ensures that a remote instance is up and running, and then uses other runners to actually run
+MLCubes. The following chain of runners is supported and has been tested:
+1. A user interacts with GCP runners. These runners are responsible for creating remote instances (if they do not 
+   exist), start them, install required software stack (such as docker or singularity).
+2. Once a remote instance is up and running, GCP runners delegates further execution to other runners, such as 
+   <a href="https://mlcommons.github.io/mlcube/runners/ssh-runner/">SSH runners</a>. SSH runners are responsible for delivering
+   MLCubes to remote instances. SSH runners then delegate the actual execution of cubes on those remote instances to
+   such runners as <a href="https://mlcommons.github.io/mlcube/runners/docker-runner/">docker runner</a> or 
+   <a href="https://mlcommons.github.io/mlcube/runners/singularity-runner/">singularity runner</a>.</p>
+<p>The described scenario assumes the presence of the following platform configuration files: GCP, SSH and one of Docker or
+Singularity. As MLCube project evolves, other paths may become possible to run cubes in clouds such as GCP.</p>
+<h2 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permanent link">&para;</a></h2>
+<p>To use GCP runners, users need to have a GCP account. The following account details must be known and available in
+advance:
+1. Project ID.
+2. Zone.
+3. Service account <a href="https://cloud.google.com/docs/authentication/production#create_service_account">JSON file</a>.
+4. Users should configure their GCP accounts so that ever new virtual instance is automatically deployed with user 
+   public key making it available through SSH access automatically.</p>
+<h2 id="creating-remote-instances">Creating remote instances<a class="headerlink" href="#creating-remote-instances" title="Permanent link">&para;</a></h2>
+<p>Remote instances for running MLCubes can be created manually or automatically. 
+1. To create a virtual instance manually, go to GCP console, select <code>Compute Engine</code> and then <code>VM instances</code>. Write
+   down an instance name.
+2. To create a virtual instance automatically, a GCP platform file needs be configured. A limited functionality is
+   supported. Basically, users can only specify <code>machine type</code> and <code>disk size</code>. Ubuntu 18.04 OS will be used as a base
+   image.</p>
+<h2 id="platform-configuration-file">Platform configuration file<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
+<p>The following is an example of the actual GCP platform configuration file used in one of the tutorials:
+<div class="highlight"><pre><span></span><code><span class="c1"># GCP login credentials</span>
+<span class="nt">gcp</span><span class="p">:</span>
+    <span class="c1"># These are your project ID and zone names. </span>
+    <span class="nt">project_id</span><span class="p">:</span> <span class="s">&#39;atomic-envelope-293722&#39;</span>
+    <span class="nt">zone</span><span class="p">:</span> <span class="s">&#39;us-central1-a&#39;</span>
+    <span class="nt">credentials</span><span class="p">:</span>
+        <span class="c1"># As described above, ensure you have servuce account activated and download your JSON key file.</span>
+        <span class="nt">file</span><span class="p">:</span> <span class="s">&#39;${HOME}/.gcp/service_account_key_file.json&#39;</span>
+        <span class="nt">scopes</span><span class="p">:</span> <span class="p p-Indicator">[</span><span class="s">&#39;https://www.googleapis.com/auth/cloud-platform&#39;</span><span class="p p-Indicator">]</span>
 
 
-<span class="c1"># Authentication section is optional, and can be null, empty or non-empty dictionary. If value is null or empty </span>
-<span class="c1"># string/dict, it is assumed the authentication is not required, or is configured in user environment </span>
-<span class="c1"># (e.g. ~/.ssh/config). SSH runner will not provide any additional information on a command line for ssh, rsync or scp.</span>
-<span class="c1"># If the value is a dictionary, optional fields that SSH runner recognizes are user name on a remote host (user) and </span>
-<span class="c1"># path to a user private key file (identity_file). If all fields are present, the following connection string is used </span>
-<span class="c1"># by the SSH runner: `-i $identity_file $user@$host`.</span>
-<span class="nt">authentication</span><span class="p">:</span>
-    <span class="nt">user</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">USER</span>
-    <span class="nt">identity_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/mlcube/ssh/gcp_identity</span>
+<span class="c1"># Instance parameters.</span>
+<span class="c1">#    If existing remote instance is used, only `name` field is used. Other fields are not taken into account.</span>
+<span class="c1">#    If users want GCP runners to automatically create remote instances, all three fields must present. Instance name</span>
+<span class="c1">#       is arbitrary name for this instance. Machine type must be the valid GCP machine type. Ubuntu 18.04 is used</span>
+<span class="c1">#       as a base OS. </span>
+<span class="nt">instance</span><span class="p">:</span>
+    <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;mlcube-gcp-instance-n1s4&#39;</span>
+    <span class="nt">machine_type</span><span class="p">:</span> <span class="s">&#39;n1-standard-4&#39;</span>
+    <span class="nt">disk_size_gb</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100</span>
 
-
-<span class="c1"># The platform field points to a platform configuration to be used on a remote host. This file must be located inside </span>
-<span class="c1"># $mlcube_root/platforms directory. The idea is that the SSH runner delivers an MLCube to a remote host and then use </span>
-<span class="c1"># another MLCube runner such as Docker or Singularity runner to run that MLCube there.</span>
-<span class="nt">platform</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span>
-
-
-<span class="c1"># The interpreter section defines python interpreter on a remote host to use to run other runners there. This is not </span>
-<span class="c1"># environment for MLCubes, this is environment for runners to run MLCubes. Two options are supported - `system` and </span>
-<span class="c1"># `virtualenv` interpreters.</span>
-
-<span class="c1"># The system interpreter is a python already available on a remote host. It can be just an executable (python, </span>
-<span class="c1"># python3.8) or a full path to a user existing environment. Three fields should be provided: type (system in this case), </span>
-<span class="c1"># python executable, possibly, with fully specified path, and dependencies in the form of a string (requirements).</span>
-<span class="nt">interpreter</span><span class="p">:</span>
-    <span class="nt">type</span><span class="p">:</span> <span class="s">&quot;system&quot;</span>
-    <span class="nt">python</span><span class="p">:</span> <span class="s">&quot;python3.6&quot;</span>
-    <span class="nt">requirements</span><span class="p">:</span> <span class="s">&quot;mlcube-docker==0.2.2&quot;</span>
-
-<span class="c1"># The virtualenv interpreter does not have to exist. SSH runner can create this one. This interpreter has the same </span>
-<span class="c1"># fields with two additional ones - location (base path for a python environment) and name (basically, a folder name </span>
-<span class="c1"># inside the location path).</span>
-<span class="c1"># interpreter:</span>
-<span class="c1">#     type: &quot;virtualenv&quot;</span>
-<span class="c1">#     python: &quot;python3.6&quot;</span>
-<span class="c1">#     requirements: &quot;mlcube-docker==0.2.1&quot;</span>
-<span class="c1">#     location: &quot;${HOME}/mlcube/environments&quot;</span>
-<span class="c1">#     name: &quot;mlcube-docker-0.2.1&quot;</span>
+<span class="c1"># As described above, primary role of GCP runners is to ensure a remote instance exists before delegating the actual</span>
+<span class="c1"># `MLCube run` functionality to other runners. Currently, the only available option is a SSH runner (that assumes </span>
+<span class="c1"># remote instances are available vis SSH i.e. they have public IPs). The `platform` field below specifies what runner</span>
+<span class="c1"># the GCP runner should be using once GCP virtual instance has been created. A SSH runner needs to be configured</span>
+<span class="c1"># separately (see sections below for some recommendations and best practices). </span>
+<span class="nt">platform</span><span class="p">:</span> <span class="s">&#39;ssh.yaml&#39;</span>
 </code></pre></div></p>
-<p>SSH runner uses IP or name of a remote host (<code>host</code>) and ssh tool to login and execute shell commands on remote hosts. 
-If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  </p>
-<p>SSH runner depends on other runners to run MLCube cubes. The <code>platform</code> field specifies what runner should be
-used on a remote host. This is a file name located in <code>{MLCUBE_ROOT}/platforms</code>.  </p>
-<p>In current implementation, SSH runner synchronizes only an mlcube workload between local and remote hosts. Runners
-are assumed to be either available on remote hosts or specified as package dependencies in python interpreter 
-configuration section. </p>
-<h2 id="configure-command">Configure command<a class="headerlink" href="#configure-command" title="Permanent link">&para;</a></h2>
-<p>During the <code>build</code> phase, the following steps are performed.
-1. Based upon configuration, SSH runner creates and/or configures python on a remote host using <code>ssh</code>. This includes
-   execution of such commands as <code>virtualenv -p ...</code> and/or <code>source ... &amp;&amp; pip install ...</code> on a remote host. Default
-   path for a python environment on a remote host is <code>${HOME}/mlcube/environments/</code>. <br />
-2. SSH runner copies mlcube directory to a remote host. Default path on a remote host is <code>${HOME}/mlcube/cubes/</code>.
-3. SSH runner runs another runner specified in a platform configuration file on a remote host to configure it. </p>
-<h2 id="run-command">Run command<a class="headerlink" href="#run-command" title="Permanent link">&para;</a></h2>
-<p>During the run phase, the SSH runner performs the following steps:<br />
-1. It uses <code>ssh</code> to run standard <code>run</code> command on a remote host.<br />
-2. It uses <code>rsync</code> to synchronize back the content of the <code>{MLCUBE_ROOT}/workspace</code> directory.   </p>
+<h2 id="gcp-runner-configure-phase">GCP runner <code>configure</code> phase<a class="headerlink" href="#gcp-runner-configure-phase" title="Permanent link">&para;</a></h2>
+<p>GCP runners execute the following steps during the configure phase:
+1.  Check that SSH access has been configured. A runner loads users <code>${HOME}/.ssh/config</code> file and verifies it 
+    contains a section for the remote instance there (specified by the name). The configuration section must define 
+    <code>User</code> and <code>IdentityFile</code>.
+2. GCP runner connects to GCP using provided project ID, zone name and <code>credentials</code> (file name and scopes).
+3. GCP runner checks if a remote instance exists with the provided name. If it does not exist, it creates it using three
+   parameters described above - instance name, machine type and disk size.
+4. If a remote instance is not running, GCP runner starts it.
+5. GCP runner retrieves a remote instance's meta data that includes public IP address. If public IP address does not 
+   match <code>HostName</code> in ssh configuration file, <strong>GCP RUNNER UPDATES USER SSH CONFIG FILE</strong>.
+6. Currently, GCP runner automatically installs such packages, as <code>docker</code>, <code>python3</code> and <code>virtualenv</code>.
+7. GCP runner calls SSH runner to continue configuring remote instance in a MLCube-specific way.</p>
+<h2 id="gcp-runner-run-phase">GCP runner <code>run</code> phase<a class="headerlink" href="#gcp-runner-run-phase" title="Permanent link">&para;</a></h2>
+<p>GCP runner does not implement any specific logic and redirects its functionality to a SSH runner.   </p>
+<h2 id="recommendations">Recommendations<a class="headerlink" href="#recommendations" title="Permanent link">&para;</a></h2>
+<ol>
+<li>One remote instance can be used to run different MLCubes. Names of remote instances can reflect their type, for
+   instance, <code>gcp_free_micro_instance</code>, <code>gcp_4_cpu_instance</code>, <code>gcp_1_gpu_instance</code>, <code>gcp_8_gpu_instance</code> etc.</li>
+<li>Following the above guidelines, these instances must be configured with key-based SSH access (GCP and SSH runners
+   depend on this). Each remote instance must have a section in the <code>{HOME}/.ssh/config</code> that should look like:
+   <div class="highlight"><pre><span></span><code>Host mlcube-gcp-instance-n1s4
+    HostName {{PUBLIC_IP_ADDRESS}}
+    IdentityFile ~/.ssh/gcp_rsa
+    User {{GCP_USER_LOGIN_NAME}}
+</code></pre></div>
+   GCP runner will update the <code>HostName</code> value if actual IP address differs from existing one. Other fields are never
+   updated by GCP runners. Section like this one is sufficient to partially configure GCP and fully configure SSH
+   runners.</li>
+<li>After every GCP run, decide if a remote instance needs to be stopped/destroyed. If so, go to web console.  </li>
+</ol>
                 
               
               
@@ -568,7 +635,7 @@ configuration section. </p>
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
         
-          <a href="../singularity-runner/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href="../kubernetes/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-footer-nav__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
             </div>
@@ -577,25 +644,11 @@ configuration section. </p>
                 <span class="md-footer-nav__direction">
                   Previous
                 </span>
-                Singularity Runner
-              </div>
-            </div>
-          </a>
-        
-        
-          <a href="../kubernetes/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
-            <div class="md-footer-nav__title">
-              <div class="md-ellipsis">
-                <span class="md-footer-nav__direction">
-                  Next
-                </span>
                 Kubernetes Runner
               </div>
             </div>
-            <div class="md-footer-nav__button md-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
-            </div>
           </a>
+        
         
       </nav>
     </div>
