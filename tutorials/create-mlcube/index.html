@@ -1,0 +1,776 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation site for MLCube">
+      
+      
+      
+      
+        <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
+      
+      <link rel="shortcut icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
+    
+    
+      
+        <title>How to Create an MLCube - MLCube</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.6910b76c.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.196e0c26.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
+      
+    
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
+    
+    
+      
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+      
+  
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tutorial-create-an-mlcube" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid" aria-label="Header">
+    <a href="../.." title="MLCube" class="md-header-nav__button md-logo" aria-label="MLCube">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header-nav__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header-nav__title" data-md-component="header-title">
+      
+        <div class="md-header-nav__ellipsis">
+          <span class="md-header-nav__topic md-ellipsis">
+            MLCube
+          </span>
+          <span class="md-header-nav__topic md-ellipsis">
+            
+              How to Create an MLCube
+            
+          </span>
+        </div>
+      
+    </div>
+    
+      <label class="md-header-nav__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 003-3 3 3 0 00-3-3 3 3 0 00-3 3 3 3 0 003 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    MLCube
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../.." class="md-nav__link">
+      Home
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2" >
+    <label class="md-nav__link" for="nav-2">
+      Getting Started
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        <span class="md-nav__icon md-icon"></span>
+        Getting Started
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/" class="md-nav__link">
+      Installation
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/hello-world/" class="md-nav__link">
+      Hello World
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../getting-started/mnist/" class="md-nav__link">
+      MNIST
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    <label class="md-nav__link" for="nav-3">
+      Tutorials
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        <span class="md-nav__icon md-icon"></span>
+        Tutorials
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        How to Create an MLCube
+        <span class="md-nav__icon md-icon"></span>
+      </label>
+    
+    <a href="./" class="md-nav__link md-nav__link--active">
+      How to Create an MLCube
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-setup" class="md-nav__link">
+    Step 1: SETUP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-configure-mlcube-using-the-template-files" class="md-nav__link">
+    Step 2: CONFIGURE MLCUBE USING THE TEMPLATE FILES
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-define-a-container-for-your-model-with-a-dockerfile" class="md-nav__link">
+    Step 3. DEFINE A CONTAINER FOR YOUR MODEL WITH A DOCKERFILE
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-build-the-docker-image" class="md-nav__link">
+    Step 4: BUILD THE DOCKER IMAGE
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-test-your-mlcube" class="md-nav__link">
+    Step 5: TEST YOUR MLCUBE
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4" >
+    <label class="md-nav__link" for="nav-4">
+      Runners
+      <span class="md-nav__icon md-icon"></span>
+    </label>
+    <nav class="md-nav" aria-label="Runners" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        <span class="md-nav__icon md-icon"></span>
+        Runners
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/" class="md-nav__link">
+      Runners
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/docker-runner/" class="md-nav__link">
+      Docker Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/singularity-runner/" class="md-nav__link">
+      Singularity Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/ssh-runner/" class="md-nav__link">
+      SSH Runner
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../../runners/kubernetes/" class="md-nav__link">
+      Kubernetes Runner
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#step-1-setup" class="md-nav__link">
+    Step 1: SETUP
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-2-configure-mlcube-using-the-template-files" class="md-nav__link">
+    Step 2: CONFIGURE MLCUBE USING THE TEMPLATE FILES
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-3-define-a-container-for-your-model-with-a-dockerfile" class="md-nav__link">
+    Step 3. DEFINE A CONTAINER FOR YOUR MODEL WITH A DOCKERFILE
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-4-build-the-docker-image" class="md-nav__link">
+    Step 4: BUILD THE DOCKER IMAGE
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#step-5-test-your-mlcube" class="md-nav__link">
+    Step 5: TEST YOUR MLCUBE
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="tutorial-create-an-mlcube">Tutorial Create an MLCube<a class="headerlink" href="#tutorial-create-an-mlcube" title="Permanent link">&para;</a></h1>
+<p>Interested in getting started with MLCube? Follow the instructions in this tutorial.    </p>
+<h2 id="step-1-setup">Step 1: SETUP<a class="headerlink" href="#step-1-setup" title="Permanent link">&para;</a></h2>
+<p>Get MLCube, MLCube examples and MLCube Templates, and CREATE a Python environment.
+<div class="highlight"><pre><span></span><code># You can clone the mlcube examples and templates from GtiHub
+git clone https://github.com/mlcommons/mlcube_examples
+# Create a python environment
+virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
+# Install mlcube, mlcube-docker and cookiecutter 
+pip install mlcube mlcube-docker cookiecutter 
+</code></pre></div></p>
+<h2 id="step-2-configure-mlcube-using-the-template-files">Step 2: CONFIGURE MLCUBE USING THE TEMPLATE FILES<a class="headerlink" href="#step-2-configure-mlcube-using-the-template-files" title="Permanent link">&para;</a></h2>
+<p>Let's use the 'matmult' example, that we downloaded in the previous step, to illustrate how to make an MLCube. Matmul is a simple matrix multiply example written in Python with TensorFlow. 
+When you create an MLCube for your own model you will use your own code, data and dockerfile.</p>
+<div class="highlight"><pre><span></span><code>cd mlcube_examples
+# rename matmul reference implementaion from matmul to matmul_reference
+mv ./matmul ./matmul_reference
+# create a mlcube directory using mlcube template(note: do not use quotes in your input to cookiecutter): name = matmul, author = MLPerf Best Practices Working Group  
+cookiecutter https://github.com/mlcommons/mlcube_cookiecutter.git
+# copy the matmul.py,Dockerfile and requirements.txt to your mlcube_matmul/build directory
+cp -R  matmul_reference/build  matmul
+# copy input file for matmul to workspace directory
+cp -R  matmul_reference/workspace  matmul
+</code></pre></div>
+<p>Edit the template files </p>
+<p>Start by looking at the mlcube.yaml file that has been generated by cookiecutter. 
+<div class="highlight"><pre><span></span><code>cd ./matmul
+</code></pre></div></p>
+<p>Cookiecutter has modified the lines shown in <strong>bold</strong> in the mlcube.yaml file shown here:</p>
+<pre><code> 
+# This YAML file marks a directory to be an MLCube directory. When running MLCubes with runners, MLCube path is
+# specified using `--mlcube` runner command line argument.
+# The most important parameters that are defined here are (1) name, (2) author and (3) list of MLCube tasks.
+schema_version: 1.0.0
+schema_type: mlcube_root
+
+# MLCube name (string). Replace it with your MLCube name (e.g. "matmul" as shown here).
+name: <strong>matmul</strong>
+# MLCube author (string). Replace it with your MLBox name (e.g. "MLPerf Best Practices Working Group").
+author: <strong>MLPerf Best Practices Working Group</strong>
+
+version: 0.1.0
+mlcube_spec_version: 0.1.0
+
+# List of MLCube tasks supported by this MLBox (list of strings). Every task:
+#    - Has a unique name (e.g. "download").
+#    - Is defined in a YAML file in the `tasks` sub-folder (e.g. "tasks/download.yaml").
+#    - Task name is passed to an MLBox implementation file as the first argument (e.g. "python mnist.py download ...").
+# Every task is described by lists of input and output parameters. Every parameter is a file system path (directory or
+# file) characterized by two fields - name and value.
+# By default, if a file system path is a relative path (i.e. does not start with `/`), it is considered to be relative
+# to the `workspace` sub-folder.
+# Once all tasks are listed below, create a YAML file for each task in the 'tasks' sub-folder and change them
+# appropriately.
+# NEXT: study `tasks/task_name.yaml`, note: in the case of matmul we only need one task.
+tasks:
+<strong>  - tasks/matmul.yaml</strong>
+</code></pre>
+
+<p>Now we will look at file ./matmul/tasks/matmul.yaml.
+<div class="highlight"><pre><span></span><code>cd ./tasks
+</code></pre></div>
+Cookiecutter has modified the lines shown in <strong>bold</strong> in the matmul.yaml file shown here:</p>
+<pre><code> 
+# This YAML file defines the task that this MLCube supports. A task is a piece of functionality that MLCube can run. Task
+# examples are `download data`, `pre-process data`, `train a model`, `test a model` etc. MLCube runtime invokes MLCube
+# entry point and provides (1) task name as the first argument, (2) task input/output parameters (--name=value) in no
+# particular order. Inputs, outputs or both can be empty lists. For instance, when MLCube runtime runs an MLCube task:
+#            python my_mlcube_entry_script.py download --data_dir=DATA_DIR_PATH --log_dir=LOG_DIR_PATH
+#    - `download` is the task name.
+#    - `data_dir` is the output parameter with value equal to DATA_DIR_PATH.
+#    - `log_dir` is the output parameter with value equal to LOG_DIR_PATH.
+# This file only defines parameters, and does not provide parameter values. This is internal MLCube file and is not
+# exposed to users via command line interface.
+schema_version: 1.0.0
+schema_type: mlcube_task
+
+# List of input parameters (list of dictionaries).
+inputs:
+   <strong> - name: parameters_file
+      type: file</strong> 
+
+# List of output parameters (list of dictionaries). Every parameter is a dictionary with two mandatory fields - `name`
+# and `type`. The `name` must have value that can be used as a command line parameter name (--data_dir, --log_dir). The
+# `type` is a categorical parameter that can be either `directory` or `file`. Every intput/output parameter is always
+# a file system path.
+# Only parameters with their types are defined in this file. Run configurations defined in the `run` sub-folder
+# associate parameter names and their values. There can be multiple run configurations for one task. One example is
+# 1-GPU and 8-GPU training configuration for some `train` task.
+# NEXT: study `run/task_name.yaml`.
+outputs:
+   <strong> - name: output_file</strong> 
+      <strong>type: file</strong> 
+</code></pre>
+
+<p>Our input file shapes.yaml that we have copied previously into the mlcube workspace contains input parameters to set matrix 
+dimensions. We need to remove the automatically generated parameters file.
+<div class="highlight"><pre><span></span><code>rm ../workspace/parameters_file.yaml
+</code></pre></div></p>
+<p>Now we will edit file ./matmul/run/matmul.yaml. 
+<div class="highlight"><pre><span></span><code>cd ../run
+</code></pre></div></p>
+<p>The lines you need to edit are shown in <strong>bold</strong> in the matmul.yaml file shown here:  </p>
+<pre><code>
+# A run configuration assigns values to task parameters. Since there can be multiple run configurations for one
+# task (i.e., 1-GPU and 8-GPU training), run configuration files do not necessarily have to have the same name as their
+# tasks. Three sections need to be updated in this file - `task_name`, `input_binding` and `output_binding`.
+# Users use task configuration files to ask MLCube runtime run specific task using `--task` command line argument.
+schema_type: mlcube_invoke
+schema_version: 1.0.0
+
+# Name of a task.
+# task_name: task_name
+task_name: matmul
+
+# Dictionary of input bindings (dictionary mapping strings to strings). Parameters must correspond to those in task
+# file (`inputs` section). If not parameters are provided, the binding section must be an empty dictionary.
+input_binding:
+        <strong>parameters_file: $WORKSPACE/shapes.yaml</strong> 
+
+# Dictionary of output bindings (dictionary mapping strings to strings). Parameters must correspond to those in task
+# file (`outputs` section). Every parameter is a file system path (directory or a file name). Paths can be absolute
+# (starting with `/`) or relative. Relative paths are assumed to be relative to MLCube `workspace` directory.
+# Alternatively, a special variable `$WORKSPACE` can be used to explicitly refer to the MLCube `workspace` directory.
+# MLCube root directory (`--mlcube`) and run configuration file (`--task`) define MLCube task to run. One step left is
+# to specify where MLCube runs - on a local machine, remote machine in the cloud etc. This is done by providing platform
+# configuration files located in the MLCube `platforms` sub-folder.
+# NEXT: study `platforms/docker.yaml`.
+output_binding:
+        <strong>output_file: $WORKSPACE/matmul_output.txt</strong> 
+
+</code></pre>
+
+<p>Now we will edit file ./matmul/platforms/docker.yaml </p>
+<p><div class="highlight"><pre><span></span><code>cd ../platforms
+</code></pre></div>
+Edit the docker image name in docker.yaml.  Change "image: "mlcube/matmul:0.0.1" to "mlcommons/matmul:v1.0"</p>
+<pre><code> 
+# Platform configuration files define where and how runners run MLCubes. This configuration file defines a Docker
+# runtime for MLCubes. One field need to be updated here - `container.image`. This platform file defines local docker
+# execution environment.
+# MLCube Docker runner uses image name to either `pull` or `build` a docker image. The rule is the following:
+#   - If the following file exists (`build/Dockerfile`), Docker image will be built.
+#   - Else, docker runner will pull a docker image with the specified name.
+# Users provide platform files using `--platform` command line argument.
+schema_type: mlcube_platform
+schema_version: 0.1.0
+
+platform:
+  name: "docker"
+  version: ">=18.01"
+container:   
+<strong>   image: "mlcommons/matmul:v1.0"</strong> 
+</code></pre>
+
+<h2 id="step-3-define-a-container-for-your-model-with-a-dockerfile">Step 3. DEFINE A CONTAINER FOR YOUR MODEL WITH A DOCKERFILE<a class="headerlink" href="#step-3-define-a-container-for-your-model-with-a-dockerfile" title="Permanent link">&para;</a></h2>
+<p>You will need a docker image to create an MLCube.  We will use the Dockerfile for 'matmul' to create a docker container image: <br />
+<sub><sup><span style="color:blue">Note: the last line of the Dockerfile must be  <br />
+"ENTRYPOINT ["python3", "/workspace/your_mlcube_name.py"]" as shown below.</span></sup></sub> </p>
+<p>Now we will edit the my_mlcube/build/Dockerfile
+<div class="highlight"><pre><span></span><code>cd ../build 
+</code></pre></div></p>
+<pre><code> 
+# Sample Dockerfile for matmul (Matrix Multiply)
+FROM ubuntu:18.04
+MAINTAINER MLPerf MLBox Working Group
+
+WORKDIR /workspace
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+            software-properties-common \
+            python3-dev \
+            curl && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -fSsL -O https://bootstrap.pypa.io/get-pip.py && \
+    python3 get-pip.py && \
+    rm get-pip.py
+
+COPY requirements.txt /requirements.txt
+RUN pip3 install --no-cache-dir -r /requirements.txt
+
+<strong>COPY matmul.py /workspace/matmul.py</strong>
+
+<strong>ENTRYPOINT ["python3", "/workspace/matmul.py"]</strong>
+</code></pre>
+
+<h2 id="step-4-build-the-docker-image">Step 4: BUILD THE DOCKER IMAGE<a class="headerlink" href="#step-4-build-the-docker-image" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>cd ..
+mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
+</code></pre></div>
+<h2 id="step-5-test-your-mlcube">Step 5: TEST YOUR MLCUBE<a class="headerlink" href="#step-5-test-your-mlcube" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code>mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/matmul.yaml
+ls ./workspace
+cat ./workspace/matmul_output.txt
+</code></pre></div>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid" aria-label="Footer">
+        
+          <a href="../../getting-started/mnist/" class="md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+            </div>
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                MNIST
+              </div>
+            </div>
+          </a>
+        
+        
+          <a href="../../runners/" class="md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-footer-nav__title">
+              <div class="md-ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Runners
+              </div>
+            </div>
+            <div class="md-footer-nav__button md-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../../assets/javascripts/vendor.fd16492e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
+      
+      <script>
+        app = initialize({
+          base: "../..",
+          features: [],
+          search: Object.assign({
+            worker: "../../assets/javascripts/worker/search.4ac00218.min.js"
+          }, typeof search !== "undefined" && search)
+        })
+      </script>
+      
+    
+  </body>
+</html>
