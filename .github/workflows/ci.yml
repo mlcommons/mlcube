@@ -68,7 +68,8 @@ jobs:
       - name: Install MLCube GCP Runner
         run: |
           cd runners/mlcube_gcp
-          python setup.py install
+          pip install -r requirements.txt
+          python setup.py sdist bdist_wheel
       - name: Test MLCube GCP CLI
         run: |
           cd runners/mlcube_gcp
