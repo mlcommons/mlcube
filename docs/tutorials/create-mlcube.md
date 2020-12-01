@@ -19,7 +19,7 @@ When you create an MLCube for your own model you will use your own code, data an
 cd mlcube_examples
 # rename matmul reference implementaion from matmul to matmul_reference
 mv ./matmul ./matmul_reference
-# create a mlcube directory using mlcube template: name = "matmul", author = "MLPerf Best Practices Working Group"
+# create a mlcube directory using mlcube template(note: do not use quotes in your input to cookiecutter): name = matmul, author = MLPerf Best Practices Working Group  
 cookiecutter https://github.com/mlcommons/mlcube_cookiecutter.git
 # copy the matmul.py,Dockerfile and requirements.txt to your mlcube_matmul/build directory
 cp -R  matmul_reference/build  matmul
