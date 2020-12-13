@@ -1,5 +1,5 @@
 # Hello World
-Hello World MLCube is an example of a docker-based cube.  
+Hello World MLCube is an example of a Docker-based cube.  
 
 
 ## QuickStart
@@ -44,8 +44,8 @@ newgrp docker                    # Either do a `newgrp docker` or log out/in to 
 ## Configuring Hello World MLCube
 Cubes need to be configured before they can run. To do so, users need to run a MLCube runner with `configure` 
 command providing path to a cube root directory and path to a platform configuration file. The Hello World cube is a 
-docker-based cube, so users provide path to a MLCube Docker platform configuration file that sets a number of
-parameters, including docker image name:
+Docker-based cube, so users provide path to a MLCube Docker platform configuration file that sets a number of
+parameters, including Docker image name:
 ```
 mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 ```
