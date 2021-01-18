@@ -22,13 +22,11 @@ jobs:
           python -m pip install --upgrade pip
       - name: Install MLCube
         run: |
-          cd mlcube
           pip install -r requirements.txt
           python setup.py sdist bdist_wheel
           pip install dist/mlcube*.whl
       - name: Test MLCube CLI
         run: |
-          cd mlcube
           pytest
       - name: Install MLCube Docker Runner
         run: |
