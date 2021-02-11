@@ -22,7 +22,6 @@ jobs:
         pip install setuptools wheel twine
     - name: Build distribution
       run: |
-        cd mlcube
         python setup.py sdist bdist_wheel
     - name: Publish
       uses: pypa/gh-action-pypi-publish@master
@@ -31,7 +30,7 @@ jobs:
         verify_metadata: true
         skip_existing: true
         password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: mlcube/dist/
+        packages_dir: dist/
         repository_url: https://upload.pypi.org/legacy/
         verbose: true
       env:
