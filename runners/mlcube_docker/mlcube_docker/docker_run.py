@@ -24,6 +24,11 @@ class DockerRun(object):
                 env_vars[proxy_var] = os.environ[proxy_var]
         return env_vars
 
+    @staticmethod
+    def get_string_value(value: typing.Optional[typing.Any], default_value: str) -> str:
+        value = str(value).strip() if value is not None else ""
+        return value or default_value
+
     def image_exists(self, image_name: str) -> bool:
         """Check if docker image exists.
         Args:
@@ -41,11 +46,14 @@ class DockerRun(object):
         # Dockerfiles are built taking into account that {mlcube.root}/build is the context (build) directory.
         build_path: str = self.mlcube.build_path
         docker_file: str = os.path.join(build_path, 'Dockerfile')
+
+        cmd: str = DockerRun.get_string_value(self.mlcube.platform.container.command, "docker")
         if not os.path.exists(docker_file):
-            cmd: str = f"docker pull {image_name}"
+            cmd = f"{cmd} pull {image_name}"
         else:
             env_args = ' '.join([f"--build-arg {var}={name}" for var, name in DockerRun.get_env_variables().items()])
-            cmd: str = f"docker build {env_args} -t {image_name} -f {docker_file} {build_path}"
+            cmd = f"{cmd} build {env_args} -t {image_name} -f {docker_file} {build_path}"
+
         logger.info(cmd)
         self._run_or_die(cmd)
 
@@ -61,13 +69,20 @@ class DockerRun(object):
         print(f"mounts={mounts}, args={args}")
 
         volumes_str = ' '.join(['--volume {}:{}'.format(t[0], t[1]) for t in mounts.items()])
-        runtime: str = self.mlcube.platform.container.runtime
-        runtime_arg = "--runtime=" + runtime if runtime is not None else ""
         env_args = ' '.join([f"-e {var}={name}" for var, name in DockerRun.get_env_variables().items()])
+        run_args: str = DockerRun.get_string_value(self.mlcube.platform.container.run_args, "")
+
+        runtime = DockerRun.get_string_value(self.mlcube.platform.container.runtime, "")
+        if runtime != "":
+            logger.warning(f"The 'runtime' parameter is deprecated. Please, use: 'run_args: --runtime={runtime}'")
+            exit(1)
 
         # Let's assume singularity containers provide entry point in the right way.
         args = ' '.join(args)
-        cmd = f"docker run --rm {runtime_arg} --net=host --privileged=true {volumes_str} {env_args} {image_name} {args}"
+
+        cmd: str = DockerRun.get_string_value(self.mlcube.platform.container.command, "docker")
+        cmd = f"{cmd} run {run_args} {env_args} {volumes_str} {image_name} {args}"
+
         logger.info(cmd)
         self._run_or_die(cmd)
 
@@ -78,7 +93,6 @@ class DockerRun(object):
             # name: parameter name, path: parameter value
             for name, path in binding_.items():
                 path = path.replace('$WORKSPACE', self.mlcube.workspace_path)
-
                 path_type = input_specs_[name]
                 if path_type == 'directory':
                     os.makedirs(path, exist_ok=True)
