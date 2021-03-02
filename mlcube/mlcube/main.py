@@ -1,42 +1,75 @@
-import sys
-from time import sleep
-from pathlib import Path
-import pprint
-import logging
-
+import os
 import click
-from halo import Halo
+import logging
 import coloredlogs
-
+from halo import Halo
+from pathlib import Path
+from typing import Optional
 from mlcube.check import check_root_dir
+from mlcube.common.mlcube_metadata import MLCubeFS
 
-@click.group(name='mlcube')
-@click.option('--log-level', default="DEBUG", help="Log level for the app.")
+
+logger = logging.getLogger(__name__)
+
+
+@click.group(name='mlcube', help="MLCube 📦 is a packaging tool for ML models")
+@click.option('--log-level', default="INFO", help="Log level for the app.")
 def cli(log_level: str):
-    """
-    MLCube 📦 is a packaging tool for ML models
-    """
-    logger = logging.getLogger(__name__)
     click.echo(f"Log level is set to - {log_level}")
     coloredlogs.install(level=log_level)
 
-@cli.command()
-@click.argument('path_to_mlcube')
-@Halo(text="", spinner="dots")
-def verify(path_to_mlcube: str):
-    """
-    Verify MLCube metadata
-    """
-    logging.info("Starting mlcube metadata verification")
-    metadata, verify_err = check_root_dir(
-    Path(path_to_mlcube).resolve().as_posix())
 
+@cli.command(name='verify', help='Verify MLCube metadata.')
+@click.option('--mlcube', required=True, type=str, help='MLCube path.')
+@Halo(text="", spinner="dots")
+def verify(mlcube: str):
+    logging.info("Starting mlcube metadata verification")
+    metadata, verify_err = check_root_dir(Path(mlcube).resolve().as_posix())
     if verify_err:
         logging.error(f"Error verifying mlcube metadata: {verify_err}")
         logging.error(f"mlcube verification - FAILED!")
         raise click.Abort()
-
     logging.info('OK - VERIFIED')
+
+
+@cli.command(name='pull', help='Pull MLCube from some remote location.')
+@click.option('--mlcube', required=True, type=str, help='Location of a remote MLCube.')
+@click.option('--branch', required=False, type=str, help='Branch name if URL is a GitHub url.')
+def pull(mlcube: str, branch: Optional[str]) -> None:
+    if not mlcube.startswith('https://github.com'):
+        raise RuntimeError(f"Unsupported URL")
+
+    branch = f"--branch {branch}" if branch else ""
+    os.system(f"git clone {branch} {mlcube}")
+
+
+@cli.command(name='describe', help='Describe this MLCube.')
+@click.option('--mlcube', required=False, type=str, help='MLCube location.')
+def describe(mlcube: Optional[str]) -> None:
+    MLCubeFS(mlcube).describe()
+
+
+@cli.command(name='configure', help='Configure environment for MLCube ML workload.')
+@click.option('--mlcube', required=False, type=str, help='Path to MLCube directory.')
+@click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
+def configure(mlcube: Optional[str], platform: Optional[str]):
+    mlcube_fs = MLCubeFS(mlcube)
+    platform_path = mlcube_fs.get_platform_path(platform)
+    runner = mlcube_fs.get_platform_runner(platform_path)
+    os.system(f"{runner} configure --mlcube={mlcube_fs.root} --platform={platform_path}")
+
+
+@cli.command(name='run', help='Run MLCube ML workload.')
+@click.option('--mlcube', required=False, type=str, help='Path to MLCube directory.')
+@click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
+@click.option('--task', required=False, type=str, help='Path to MLCube Task definition file.')
+def run(mlcube: Optional[str], platform: Optional[str], task: Optional[str]):
+    mlcube_fs = MLCubeFS(mlcube)
+    platform_path = mlcube_fs.get_platform_path(platform)
+    task_path = mlcube_fs.get_task_instance_path(task)
+    runner = mlcube_fs.get_platform_runner(platform_path)
+    os.system(f"{runner} run --mlcube={mlcube_fs.root} --platform={platform_path} --task={task_path}")
+
 
 if __name__ == "__main__":
     cli()
