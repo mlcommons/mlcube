@@ -9,4 +9,4 @@ def test_mlcube():
     print(response.output)
     assert 'Usage: mlcube [OPTIONS] COMMAND [ARGS]...' in response.output
     assert 'MLCube 📦 is a packaging tool for ML models' in response.output
-    assert 'verify  Verify MLCube metadata' in response.output
+    assert 'Verify MLCube metadata' in response.output
