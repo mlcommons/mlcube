@@ -1,10 +1,9 @@
 import os
-import textwrap
-
 import yaml
+import textwrap
 from pathlib import Path
 from mlspeclib import MLObject
-from typing import (Any, Optional)
+from typing import (Any, Optional, Union)
 
 
 class MLCubeInvoke(object):
@@ -198,3 +197,87 @@ class MLCubeFS(object):
         print("  Run MLCube tasks:")
         for task in self.tasks:
             print(f"    mlcube run --mlcube={self.root} --task={task.name[0:-5]} --platform={platforms}")
+
+
+class CompactMLCube(object):
+    def __init__(self, path: Optional[Union[str, MLCubeFS]]) -> None:
+        if path is None or isinstance(path, str):
+            self.mlcube_fs = MLCubeFS(path)
+        elif isinstance(path, MLCubeFS):
+            self.mlcube_fs = path
+        else:
+            raise ValueError(f"Invalid parameter: {path}")
+
+    def unpack(self) -> 'CompactMLCube':
+        # Compact MLCube exists if the root MLCube folder contains ".mlcube.yaml" file.
+        if not self.mlcube_fs.compact_mlcube_file.exists():
+            return
+
+        # The code below "unpacks" compact MLCube by creating standard mlcube/task/run files if they do not exist.
+        os.makedirs(self.mlcube_fs.root / 'tasks', exist_ok=True)
+        os.makedirs(self.mlcube_fs.root / 'run', exist_ok=True)
+
+        compact_mlcube: dict = yaml.safe_load(open(self.mlcube_fs.compact_mlcube_file, 'r'))
+        self.create_mlcube_file(compact_mlcube)
+        self.create_task_files(compact_mlcube)
+        # Reload if task/run files have been created.
+        self.mlcube_fs = MLCubeFS(self.mlcube_fs.root)
+
+        return self
+
+    def create_mlcube_file(self, compact_mlcube: dict) -> None:
+        if self.mlcube_fs.mlcube_file.exists():
+            return
+
+        task_names = compact_mlcube['tasks'].keys()
+        mlcube = {
+            'schema_version': '1.0.0', 'schema_type': 'mlcube_root',
+            'name': compact_mlcube.get('name', 'MLCube name'),
+            'author': compact_mlcube.get('author', 'MLCube authors'), 'version': '0.1.0',
+            'mlcube_spec_version': '0.1.0',
+            'tasks': [f'tasks/{task_name}.yaml' for task_name in task_names]
+        }
+        yaml.safe_dump(mlcube, open(self.mlcube_fs.mlcube_file, 'w'))
+
+    def create_task_files(self, compact_mlcube: dict) -> None:
+        task_names = compact_mlcube['tasks'].keys()
+
+        def _get_params(_params, _type):
+            return [{'name': p['name'], 'type': p['type'], 'description': p.get('description', '')}
+                    for p in _params if p['io'] == _type]
+
+        for task_name in task_names:
+            compact_task = compact_mlcube['tasks'][task_name]
+
+            task = {
+                'schema_version': '1.0.0',
+                'schema_type': 'mlcube_task',
+                'inputs': _get_params(compact_task['parameters'], 'input'),
+                'outputs': _get_params(compact_task['parameters'], 'output')
+            }
+            task_file = self.mlcube_fs.root / 'tasks' / f'{task_name}.yaml'
+            if not task_file.exists():
+                yaml.safe_dump(task, open(task_file, 'w'))
+
+            """
+            input_binding: {}
+
+            output_binding:
+              cache_dir: $WORKSPACE/cache
+              data_dir: $WORKSPACE/data
+
+            {cache_dir: $WORKSPACE/cache, data_dir: $WORKSPACE/data}
+            """
+            inputs = [p['name'] for p in task['inputs']]
+            outputs = [p['name'] for p in task['outputs']]
+            for run_name, run_bindings in compact_task['tasks'].items():
+                run = {
+                    'schema_type': 'mlcube_invoke',
+                    'schema_version': '1.0.0',
+                    'task_name': task_name,
+                    'input_binding': {k: v for k, v in run_bindings.items() if k in inputs},
+                    'output_binding': {k: v for k, v in run_bindings.items() if k in outputs}
+                }
+                run_file = self.mlcube_fs.root / 'run' / f'{run_name}.yaml'
+                if not run_file.exists():
+                    yaml.safe_dump(run, open(run_file, 'w'))

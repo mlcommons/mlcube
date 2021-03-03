@@ -6,7 +6,7 @@ from halo import Halo
 from pathlib import Path
 from typing import Optional
 from mlcube.check import check_root_dir
-from mlcube.common.mlcube_metadata import MLCubeFS
+from mlcube.common.mlcube_metadata import (MLCubeFS, CompactMLCube)
 
 
 logger = logging.getLogger(__name__)
@@ -20,11 +20,12 @@ def cli(log_level: str):
 
 
 @cli.command(name='verify', help='Verify MLCube metadata.')
-@click.option('--mlcube', required=True, type=str, help='MLCube path.')
+@click.option('--mlcube', required=False, type=str, help='MLCube path.')
 @Halo(text="", spinner="dots")
-def verify(mlcube: str):
+def verify(mlcube: Optional[str]) -> None:
     logging.info("Starting mlcube metadata verification")
-    metadata, verify_err = check_root_dir(Path(mlcube).resolve().as_posix())
+    mlcube_path = CompactMLCube(mlcube).unpack().mlcube_fs.root
+    metadata, verify_err = check_root_dir(mlcube_path)
     if verify_err:
         logging.error(f"Error verifying mlcube metadata: {verify_err}")
         logging.error(f"mlcube verification - FAILED!")
@@ -46,14 +47,14 @@ def pull(mlcube: str, branch: Optional[str]) -> None:
 @cli.command(name='describe', help='Describe this MLCube.')
 @click.option('--mlcube', required=False, type=str, help='MLCube location.')
 def describe(mlcube: Optional[str]) -> None:
-    MLCubeFS(mlcube).describe()
+    CompactMLCube(mlcube).unpack().mlcube_fs.describe()
 
 
 @cli.command(name='configure', help='Configure environment for MLCube ML workload.')
 @click.option('--mlcube', required=False, type=str, help='Path to MLCube directory.')
 @click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
 def configure(mlcube: Optional[str], platform: Optional[str]):
-    mlcube_fs = MLCubeFS(mlcube)
+    mlcube_fs = CompactMLCube(mlcube).unpack().mlcube_fs
     platform_path = mlcube_fs.get_platform_path(platform)
     runner = mlcube_fs.get_platform_runner(platform_path)
     os.system(f"{runner} configure --mlcube={mlcube_fs.root} --platform={platform_path}")
@@ -64,7 +65,7 @@ def configure(mlcube: Optional[str], platform: Optional[str]):
 @click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
 @click.option('--task', required=False, type=str, help='Path to MLCube Task definition file.')
 def run(mlcube: Optional[str], platform: Optional[str], task: Optional[str]):
-    mlcube_fs = MLCubeFS(mlcube)
+    mlcube_fs = CompactMLCube(mlcube).unpack().mlcube_fs
     platform_path = mlcube_fs.get_platform_path(platform)
     task_path = mlcube_fs.get_task_instance_path(task)
     runner = mlcube_fs.get_platform_runner(platform_path)
