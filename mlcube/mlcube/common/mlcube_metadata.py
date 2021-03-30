@@ -1,9 +1,10 @@
 import os
 import yaml
 import textwrap
+import argparse
 from pathlib import Path
 from mlspeclib import MLObject
-from typing import (Any, Optional, Union)
+from typing import (Any, Optional, Union, List)
 
 
 class MLCubeInvoke(object):
@@ -80,6 +81,37 @@ class MLCube(object):
     def __str__(self) -> str:
         return f"MLCube(root={self.root}, name={self.name}, version={self.version}, task={self.task}, "\
                f"invoke={self.invoke}, platform={self.platform})"
+
+    def override_invoke_args(self, args: Optional[List[str]]) -> None:
+        """ Override invoke parameters using user-provided values.
+        A common example to run MLCube tasks is the following:
+            $ mlcube run --mlcube=. --platform=platforms/docker.yaml --task=run/download.yaml
+        Users can override task parameters (declared in task/download.yaml and defined in run/download.yaml):
+            $ mlcube run --mlcube=. --platform=platforms/docker.yaml --task=run/download.yaml --data_dir=/MY/DATA/PATH
+
+        This method modifies MLCube's `invoke` object. Corresponding yaml file remains unchanged.
+
+        Args:
+             args (Optional[List[str]]): List of user arguments. The`ArgParse.parse_args` method must be able to parse
+                 it.
+        """
+        if None in (args, self.task, self.invoke) or len(args) == 0:
+            return
+
+        parser = argparse.ArgumentParser()
+        for input_arg in self.task.inputs.keys():
+            parser.add_argument(f'--{input_arg}', type=str, default=None)
+        for output_arg in self.task.outputs.keys():
+            parser.add_argument(f'--{output_arg}', type=str, default=None)
+
+        parsed_args: dict = vars(parser.parse_args(args))
+        for arg_name, arg_value in parsed_args.items():
+            if arg_value is None:
+                continue
+            if arg_name in self.task.inputs:
+                self.invoke.input_binding[arg_name] = arg_value
+            elif arg_name in self.task.outputs:
+                self.invoke.output_binding[arg_name] = arg_value
 
 
 class MLCubeFS(object):
