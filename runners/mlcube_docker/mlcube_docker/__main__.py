@@ -29,16 +29,18 @@ def configure(mlcube: str, platform: str):
     runner.configure()
 
 
-@cli.command(name='run', help='Run MLCube ML workload in the docker environment.')
+@cli.command(name='run', help='Run MLCube ML workload in the docker environment.',
+             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
 @click.option('--mlcube', required=True, type=click.Path(exists=True), help='Path to MLCube directory.')
 @click.option('--platform', required=True, type=click.Path(exists=True), help='Path to MLCube Platform definition file.')
 @click.option('--task', required=True, type=click.Path(exists=True), help='Path to MLCube Task definition file.')
-def run(mlcube: str, platform: str, task: str):
+@click.pass_context
+def run(ctx, mlcube: str, platform: str, task: str):
     mlcube: mlcube_metadata.MLCube = mlcube_metadata.MLCube(path=mlcube)
-    mlcube.platform = objects.load_object_from_file(
-            file_path=platform, obj_class=platform_config.PlatformConfig)
+    mlcube.platform = objects.load_object_from_file(file_path=platform, obj_class=platform_config.PlatformConfig)
     mlcube.invoke = mlcube_metadata.MLCubeInvoke(task)
     mlcube.task = mlcube_metadata.MLCubeTask(os.path.join(mlcube.tasks_path, f'{mlcube.invoke.task_name}.yaml'))
+    mlcube.override_invoke_args(ctx.args)
     print(mlcube)
 
     runner = DockerRun(mlcube)

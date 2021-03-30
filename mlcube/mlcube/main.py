@@ -60,16 +60,19 @@ def configure(mlcube: Optional[str], platform: Optional[str]):
     os.system(f"{runner} configure --mlcube={mlcube_fs.root} --platform={platform_path}")
 
 
-@cli.command(name='run', help='Run MLCube ML workload.')
+@cli.command(name='run', help='Run MLCube ML workload.',
+             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
 @click.option('--mlcube', required=False, type=str, help='Path to MLCube directory.')
 @click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
 @click.option('--task', required=False, type=str, help='Path to MLCube Task definition file.')
-def run(mlcube: Optional[str], platform: Optional[str], task: Optional[str]):
+@click.pass_context
+def run(ctx, mlcube: Optional[str], platform: Optional[str], task: Optional[str]):
     mlcube_fs = CompactMLCube(mlcube).unpack().mlcube_fs
     platform_path = mlcube_fs.get_platform_path(platform)
     task_path = mlcube_fs.get_task_instance_path(task)
     runner = mlcube_fs.get_platform_runner(platform_path)
-    os.system(f"{runner} run --mlcube={mlcube_fs.root} --platform={platform_path} --task={task_path}")
+    os.system(f"{runner} run --mlcube={mlcube_fs.root} --platform={platform_path} --task={task_path} "
+              f"{' '.join(ctx.args)}")
 
 
 if __name__ == "__main__":
