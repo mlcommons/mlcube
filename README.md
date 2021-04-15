@@ -27,7 +27,7 @@ pip uninstall mlcube
 Check out the [examples](https://github.com/mlcommons/mlcube_examples) for detailed examples and [MLCube™ wiki](https://mlcommons.github.io/mlcube).
 
 ## License
-[MLCube](https://github.com/mlcommons/mlcube/) is licensed under the Apache License 2.0. 
+[MLCube™](https://github.com/mlcommons/mlcube/) is licensed under the Apache License 2.0. 
 
 See [LICENSE](https://github.com/mlcommons/mlcube/blob/master/LICENSE) for more information.
 
