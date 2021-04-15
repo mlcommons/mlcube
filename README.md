@@ -8,7 +8,7 @@ MLCube™ isn’t a new framework or service; MLCube™ is a consistent interfac
 
 *Note: This project is still in the very early stages and under active development, some parts may have unexpected/inconsistent behaviours.*
 
-## Installing MLCube
+## Installing MLCube™
 
 Install from PyPI:  
 ```sh
