@@ -36,7 +36,8 @@ class DockerRun(object):
         Returns:
             True if image exists, else false.
         """
-        return self._run_or_die(f"docker inspect --type=image {image_name} > /dev/null 2>&1", die_on_error=False) == 0
+        cmd: str = DockerRun.get_string_value(self.mlcube.platform.container.command, "docker")
+        return self._run_or_die(f"{cmd} inspect --type=image {image_name} > /dev/null 2>&1", die_on_error=False) == 0
 
     def configure(self):
         """Build Docker Image on a current host."""
