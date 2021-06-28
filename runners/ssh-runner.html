@@ -13,19 +13,19 @@
         <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
       
       
-      <link rel="shortcut icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-7.0.3">
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
     
     
       
-        <title>Docker Runner - MLCube</title>
+        <title>SSH Runner - MLCube</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.1655a90d.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ca7ac06f.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.7fa14f5b.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
         
       
     
@@ -40,10 +40,12 @@
     
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
+      <link rel="stylesheet" href="../assets/stylesheets/circular.css">
     
     
       
+
+
     
     
   </head>
@@ -55,8 +57,9 @@
     
     
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
-      
   
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -64,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#docker-runner" class="md-skip">
+        <a href="#ssh-runner" class="md-skip">
           Skip to content
         </a>
       
@@ -73,11 +76,9 @@
       
     </div>
     
-      
-
-<header class="md-header" data-md-component="header">
+      <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="MLCube" class="md-header__button md-logo" aria-label="MLCube">
+    <a href="../index.html" title="MLCube" class="md-header__button md-logo" aria-label="MLCube" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -96,15 +97,14 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Docker Runner
+              SSH Runner
             
           </span>
         </div>
       </div>
     </div>
-    <div class="md-header__options">
-      
-    </div>
+    
+    
     
       <label class="md-header__button md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
@@ -120,7 +120,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
       </label>
       <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
       </button>
     </form>
     <div class="md-search__output">
@@ -156,11 +156,9 @@
                     
 
 
-
-
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube">
+    <a href="../index.html" title="MLCube" class="md-nav__button md-logo" aria-label="MLCube" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -179,7 +177,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../index.html" class="md-nav__link">
         Home
       </a>
     </li>
@@ -215,7 +213,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/" class="md-nav__link">
+      <a href="../getting-started/index.html" class="md-nav__link">
         Installation
       </a>
     </li>
@@ -227,7 +225,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/hello-world/" class="md-nav__link">
+      <a href="../getting-started/hello-world.html" class="md-nav__link">
         Hello World
       </a>
     </li>
@@ -239,7 +237,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../getting-started/mnist/" class="md-nav__link">
+      <a href="../getting-started/mnist.html" class="md-nav__link">
         MNIST
       </a>
     </li>
@@ -281,7 +279,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/create-mlcube/" class="md-nav__link">
+      <a href="../tutorials/create-mlcube.html" class="md-nav__link">
         How to Create an MLCube
       </a>
     </li>
@@ -325,8 +323,32 @@
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="index.html" class="md-nav__link">
         Runners
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="docker-runner.html" class="md-nav__link">
+        Docker Runner
+      </a>
+    </li>
+  
+
+          
+            
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="singularity-runner.html" class="md-nav__link">
+        Singularity Runner
       </a>
     </li>
   
@@ -342,20 +364,22 @@
       
       <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
       
+      
         
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
-          Docker Runner
+          SSH Runner
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="./" class="md-nav__link md-nav__link--active">
-        Docker Runner
+      <a href="ssh-runner.html" class="md-nav__link md-nav__link--active">
+        SSH Runner
       </a>
       
         
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
   
   
     
@@ -375,22 +399,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#additional-configuration" class="md-nav__link">
-    Additional configuration
+  <a href="#configure-command" class="md-nav__link">
+    Configure command
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
+  <a href="#run-command" class="md-nav__link">
+    Run command
   </a>
   
 </li>
@@ -408,31 +425,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../singularity-runner/" class="md-nav__link">
-        Singularity Runner
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../ssh-runner/" class="md-nav__link">
-        SSH Runner
-      </a>
-    </li>
-  
-
-          
-            
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../kubernetes/" class="md-nav__link">
+      <a href="kubernetes.html" class="md-nav__link">
         Kubernetes Runner
       </a>
     </li>
@@ -444,7 +437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../gcp-runner/" class="md-nav__link">
+      <a href="gcp-runner.html" class="md-nav__link">
         GCP Runner
       </a>
     </li>
@@ -472,6 +465,7 @@
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
+  
     
   
   
@@ -489,22 +483,15 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#additional-configuration" class="md-nav__link">
-    Additional configuration
+  <a href="#configure-command" class="md-nav__link">
+    Configure command
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
+  <a href="#run-command" class="md-nav__link">
+    Run command
   </a>
   
 </li>
@@ -522,57 +509,77 @@
               
                 
                 
-                <h1 id="docker-runner">Docker Runner<a class="headerlink" href="#docker-runner" title="Permanent link">&para;</a></h1>
-<p>Docker runner uses docker/nvidia-docker to run MLCube cubes. It supports two mandatory commands - <code>configure</code> and
-<code>run</code> with standard arguments - <code>mlcube</code>, <code>platform</code> and <code>task</code>. Docker platform configuration is used to configure
-docker runner.</p>
-<h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
-<p>Docker platform configuration file is a YAML file that follows <code>mlcube_docker</code> ML schema. The configuration file for the
-reference MNIST cube is the following:
-<div class="highlight"><pre><span></span><code><span class="nt">schema_version</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">1.0.0</span>
-<span class="nt">schema_type</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span>
-
-<span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons/mlcube:mnist</span>   <span class="c1"># Docker image name</span>
-<span class="nt">docker_runtime</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>      <span class="c1"># Docker executable: docker or nvidia-docker</span>
-</code></pre></div></p>
-<h2 id="additional-configuration">Additional configuration<a class="headerlink" href="#additional-configuration" title="Permanent link">&para;</a></h2>
-<p>In current implementation, Docker runner uses <code>http_proxy</code> and <code>https_proxy</code> environmental variables (if set) during
-configure and run phases:<br />
-- <strong>configure</strong>: <code>docker build ... --build-args http_proxy=${http_proxy} --build-args https_proxy=${https_proxy} ...</code><br />
-- <strong>run</strong>: <code>docker run ... -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ...</code>  </p>
-<h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
-<p>Docker runner uses <code>{MLCUBE_ROOT}/build</code> directory as the build context directory. This implies that all files
-that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
-resource files, ML models etc. The docker recipe must have the standard name <code>Dockerfile</code>.</p>
-<p>If <code>Dockerfile</code> file exists in <code>{MLCUBE_ROOT}/build</code>, the Docker runner assumes that it needs to <code>build</code> a docker
-image. If that file does not exists, the Docker runner will try to <code>pull</code> image with the specified name.</p>
-<p>Docker runner under the hood runs the following command line:<br />
-<div class="highlight"><pre><span></span><code>cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile .
-</code></pre></div>
-where:<br />
-- <code>{build_path}</code> is <code>{MLCUBE_ROOT}/build</code> root directory.<br />
-- <code>{env_args}</code> is the arguments retrieved from user environment. Currently, only <code>http_proxy</code> and <code>https_proxy</code> are
-  supported.<br />
--  <code>{image_name}</code> is the image name defined in the platform configuration file.  </p>
+                <h1 id="ssh-runner">SSH Runner<a class="headerlink" href="#ssh-runner" title="Permanent link">&para;</a></h1>
+<p>SSH runner uses other runners to run MLCube cubes on remote hosts. It uses <code>ssh</code> and <code>rsync</code> internally. It
+supports two mandatory commands - <code>configure</code> and <code>run</code> with standard arguments - <code>mlcube</code>, <code>platform</code> and <code>task</code>. SSH
+platform configuration is used to configure SSH runner.</p>
 <blockquote>
-<p>The <code>configure</code> command is optional and users do not necessarily need to be aware about it. The Docker runner
-auto-detects if docker image exists before running a task, and if it does not exist, the docker runner runs the 
-<code>configure</code> command. During the <code>configure</code> phase, docker runner does not check if docker image exists. This means the
-following. If some of the implementation files have been modified, to rebuild the docker image users need to run
-the <code>configure</code> command explicitly.</p>
+<p>This runner is being actively developed and not all features described on this page may be supported.</p>
 </blockquote>
-<h2 id="running-mlcubes">Running MLCubes<a class="headerlink" href="#running-mlcubes" title="Permanent link">&para;</a></h2>
-<p>Docker runner runs the following command:  <br />
-<div class="highlight"><pre><span></span><code>{docker_runtime} run --rm --net=host --privileged=true {volumes} {env_args} {image_name} {args}
-</code></pre></div>
-where:  <br />
-- <code>{docker_exec}</code> is the docker_runtime value from the Docker platform configuration file.<br />
-- <code>{volumes}</code> are the mount points that the runner automatically constructs based upon the task input/output
-  specifications.<br />
-- <code>{env_args}</code> is the arguments retrieved from user environment, currently, only <code>http_proxy</code> and <code>https_proxy</code> are
-  supported.<br />
-- <code>{image_name}</code> is the image name from the platform configuration file.<br />
-- <code>{args}</code> is the task command line arguments, constructed automatically by the runner.  </p>
+<h2 id="platform-configuration-file">Platform Configuration File<a class="headerlink" href="#platform-configuration-file" title="Permanent link">&para;</a></h2>
+<p>SSH platform configuration file is a YAML file. The configuration file for the reference MNIST cube is the following:
+<div class="highlight"><pre><span></span><code><span class="c1"># Possible values are hostname or IP address. It can also be a host alias if there is a corresponding section</span>
+<span class="c1"># exists in ~/.ssh/config. The hostname should be possible to use with tools like ssh, rsync and scp.</span>
+<span class="nt">host</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">REMOTE_HOST</span>
+
+
+<span class="c1"># Authentication section is optional, and can be null, empty or non-empty dictionary. If value is null or empty </span>
+<span class="c1"># string/dict, it is assumed the authentication is not required, or is configured in user environment </span>
+<span class="c1"># (e.g. ~/.ssh/config). SSH runner will not provide any additional information on a command line for ssh, rsync or scp.</span>
+<span class="c1"># If the value is a dictionary, optional fields that SSH runner recognizes are user name on a remote host (user) and </span>
+<span class="c1"># path to a user private key file (identity_file). If all fields are present, the following connection string is used </span>
+<span class="c1"># by the SSH runner: `-i $identity_file $user@$host`.</span>
+<span class="nt">authentication</span><span class="p">:</span>
+    <span class="nt">user</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">USER</span>
+    <span class="nt">identity_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">/opt/mlcube/ssh/gcp_identity</span>
+
+
+<span class="c1"># The platform field points to a platform configuration to be used on a remote host. This file must be located inside </span>
+<span class="c1"># $mlcube_root/platforms directory. The idea is that the SSH runner delivers an MLCube to a remote host and then use </span>
+<span class="c1"># another MLCube runner such as Docker or Singularity runner to run that MLCube there.</span>
+<span class="nt">platform</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker.yaml</span>
+
+
+<span class="c1"># The interpreter section defines python interpreter on a remote host to use to run other runners there. This is not </span>
+<span class="c1"># environment for MLCubes, this is environment for runners to run MLCubes. Two options are supported - `system` and </span>
+<span class="c1"># `virtualenv` interpreters.</span>
+
+<span class="c1"># The system interpreter is a python already available on a remote host. It can be just an executable (python, </span>
+<span class="c1"># python3.8) or a full path to a user existing environment. Three fields should be provided: type (system in this case), </span>
+<span class="c1"># python executable, possibly, with fully specified path, and dependencies in the form of a string (requirements).</span>
+<span class="nt">interpreter</span><span class="p">:</span>
+    <span class="nt">type</span><span class="p">:</span> <span class="s">&quot;system&quot;</span>
+    <span class="nt">python</span><span class="p">:</span> <span class="s">&quot;python3.6&quot;</span>
+    <span class="nt">requirements</span><span class="p">:</span> <span class="s">&quot;mlcube-docker==0.2.2&quot;</span>
+
+<span class="c1"># The virtualenv interpreter does not have to exist. SSH runner can create this one. This interpreter has the same </span>
+<span class="c1"># fields with two additional ones - location (base path for a python environment) and name (basically, a folder name </span>
+<span class="c1"># inside the location path).</span>
+<span class="c1"># interpreter:</span>
+<span class="c1">#     type: &quot;virtualenv&quot;</span>
+<span class="c1">#     python: &quot;python3.6&quot;</span>
+<span class="c1">#     requirements: &quot;mlcube-docker==0.2.1&quot;</span>
+<span class="c1">#     location: &quot;${HOME}/mlcube/environments&quot;</span>
+<span class="c1">#     name: &quot;mlcube-docker-0.2.1&quot;</span>
+</code></pre></div></p>
+<p>SSH runner uses IP or name of a remote host (<code>host</code>) and ssh tool to login and execute shell commands on remote hosts. 
+If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  </p>
+<p>SSH runner depends on other runners to run MLCube cubes. The <code>platform</code> field specifies what runner should be
+used on a remote host. This is a file name located in <code>{MLCUBE_ROOT}/platforms</code>.  </p>
+<p>In current implementation, SSH runner synchronizes only an mlcube workload between local and remote hosts. Runners
+are assumed to be either available on remote hosts or specified as package dependencies in python interpreter 
+configuration section. </p>
+<h2 id="configure-command">Configure command<a class="headerlink" href="#configure-command" title="Permanent link">&para;</a></h2>
+<p>During the <code>build</code> phase, the following steps are performed.
+1. Based upon configuration, SSH runner creates and/or configures python on a remote host using <code>ssh</code>. This includes
+   execution of such commands as <code>virtualenv -p ...</code> and/or <code>source ... &amp;&amp; pip install ...</code> on a remote host. Default
+   path for a python environment on a remote host is <code>${HOME}/mlcube/environments/</code>. <br />
+2. SSH runner copies mlcube directory to a remote host. Default path on a remote host is <code>${HOME}/mlcube/cubes/</code>.
+3. SSH runner runs another runner specified in a platform configuration file on a remote host to configure it. </p>
+<h2 id="run-command">Run command<a class="headerlink" href="#run-command" title="Permanent link">&para;</a></h2>
+<p>During the run phase, the SSH runner performs the following steps:<br />
+1. It uses <code>ssh</code> to run standard <code>run</code> command on a remote host.<br />
+2. It uses <code>rsync</code> to synchronize back the content of the <code>{MLCUBE_ROOT}/workspace</code> directory.   </p>
                 
               
               
@@ -583,6 +590,7 @@ where:  <br />
             </article>
           </div>
         </div>
+        
       </main>
       
         
@@ -590,7 +598,8 @@ where:  <br />
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
-        <a href="../" class="md-footer__link md-footer__link--prev" rel="prev">
+        
+        <a href="singularity-runner.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Singularity Runner" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -599,19 +608,20 @@ where:  <br />
               <span class="md-footer__direction">
                 Previous
               </span>
-              Runners
+              Singularity Runner
             </div>
           </div>
         </a>
       
       
-        <a href="../singularity-runner/" class="md-footer__link md-footer__link--next" rel="next">
+        
+        <a href="kubernetes.html" class="md-footer__link md-footer__link--next" aria-label="Next: Kubernetes Runner" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
                 Next
               </span>
-              Singularity Runner
+              Kubernetes Runner
             </div>
           </div>
           <div class="md-footer__button md-icon">
@@ -629,6 +639,7 @@ where:  <br />
         <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
           Material for MkDocs
         </a>
+        
       </div>
       
     </div>
@@ -639,10 +650,10 @@ where:  <br />
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}, "search": "../../assets/javascripts/workers/search.fb4a9340.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.ca5457b8.min.js"></script>
+      <script src="../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>
