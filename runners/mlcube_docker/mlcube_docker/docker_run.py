@@ -178,15 +178,32 @@ class DockerRun(object):
         # First task argument is always the task name.
         mounts, args = {}, [self.task]
 
-        def _generate(_params: DictConfig) -> None:
+        def _generate(_params: DictConfig, _io: t.Text) -> None:
             """ _params here is a dictionary containing input or output parameters.
             It maps parameter name to DictConfig(type, default)
             """
+            if _io not in ('input', 'output'):
+                raise ConfigurationError(f"Invalid IO = {_io}")
             for _param_name, _param_def in _params.items():
-                if _param_def.type not in ('file', 'directory'):
+                if _param_def.type not in ('file', 'directory', 'unknown'):
                     raise ConfigurationError(f"Invalid task: task={self.task}, param={_param_name}, "
-                                             f"type={_param_def.type}")
-                _host_path = os.path.join(self.mlcube.runtime.workspace, _param_def.get('default', _param_name))
+                                             f"type={_param_def.type}. Type is invalid.")
+                _host_path = os.path.join(self.mlcube.runtime.workspace, _param_def.default)
+
+                if _param_def.type == 'unknown':
+                    if _io == 'output':
+                        raise ConfigurationError(f"Invalid task: task={self.task}, param={_param_name}, "
+                                                 f"type={_param_def.type}. Type is unknown.")
+                    else:
+                        if os.path.isdir(_host_path):
+                            _param_def.type = 'directory'
+                        elif os.path.isfile(_host_path):
+                            _param_def.type = 'file'
+                        else:
+                            raise ConfigurationError(f"Invalid task: task={self.task}, param={_param_name}, "
+                                                     f"type={_param_def.type}. Type is unknown and unable to identify "
+                                                     f"it ({_host_path}).")
+
                 if _param_def.type == 'directory':
                     os.makedirs(_host_path, exist_ok=True)
                     mounts[_host_path] = mounts.get(
@@ -204,7 +221,7 @@ class DockerRun(object):
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
         params = self.mlcube.tasks[self.task].parameters
-        _generate(params.get('inputs', OmegaConf.create({})))
-        _generate(params.get('outputs', OmegaConf.create({})))
+        _generate(params.inputs, 'input')
+        _generate(params.outputs, 'output')
 
         return mounts, args
