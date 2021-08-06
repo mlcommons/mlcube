@@ -1,6 +1,6 @@
 import os
-import typing
 import logging
+import typing as t
 from omegaconf import (OmegaConf, DictConfig)
 
 
@@ -17,11 +17,11 @@ class ConfigurationError(Exception):
 
 class IllegalParameterError(ConfigurationError):
     """ Exception to be raised when a configuration parameter is missing or has illegal value. """
-    def __init__(self, name: str, value: typing.Any) -> None:
+    def __init__(self, name: t.Text, value: t.Any) -> None:
         """
         Args:
-            name (str): Parameter name, possibly, qualified (e.g. `container.image`).
-            value (str): Current parameter value.
+            name: Parameter name, possibly, qualified (e.g. `container.image`).
+            value: Current parameter value.
         """
         super().__init__(f"{name} = {value}")
 
@@ -34,11 +34,11 @@ class Shell(object):
         """Execute shell command.
         Args:
             cmd: Command to execute, e.g. Shell.run('ls', -lh'). This method will just join using whitespaces.
-            die_on_error (bool): If true and shell returns non-zero exit status, raise RuntimeError.
+            die_on_error: If true and shell returns non-zero exit status, raise RuntimeError.
         Returns:
             Exit code.
         """
-        cmd: str = ' '.join(cmd)
+        cmd: t.Text = ' '.join(cmd)
         print(cmd)
         return_code: int = os.system(cmd)
         if return_code != 0 and die_on_error:
@@ -46,11 +46,11 @@ class Shell(object):
         return return_code
 
     @staticmethod
-    def docker_image_exists(docker: typing.Optional[str], image: str) -> bool:
+    def docker_image_exists(docker: t.Optional[t.Text], image: t.Text) -> bool:
         """Check if docker image exists.
         Args:
-            docker (str): Docker executable (docker/sudo docker/podman/nvidia-docker/...).
-            image (str): Name of a docker image.
+            docker: Docker executable (docker/sudo docker/podman/nvidia-docker/...).
+            image: Name of a docker image.
         Returns:
             True if image exists, else false.
         """
@@ -61,51 +61,54 @@ class Shell(object):
 class Config(object):
     """ Helper class to manage `container` environment configuration."""
 
-    CONFIG_SECTION = 'container'         # Section name in MLCube configuration file.
+    CONFIG_SECTION = 'docker'         # Section name in MLCube configuration file.
 
-    DEFAULTS = {
-        'image': '',                     # Image name.
-        'docker': 'docker',              # Executable (docker, podman, sudo docker ...).
-        'gpu_args': '',                  # Docker run arguments when accelerator_count > 0.
-        'cpu_args': '',                  # Docker run arguments when accelerator_count == 0.
+    DEFAULT_CONFIG = {
+        'image': '???',               # Image name.
+        'docker': 'docker',           # Executable (docker, podman, sudo docker ...).
 
-        'build_args': {},                # Docker build arguments
-        'build_context': 'build',        # Docker build context relative to $MLCUBE_ROOT. Default is `build`.
-        'build_file': 'Dockerfile',      # Docker file name within docker build context, default is `Dockerfile`.
-        'build_always': True,            # Try to build the docker image every time a task is executed.
+        'env_args': {},               # Environmental variables for build and run actions.
 
-        'env_args': {},                  # Environmental variables for build and run actions.
+        'gpu_args': '',               # Docker run arguments when accelerator_count > 0.
+        'cpu_args': '',               # Docker run arguments when accelerator_count == 0.
+
+        'build_args': {},             # Docker build arguments
+        'build_context': '.',         # Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.
+        'build_file': 'Dockerfile',   # Docker file relative to $MLCUBE_ROOT, default is:
+                                      # `$MLCUBE_ROOT/Dockerfile`.
+        'build_always': True,         # Try to build the docker image every time a task is executed.
     }
 
     @staticmethod
-    def from_dict(container_env: DictConfig) -> DictConfig:
+    def from_dict(docker_env: DictConfig) -> DictConfig:
         """ Initialize configuration from user config
         Args:
-            container_env (DictConfig): MLCube `container` configuration, possible merged with user local configuration.
+            docker_env: MLCube `container` configuration, possible merged with user local configuration.
         Return:
             Initialized configuration.
         """
         # Make sure all parameters present with their default values.
-        for name, value in Config.DEFAULTS.items():
-            container_env[name] = container_env.get(name, None) or value
+        for name, value in Config.DEFAULT_CONFIG.items():
+            docker_env[name] = docker_env.get(name, None) or value
 
-        if not container_env.image:
-            raise IllegalParameterError(f'{Config.CONFIG_SECTION}.image', container_env.image)
+        if not docker_env.image:
+            raise IllegalParameterError(f'{Config.CONFIG_SECTION}.image', docker_env.image)
 
-        if isinstance(container_env.build_args, DictConfig):
-            container_env.build_args = Config.dict_to_cli(container_env.build_args, parent_arg='--build-arg')
-        if isinstance(container_env.env_args, DictConfig):
-            container_env.env_args = Config.dict_to_cli(container_env.env_args, parent_arg='-e')
+        if isinstance(docker_env.build_args, DictConfig):
+            docker_env.build_args = Config.dict_to_cli(docker_env.build_args, parent_arg='--build-arg')
+        if isinstance(docker_env.env_args, DictConfig):
+            docker_env.env_args = Config.dict_to_cli(docker_env.env_args, parent_arg='-e')
 
-        logger.info(f"DockerRun configuration: {str(container_env)}")
-        return container_env
+        logger.info(f"DockerRun configuration: {str(docker_env)}")
+        return docker_env
 
     @staticmethod
-    def dict_to_cli(args: typing.Union[typing.Dict, DictConfig], sep: str = '=',
-                    parent_arg: typing.Optional[str] = None) -> str:
+    def dict_to_cli(args: t.Union[t.Dict, DictConfig], sep: t.Text = '=',
+                    parent_arg: t.Optional[t.Text] = None) -> t.Text:
         """ Convert dict to CLI arguments.
         Args:
             args (typing.Dict): Dictionary with parameters.
+            sep (str): Key-value separator. For build args and environment variables it's '=', for mount points -  ':'.
             parent_arg (str): If not None, a parent parameter name for each arg in args, e.g. --build-arg
         """
         if parent_arg is not None:
@@ -118,44 +121,39 @@ class Config(object):
 class DockerRun(object):
     """ Docker runner. """
 
-    def __init__(self, mlcube: typing.Dict, **kwargs) -> None:
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
         """Docker Runner.
         Args:
-            mlcube (typing.Dict): MLCube configuration.
-            kwargs: Additional parameters (root, workspace, task).
+            mlcube: MLCube configuration.
+            task: Task name to run.
         """
-        if not isinstance(mlcube, dict):
-            raise ConfigurationError(f"Invalid mlcube type ('{type(mlcube)}'). Expecting 'dict'.")
+        if isinstance(mlcube, dict):
+            mlcube: DictConfig = OmegaConf.create(mlcube)
+        if not isinstance(mlcube, DictConfig):
+            raise ConfigurationError(f"Invalid mlcube type ('{type(DictConfig)}'). Expecting 'DictConfig'.")
 
-        self.mlcube = OmegaConf.create(mlcube)
-        self.mlcube.container = Config.from_dict(self.mlcube.get(Config.CONFIG_SECTION, OmegaConf.create({})))
-
-        self.root = kwargs.get('root', None)
-        if not self.root:
-            raise IllegalParameterError('root', self.root)
-        self.task = kwargs.get('task', None)
-        if not self.task:
-            raise IllegalParameterError('task', self.task)
-        self.workspace = kwargs.get('workspace', os.path.join(self.root, 'workspace'))
+        self.mlcube = mlcube
+        self.mlcube.docker = Config.from_dict(self.mlcube.get(Config.CONFIG_SECTION, OmegaConf.create({})))
+        self.task = task
 
     def configure(self):
         """Build Docker image on a current host."""
-        image: str = self.mlcube.container.image
-        context: str = os.path.join(self.root, self.mlcube.container.build_context)
-        recipe: str = os.path.join(context, self.mlcube.container.build_file)
-        docker: str = self.mlcube.container.docker
+        image: t.Text = self.mlcube.docker.image
+        context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.docker.build_context)
+        recipe: t.Text = os.path.join(context, self.mlcube.docker.build_file)
+        docker: t.Text = self.mlcube.docker.docker
 
         if not os.path.exists(recipe):
             Shell.run(docker, 'pull', image)
         else:
-            build_args: str = self.mlcube.container.build_args
+            build_args: t.Text = self.mlcube.docker.build_args
             Shell.run(docker, 'build', build_args, '-t', image, '-f', recipe, context)
 
     def run(self):
         """ Run a cube. """
-        docker: str = self.mlcube.container.docker
-        image: str = self.mlcube.container.image
-        if self.mlcube.container.build_always or not Shell.docker_image_exists(docker, image):
+        docker: t.Text = self.mlcube.docker.docker
+        image: t.Text = self.mlcube.docker.image
+        if self.mlcube.docker.build_always or not Shell.docker_image_exists(docker, image):
             logger.warning("Docker image (%s) does not exist or build always is on. Running 'configure' phase.", image)
             self.configure()
 
@@ -164,13 +162,13 @@ class DockerRun(object):
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
         volumes = Config.dict_to_cli(mounts, sep=':', parent_arg='--volume')
-        env_args = self.mlcube.container.env_args
+        env_args = self.mlcube.docker.env_args
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
-        run_args: str = self.mlcube.container.cpu_args if num_gpus == 0 else self.mlcube.container.gpu_args
+        run_args: t.Text = self.mlcube.docker.cpu_args if num_gpus == 0 else self.mlcube.docker.gpu_args
 
         Shell.run(docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args))
 
-    def _generate_mounts_and_args(self) -> typing.Tuple[typing.Dict, typing.List]:
+    def _generate_mounts_and_args(self) -> t.Tuple[t.Dict, t.List]:
         """ Generate mount points and arguments for the give task.
         Return:
             A tuple containing two elements:
@@ -180,29 +178,33 @@ class DockerRun(object):
         # First task argument is always the task name.
         mounts, args = {}, [self.task]
 
-        params = self.mlcube.tasks[self.task].io
-        for param in params:
-            # Fields in param: name (raw_data), type (directory), io (output), default ($WORKSPACE/raw_data)
-            host_path = param.get(
-                'default',
-                f'$WORKSPACE/{param.name}'
-            ).replace('$WORKSPACE', self.workspace)
-            if param.type == 'directory':
-                os.makedirs(host_path, exist_ok=True)
-                mounts[host_path] = mounts.get(
-                    host_path,
-                    '/mlcube_io{}/{}'.format(len(mounts), os.path.basename(host_path))
-                )
-                args.append('--{}={}'.format(param.name, mounts[host_path]))
-            elif param.type == 'file':
-                host_path, file_name = os.path.split(host_path)
-                os.makedirs(host_path, exist_ok=True)
-                mounts[host_path] = mounts.get(
-                    host_path,
-                    '/mlcube_io{}/{}'.format(len(mounts), host_path)
-                )
-                args.append('--{}={}'.format(param.name, mounts[host_path] + '/' + file_name))
-            else:
-                raise ConfigurationError(f"Invalid task: task={self.task}, param={param.name}, type={param.type}")
+        def _generate(_params: DictConfig) -> None:
+            """ _params here is a dictionary containing input or output parameters.
+            It maps parameter name to DictConfig(type, default)
+            """
+            for _param_name, _param_def in _params.items():
+                if _param_def.type not in ('file', 'directory'):
+                    raise ConfigurationError(f"Invalid task: task={self.task}, param={_param_name}, "
+                                             f"type={_param_def.type}")
+                _host_path = os.path.join(self.mlcube.runtime.workspace, _param_def.get('default', _param_name))
+                if _param_def.type == 'directory':
+                    os.makedirs(_host_path, exist_ok=True)
+                    mounts[_host_path] = mounts.get(
+                        _host_path,
+                        '/mlcube_io{}/{}'.format(len(mounts), os.path.basename(_host_path))
+                    )
+                    args.append('--{}={}'.format(_param_name, mounts[_host_path]))
+                elif _param_def.type == 'file':
+                    _host_path, _file_name = os.path.split(_host_path)
+                    os.makedirs(_host_path, exist_ok=True)
+                    mounts[_host_path] = mounts.get(
+                        _host_path,
+                        '/mlcube_io{}/{}'.format(len(mounts), _host_path)
+                    )
+                    args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
+
+        params = self.mlcube.tasks[self.task].parameters
+        _generate(params.get('inputs', OmegaConf.create({})))
+        _generate(params.get('outputs', OmegaConf.create({})))
 
         return mounts, args
