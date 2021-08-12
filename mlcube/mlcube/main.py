@@ -6,8 +6,8 @@ import click
 import logging
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
-from parser import CliParser
-from config import MLCubeConfig
+from mlcube.parser import CliParser
+from mlcube.config import MLCubeConfig
 
 
 logger = logging.getLogger(__name__)
