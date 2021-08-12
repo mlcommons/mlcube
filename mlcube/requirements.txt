@@ -11,3 +11,4 @@ coloredlogs==14.0
 cookiecutter==1.7.2
 docker==4.3.1
 pyyaml==5.3.1
+omegaconf==2.1.0

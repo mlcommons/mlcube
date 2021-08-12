@@ -1,78 +1,115 @@
+"""
+This requires the MLCube 2.0 that's located somewhere in one of dev branches.
+"""
 import os
 import click
 import logging
-import coloredlogs
-from halo import Halo
-from pathlib import Path
-from typing import Optional
-from mlcube.check import check_root_dir
-from mlcube.common.mlcube_metadata import (MLCubeFS, CompactMLCube)
+import typing as t
+from omegaconf import (OmegaConf, DictConfig)
+from mlcube.parser import CliParser
+from mlcube.config import MLCubeConfig
 
 
 logger = logging.getLogger(__name__)
 
 
-@click.group(name='mlcube', help="MLCube 📦 is a packaging tool for ML models")
-@click.option('--log-level', default="INFO", help="Log level for the app.")
-def cli(log_level: str):
-    click.echo(f"Log level is set to - {log_level}")
-    coloredlogs.install(level=log_level)
+class Platforms(object):
+    @staticmethod
+    def get_runner(platform: t.Text) -> t.Callable:
+        """Return runner class or create function for given platform.
+        Args:
+            platform: Platform name (e.g. `docker`, `podman`, `ssh`, `gcp`, `k8s` etc.).
+        Returns:
+            Callable object (e.g. runner class) that can create runner instance.
+        """
+        platform = platform.lower()
+        if platform in ('docker', 'podman'):
+            try:
+                from mlcube_docker.docker_run import DockerRun as Runner
+            except ImportError:
+                print(f"Docker/Podman runner (platform={platform}) could not be imported.")
+                raise
+        else:
+            raise ValueError(f"Runner for platform '{platform}' is not supported yet.")
+        return Runner
 
 
-@cli.command(name='verify', help='Verify MLCube metadata.')
-@click.option('--mlcube', required=False, type=str, help='MLCube path.')
-@Halo(text="", spinner="dots")
-def verify(mlcube: Optional[str]) -> None:
-    logging.info("Starting mlcube metadata verification")
-    mlcube_path = CompactMLCube(mlcube).unpack().mlcube_fs.root
-    metadata, verify_err = check_root_dir(mlcube_path)
-    if verify_err:
-        logging.error(f"Error verifying mlcube metadata: {verify_err}")
-        logging.error(f"mlcube verification - FAILED!")
-        raise click.Abort()
-    logging.info('OK - VERIFIED')
+mlcube_option = click.option(
+    '--mlcube', required=False, type=str, default=os.getcwd(),
+    help="Path to MLCube. This can be either a directory path that becomes MLCube's root directory, or path to MLCube"
+         "definition file (.yaml). In the latter case the MLCube's root directory becomes parent directory of the yaml"
+         "file. Default is current directory."
+)
+platform_option = click.option(
+    '--platform', required=False, type=str, default='docker',
+    help="Platform to run MLCube, default is 'docker' (that also supports podman)."
+)
+task_option = click.option(
+    '--task', required=False, type=str, default='main',
+    help="MLCube task name(s) to run, default is `main`. This parameter can take a list value, in which case task names"
+         "are separated with ','."
+)
+workspace_option = click.option(
+    '--workspace', required=False, type=str, default=None,
+    help="Workspace location that is used to store input/output artifacts of MLCube tasks."
+)
 
 
-@cli.command(name='pull', help='Pull MLCube from some remote location.')
-@click.option('--mlcube', required=True, type=str, help='Location of a remote MLCube.')
-@click.option('--branch', required=False, type=str, help='Branch name if URL is a GitHub url.')
-def pull(mlcube: str, branch: Optional[str]) -> None:
-    if not mlcube.startswith('https://github.com'):
-        raise RuntimeError(f"Unsupported URL")
-
-    branch = f"--branch {branch}" if branch else ""
-    os.system(f"git clone {branch} {mlcube}")
+@click.group(name='mlcube')
+def cli():
+    pass
 
 
-@cli.command(name='describe', help='Describe this MLCube.')
-@click.option('--mlcube', required=False, type=str, help='MLCube location.')
-def describe(mlcube: Optional[str]) -> None:
-    CompactMLCube(mlcube).unpack().mlcube_fs.describe()
-
-
-@cli.command(name='configure', help='Configure environment for MLCube ML workload.')
-@click.option('--mlcube', required=False, type=str, help='Path to MLCube directory.')
-@click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
-def configure(mlcube: Optional[str], platform: Optional[str]):
-    mlcube_fs = CompactMLCube(mlcube).unpack().mlcube_fs
-    platform_path = mlcube_fs.get_platform_path(platform)
-    runner = mlcube_fs.get_platform_runner(platform_path)
-    os.system(f"{runner} configure --mlcube={mlcube_fs.root} --platform={platform_path}")
-
-
-@cli.command(name='run', help='Run MLCube ML workload.',
+@cli.command(name='show_config', help='Show MLCube configuration.',
              context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
-@click.option('--mlcube', required=False, type=str, help='Path to MLCube directory.')
-@click.option('--platform', required=False, type=str, help='Path to MLCube Platform definition file.')
-@click.option('--task', required=False, type=str, help='Path to MLCube Task definition file.')
+@mlcube_option
+@platform_option
+@workspace_option
+@click.option('--resolve', is_flag=True, help="Resolve MLCube parameters.")
 @click.pass_context
-def run(ctx, mlcube: Optional[str], platform: Optional[str], task: Optional[str]):
-    mlcube_fs = CompactMLCube(mlcube).unpack().mlcube_fs
-    platform_path = mlcube_fs.get_platform_path(platform)
-    task_path = mlcube_fs.get_task_instance_path(task)
-    runner = mlcube_fs.get_platform_runner(platform_path)
-    os.system(f"{runner} run --mlcube={mlcube_fs.root} --platform={platform_path} --task={task_path} "
-              f"{' '.join(ctx.args)}")
+def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, workspace: t.Text, resolve: bool) -> None:
+    """
+    Args:
+        ctx: Click context. We need this to get access to extra CLI arguments.
+        mlcube: Path to MLCube root directory or mlcube.yaml file.
+        platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
+        workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
+        resolve: if True, compute values in MLCube configuration.
+    """
+    mlcube_root, mlcube_file = CliParser.parse_mlcube_arg(mlcube)
+    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
+    mlcube_config = MLCubeConfig.create_mlcube_config(
+        os.path.join(mlcube_root, mlcube_file), mlcube_cli_args, task_cli_args, platform, workspace, resolve=resolve
+    )
+    print(OmegaConf.to_yaml(mlcube_config))
+
+
+@cli.command(name='run', help='Run MLCube ML task.',
+             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@mlcube_option
+@platform_option
+@task_option
+@workspace_option
+@click.pass_context
+def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text, workspace: t.Text) -> None:
+    """
+    Args:
+        ctx: Click context. We need this to get access to extra CLI arguments.
+        mlcube: Path to MLCube root directory or mlcube.yaml file.
+        platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
+        task: Comma separated list of tasks to run.
+        workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
+    """
+    mlcube_root, mlcube_file = CliParser.parse_mlcube_arg(mlcube)
+    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
+    mlcube_config = MLCubeConfig.create_mlcube_config(
+        os.path.join(mlcube_root, mlcube_file), mlcube_cli_args, task_cli_args, platform, workspace, resolve=True
+    )
+    runner_cls: t.Callable = Platforms.get_runner(platform)
+    tasks: t.List[str] = CliParser.parse_list_arg(task, default='main')
+    for task in tasks:
+        docker_runner = runner_cls(mlcube_config, task=task)
+        docker_runner.run()
 
 
 if __name__ == "__main__":
