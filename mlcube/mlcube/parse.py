@@ -1,110 +1,56 @@
-# Lint as: python3
-"""Parses an MLCube directory tree.
-
-Will return objects which represent the metadata of the mlcube.
-"""
-
 import os
-from pathlib import Path
+import typing as t
+from omegaconf import (OmegaConf, DictConfig)
 
-from mlspeclib import MLObject, MLSchema
+class CliParser(object):
+    @staticmethod
+    def parse_mlcube_arg(mlcube: t.Optional[t.Text]) -> t.Tuple[t.Text, t.Text]:
+        """ Parse value of the `--mlcube` command line argument.
+        Args:
+            mlcube: Path to a MLCube directory or `mlcube.yaml` file. If it's a directory, standard name
+                `mlcube.yaml` is assumed for MLCube definition file.
+        Returns:
+            Tuple (mlcube_root_directory, mlcube_file_name), `mlcube_file_name` is a file name inside
+                `mlcube_root_directory` directory.
+        """
+        if mlcube is None:
+            mlcube = os.getcwd()
+        mlcube_root, mlcube_file = os.path.abspath(mlcube), 'mlcube.yaml'
+        if os.path.isfile(mlcube_root):
+            mlcube_root, mlcube_file = os.path.split(mlcube_root)
+        return mlcube_root, mlcube_file
 
+    @staticmethod
+    def parse_list_arg(arg: t.Optional[t.Text], default: t.Optional[t.Text] = None) -> t.List[t.Text]:
+        """ Parse a string into list of strings using `,` as a separator.
+        Args:
+            arg: String if elements separated with `,`.
+            default: Default value for `arg` if `arg` is None or empty.
+        Returns:
+            List of items.
+        """
+        arg = arg or default
+        if not arg:
+            return []
+        return arg.split(',')
 
-class MLCubeMetadata:
-  def __init__(self, root, tasks, docker):
-    self.root = root
-    self.tasks = tasks
-    self.docker = docker
+    @staticmethod
+    def parse_extra_arg(*args: t.Text) -> t.Tuple[DictConfig, t.Dict]:
+        """ Parse extra arguments on a command line.
+        These arguments correspond to:
+            - MLCube runtime arguments. These start with `-P` prefix and are translated to a nested dictionaries
+                structure using `.` as a separator. For instance, `-Pdocker.image=mlcommons/mnist:0.0.1` translates to
+                python dictionary {'docker': {'image': 'mlcommons/mnist:0.0.1'}}.
+            - Task arguments are all other arguments that do not star with `-P`. These arguments are input/output
+                arguments of tasks.
+        Args:
+            args: List of arguments that have not been parsed before.
+        Returns:
+            Tuple of two dictionaries: (mlcube_arguments, task_arguments).
+        """
+        mlcube_args = OmegaConf.from_dotlist([arg for arg in args if not arg.startswith('-P')])
 
+        task_args = [arg[2:].split('=') for arg in args if arg.startswith('-P')]
+        task_args = {arg[0]: arg[1] for arg in task_args}
 
-def _register_schemas():
-  MLSchema.populate_registry()
-  # TODO fix pathing
-  MLSchema.append_schema_to_registry(Path(Path(__file__).parent, "schemas"))
-
-
-def parse_mlcube_invoke(filename):
-  if not os.path.exists(filename):
-    return None, 'No such invocation file: {}'.format(filename)
-  (root, err) = MLObject.create_object_from_file(filename)
-  return root, err
-
-
-def parse_mlcube_root(filename):
-  (root, err) = MLObject.create_object_from_file(filename)
-  return root, err
-
-
-def mlobject_from_dict(schema_type, schema_version, dict_value):
-    ml_object = MLObject()
-    ml_object.set_type(
-        schema_version=schema_version,
-        schema_type=schema_type,
-    )
-    dict_value['schema_type'] = schema_type
-    dict_value['schema_version'] = schema_version
-    MLObject.update_tree(ml_object, dict_value)
-    errors = ml_object.validate()
-
-    if errors:
-        return None, errors
-    else:
-        return ml_object, None
-
-
-def parse_mlcube_task(filename):
-    (task, err) = MLObject.create_object_from_file(filename)
-    if err:
-      return None, err
-
-    inputs = {}
-    for input_dict in task.inputs:
-      input_obj, err = mlobject_from_dict('mlcube_task_input', '1.0.0', input_dict)
-      if err:
-        return None, err
-      inputs[input_obj.name] = input_obj
-
-    outputs = {}
-    for output_dict in task.outputs:
-      output_obj, err = mlobject_from_dict('mlcube_task_output', '1.0.0', output_dict)
-      if err:
-        return None, err
-      outputs[output_obj.name] = output_obj
-
-    task.inputs = inputs
-    task.outputs = outputs
-    return task, None
-
-
-def parse_mlcube_docker(filename):
-    (docker, err) = MLObject.create_object_from_file(filename)
-    return docker, err
-
-
-def parse_mlcube(root_dir):
-  path = Path(root_dir, 'mlcube.yaml').as_posix()
-  if not os.path.exists(path):
-    return None, 'root metadata does not exist: {}'.format(path)
-
-  root, err = parse_mlcube_root(path)
-  if err:
-    return None, err
-
-  tasks = {}
-  for task_file in root.tasks:
-    task, err = parse_mlcube_task(os.path.join(root_dir, task_file))
-    if err:
-      return None, err
-    if task is None:
-      raise Exception(root_dir)
-    name = Path(task_file).name.strip('.yaml')
-    tasks[name] = task
-
-  docker, err = parse_mlcube_docker(Path(root_dir, 'mlcube_docker.yaml').as_posix())
-  if err:
-    return None, err
-
-  return MLCubeMetadata(root, tasks, docker), None
-
-
-_register_schemas()
+        return mlcube_args, task_args
