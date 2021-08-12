@@ -1,5 +1,9 @@
 # MLCube Release process
 
+To run unitests in projects, run:
+```shell
+python -m pytest
+```
 
 Hard requirements:
 1. Versions of all projects must be the same, e.g. 0.2.3. This applies to [mlcube](https://github.com/mlcommons/mlcube/tree/master/mlcube)

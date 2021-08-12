@@ -5,7 +5,7 @@ import os
 import click
 import logging
 import typing as t
-from omegaconf import (OmegaConf, DictConfig)
+from omegaconf import OmegaConf
 from mlcube.parser import CliParser
 from mlcube.config import MLCubeConfig
 

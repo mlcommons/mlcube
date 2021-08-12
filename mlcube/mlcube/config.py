@@ -1,6 +1,10 @@
 import os
+import logging
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
+
+
+logger = logging.getLogger(__name__)
 
 
 class MLCubeConfig(object):

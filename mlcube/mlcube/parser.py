@@ -2,6 +2,7 @@ import os
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
 
+
 class CliParser(object):
     @staticmethod
     def parse_mlcube_arg(mlcube: t.Optional[t.Text]) -> t.Tuple[t.Text, t.Text]:

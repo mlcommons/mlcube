@@ -3,6 +3,7 @@ from mlcube.main import cli
 
 runner = CliRunner()
 
+
 def test_mlcube():
     response = runner.invoke(cli)
     assert response.exit_code == 0
@@ -11,5 +12,3 @@ def test_mlcube():
     assert 'run          Run MLCube ML task.' in response.output
     assert 'show_config  Show MLCube configuration.' in response.output
     print("All assertions passed")
-
-test_mlcube()
