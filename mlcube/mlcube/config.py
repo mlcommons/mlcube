@@ -85,6 +85,11 @@ class MLCubeConfig(object):
             resolve: If true, compute all values (some of them may reference other parameters or environmental
                 variables).
         """
+        logger.debug("mlcube_config_file = %s", mlcube_config_file)
+        logger.debug("mlcube_cli_args = %s", mlcube_cli_args)
+        logger.debug("task_cli_args = %s", task_cli_args)
+        logger.debug("platform = %s", platform)
+        logger.debug("workspace = %s", workspace)
         # TODO: sergey - it's not really clear now why I use list here.
         platforms = [platform] if platform else []
         # Merge default runtime config, local mlcube config and mlcube config from CLI.

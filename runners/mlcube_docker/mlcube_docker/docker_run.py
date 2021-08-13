@@ -64,7 +64,7 @@ class Config(BaseConfig):
         if isinstance(docker_env.env_args, DictConfig):
             docker_env.env_args = Config.dict_to_cli(docker_env.env_args, parent_arg='-e')
 
-        logger.info(f"DockerRun configuration: {str(docker_env)}")
+        logger.debug(f"DockerRun configuration: {str(docker_env)}")
         return docker_env
 
 
@@ -85,9 +85,18 @@ class DockerRun(BaseRunner):
 
         # Build strategies: `pull`, `auto` and `always`.
         build_strategy: t.Text = self.mlcube.docker.build_strategy
-        if build_strategy == Config.BuildStrategy.PULL or not os.path.exists(recipe):
+        build_recipe_exists: bool = os.path.exists(recipe)
+        if build_strategy == Config.BuildStrategy.PULL or not build_recipe_exists:
+            logger.info("Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
+                        image, build_strategy, build_recipe_exists)
             Shell.run(docker, 'pull', image)
+            if build_recipe_exists:
+                logger.warning("Docker recipe exists (%s), but your build strategy is '%s', and so the image has been "
+                               "pulled, not built. Make sure your image is up-to-data with your source code.",
+                               recipe, build_strategy)
         else:
+            logger.info("Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
+                        image, build_strategy, build_recipe_exists)
             build_args: t.Text = self.mlcube.docker.build_args
             Shell.run(docker, 'build', build_args, '-t', image, '-f', recipe, context)
 
@@ -99,8 +108,17 @@ class DockerRun(BaseRunner):
         build_strategy: t.Text = self.mlcube.docker.build_strategy
         if build_strategy == Config.BuildStrategy.ALWAYS or not Shell.docker_image_exists(docker, image):
             logger.warning("Docker image (%s) does not exist or build strategy is 'always'. "
-                           "Running 'configure' phase.", image)
-            self.configure()
+                           "Will run 'configure' phase.", image)
+            try:
+                self.configure()
+            except RuntimeError:
+                context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.docker.build_context)
+                recipe: t.Text = os.path.join(context, self.mlcube.docker.build_file)
+                if build_strategy == Config.BuildStrategy.PULL and os.path.exists(recipe):
+                    logger.warning("MLCube configuration failed. Docker recipe (%s) exists, but your build strategy is "
+                                   "set to pull. Rerun with: -Pdocker.build_strategy=auto to build image locally.",
+                                   recipe)
+                raise
 
         # The 'mounts' dictionary maps host paths to container paths
         mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)

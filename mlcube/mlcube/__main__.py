@@ -4,6 +4,7 @@ This requires the MLCube 2.0 that's located somewhere in one of dev branches.
 import os
 import click
 import logging
+import coloredlogs
 import typing as t
 from omegaconf import OmegaConf
 from mlcube.parser import CliParser
@@ -40,6 +41,10 @@ class Platforms(object):
         return Runner
 
 
+log_level_option = click.option(
+    '--log-level', '--log_level', required=False, type=str, default='warning',
+    help="Log level to set, default is to do nothing."
+)
 mlcube_option = click.option(
     '--mlcube', required=False, type=str, default=os.getcwd(),
     help="Path to MLCube. This can be either a directory path that becomes MLCube's root directory, or path to MLCube"
@@ -61,9 +66,14 @@ workspace_option = click.option(
 )
 
 
-@click.group(name='mlcube')
-def cli():
-    pass
+@click.group(name='mlcube', help="MLCube 📦 is a packaging tool for ML models")
+@log_level_option
+def cli(log_level: t.Text):
+    if log_level:
+        log_level = log_level.upper()
+        logging.basicConfig(level=log_level)
+        coloredlogs.install(level=log_level)
+        logging.info("Setting Log Level from CLI argument to '%s'.", log_level)
 
 
 @cli.command(name='show_config', help='Show MLCube configuration.',

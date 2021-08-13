@@ -1,4 +1,5 @@
 import os
+import logging
 import typing as t
 from omegaconf import DictConfig
 from mlcube.errors import ConfigurationError
@@ -6,6 +7,8 @@ from mlcube.config import (ParameterType, IOType)
 
 
 __all__ = ['Shell']
+
+logger = logging.getLogger(__name__)
 
 
 class Shell(object):
@@ -21,10 +24,11 @@ class Shell(object):
             Exit code.
         """
         cmd: t.Text = ' '.join(cmd)
-        print(cmd)
         return_code: int = os.system(cmd)
         if return_code != 0 and die_on_error:
+            logger.error("Command = '%s', return_code = %d, die_on_error = %r", cmd, return_code, die_on_error)
             raise RuntimeError("Command failed: {}".format(cmd))
+        logger.info("Command = '%s', return_code = %d, die_on_error = %r", cmd, return_code, die_on_error)
         return return_code
 
     @staticmethod
