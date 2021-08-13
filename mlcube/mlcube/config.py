@@ -7,6 +7,25 @@ from omegaconf import (OmegaConf, DictConfig)
 logger = logging.getLogger(__name__)
 
 
+class IOType(object):
+    INPUT = 'input'
+    OUTPUT = 'output'
+
+    @staticmethod
+    def is_valid(io: t.Text) -> bool:
+        return io in (IOType.INPUT, IOType.OUTPUT)
+
+
+class ParameterType(object):
+    FILE = 'file'
+    DIRECTORY = 'directory'
+    UNKNOWN = 'unknown'
+
+    @staticmethod
+    def is_valid(io: t.Text) -> bool:
+        return io in (ParameterType.FILE, ParameterType.DIRECTORY, ParameterType.UNKNOWN)
+
+
 class MLCubeConfig(object):
 
     @staticmethod
@@ -92,8 +111,8 @@ class MLCubeConfig(object):
             [parameters] = MLCubeConfig.ensure_values_exist(task, 'parameters', dict)
             [inputs, outputs] = MLCubeConfig.ensure_values_exist(parameters, ['inputs', 'outputs'], dict)
 
-            MLCubeConfig.check_parameters(inputs, 'input', task_cli_args)
-            MLCubeConfig.check_parameters(outputs, 'output', task_cli_args)
+            MLCubeConfig.check_parameters(inputs, IOType.INPUT, task_cli_args)
+            MLCubeConfig.check_parameters(outputs, IOType.OUTPUT, task_cli_args)
 
         if resolve:
             OmegaConf.resolve(mlcube_config)
@@ -117,14 +136,25 @@ class MLCubeConfig(object):
                 param_def = parameters[name]
             # If `default` key is not present, use parameter name as value.
             _ = MLCubeConfig.ensure_values_exist(param_def, 'default', lambda: name)
-            # Finally, see if there is value on a command line
+            # One challenge is how to identify type (file, directory) of input/output parameters if users have
+            # not provided these types. The below is a kind of rule-based system that tries to infer types.
+
+            # Make sure every parameter definition contains 'type' field. Also, if it's unknown, we can assume it's a
+            # directory if a value ends with forward/backward slash.
+            _ = MLCubeConfig.ensure_values_exist(param_def, 'type', lambda: ParameterType.UNKNOWN)
+            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
+                param_def.type = ParameterType.DIRECTORY
+            # See if there is value on a command line
             param_def.default = task_cli_args.get(name, param_def.default)
-            # It's here probably temporarily. Does not make too much sense to check for input types, since inputs
-            # might not be in the workspace yet (both independent and dependent).
-            _ = MLCubeConfig.ensure_values_exist(param_def, 'type', lambda: 'unknown')
-            if param_def.type == 'unknown' and param_def.default.endswith(os.sep):
-                param_def.type = 'directory'
-            # Resolve path if it's relative (meaning it's relative to workspace directory.)
-            # This should be done in a runner (for instance, this MLCube can run someplace else on a remote host).
-            # _param_def.default = os.path.abspath(os.path.join(mlcube_config.runtime.workspace,
-            #                                                   _param_def.default))
+            # Check again parameter type. Users in certain number of cases will not be providing final slash on a
+            # command line for directories, so we tried to infer types above using default values. Just in case, see
+            # if we can do the same with user-provided values.
+            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
+                param_def.type = ParameterType.DIRECTORY
+
+            # TODO: For some input parameters, that generally speaking must exist, we can figure out types later,
+            #       when we actually use them (in one of the runners). One problem is when inputs are optional. In this
+            #       case, we need to know their type in advance.
+
+            # It probably does not make too much sense to see, let's say, if an input parameter exists and set its
+            # type at this moment, because MLCube can run on remote hosts.

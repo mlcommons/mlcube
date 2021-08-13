@@ -1,12 +1,11 @@
 import os
 import typing as t
+from omegaconf import DictConfig
+from mlcube.errors import ConfigurationError
+from mlcube.config import (ParameterType, IOType)
 
 
 __all__ = ['Shell']
-
-from omegaconf import DictConfig
-
-from mlcube.errors import ConfigurationError
 
 
 class Shell(object):
@@ -64,36 +63,36 @@ class Shell(object):
             """ _params here is a dictionary containing input or output parameters.
             It maps parameter name to DictConfig(type, default)
             """
-            if _io not in ('input', 'output'):
+            if not IOType.is_valid(_io):
                 raise ConfigurationError(f"Invalid IO = {_io}")
             for _param_name, _param_def in _params.items():
-                if _param_def.type not in ('file', 'directory', 'unknown'):
+                if not ParameterType.is_valid(_param_def.type):
                     raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
                                              f"type={_param_def.type}. Type is invalid.")
                 _host_path = os.path.join(mlcube.runtime.workspace, _param_def.default)
 
-                if _param_def.type == 'unknown':
-                    if _io == 'output':
+                if _param_def.type == ParameterType.UNKNOWN:
+                    if _io == IOType.OUTPUT:
                         raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
                                                  f"type={_param_def.type}. Type is unknown.")
                     else:
                         if os.path.isdir(_host_path):
-                            _param_def.type = 'directory'
+                            _param_def.type = ParameterType.DIRECTORY
                         elif os.path.isfile(_host_path):
-                            _param_def.type = 'file'
+                            _param_def.type = ParameterType.FILE
                         else:
                             raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
                                                      f"type={_param_def.type}. Type is unknown and unable to identify "
                                                      f"it ({_host_path}).")
 
-                if _param_def.type == 'directory':
+                if _param_def.type == ParameterType.DIRECTORY:
                     os.makedirs(_host_path, exist_ok=True)
                     mounts[_host_path] = mounts.get(
                         _host_path,
                         '/mlcube_io{}/{}'.format(len(mounts), os.path.basename(_host_path))
                     )
                     args.append('--{}={}'.format(_param_name, mounts[_host_path]))
-                elif _param_def.type == 'file':
+                elif _param_def.type == ParameterType.FILE:
                     _host_path, _file_name = os.path.split(_host_path)
                     os.makedirs(_host_path, exist_ok=True)
                     mounts[_host_path] = mounts.get(
@@ -103,7 +102,7 @@ class Shell(object):
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
         params = mlcube.tasks[task].parameters
-        _generate(params.inputs, 'input')
-        _generate(params.outputs, 'output')
+        _generate(params.inputs, IOType.INPUT)
+        _generate(params.outputs, IOType.OUTPUT)
 
         return mounts, args
