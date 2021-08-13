@@ -49,9 +49,9 @@ class CliParser(object):
         Returns:
             Tuple of two dictionaries: (mlcube_arguments, task_arguments).
         """
-        mlcube_args = OmegaConf.from_dotlist([arg for arg in args if not arg.startswith('-P')])
+        mlcube_args = OmegaConf.from_dotlist([arg for arg in args if arg.startswith('-P')])
 
-        task_args = [arg[2:].split('=') for arg in args if arg.startswith('-P')]
+        task_args = [arg[2:].split('=') for arg in args if not arg.startswith('-P')]
         task_args = {arg[0]: arg[1] for arg in task_args}
 
         return mlcube_args, task_args
