@@ -35,7 +35,7 @@ setup(
     license="Apache 2.0",
     entry_points='''
         [console_scripts]
-        mlcube=mlcube.main:cli
+        mlcube=mlcube.__main__:cli
     ''',
     install_requires=requires,
     python_requires='>=3.6',

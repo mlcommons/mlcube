@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from mlcube.main import cli
+from mlcube.__main__ import cli
 
 runner = CliRunner()
 
