@@ -122,7 +122,7 @@ class MLCubeConfig(object):
             # It's here probably temporarily. Does not make too much sense to check for input types, since inputs
             # might not be in the workspace yet (both independent and dependent).
             _ = MLCubeConfig.ensure_values_exist(param_def, 'type', lambda: 'unknown')
-            if io == 'output' and param_def.type == 'unknown' and param_def.default.endswith(os.sep):
+            if param_def.type == 'unknown' and param_def.default.endswith(os.sep):
                 param_def.type = 'directory'
             # Resolve path if it's relative (meaning it's relative to workspace directory.)
             # This should be done in a runner (for instance, this MLCube can run someplace else on a remote host).
