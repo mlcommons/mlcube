@@ -1,5 +1,0 @@
-schema_type: mlcube_runner
-schema_version: 0.1.0
-
-platform:
-  name: "singularity"
