@@ -1,5 +1,4 @@
 from click.testing import CliRunner
-from mlcube_docker.__main__ import cli
 
 
 runner = CliRunner()
