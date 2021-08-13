@@ -29,6 +29,12 @@ class Platforms(object):
             except ImportError:
                 print(f"Docker/Podman runner (platform={platform}) could not be imported.")
                 raise
+        elif platform in ('singularity',):
+            try:
+                from mlcube_singularity.singularity_run import SingularityRun as Runner
+            except ImportError:
+                print(f"Singularity runner (platform={platform}) could not be imported.")
+                raise
         else:
             raise ValueError(f"Runner for platform '{platform}' is not supported yet.")
         return Runner
