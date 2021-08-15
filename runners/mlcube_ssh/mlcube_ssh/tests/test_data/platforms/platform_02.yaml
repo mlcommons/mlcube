@@ -3,16 +3,19 @@ host: "gcp-f1-micro"
 
 # Authentication method. Use this user and identify file. Both parameters are optional.
 authentication:
-    user: "gcp_user"
+    user: "my_name"
     identify_file: "/opt/mlcube/ssh/gcp_identity"
 
 # A platform file to use on remote host.
-platform: "singularity.yaml"
+platform: "singularity"
+
+# Full path on a remote host to sync MLCube content.
+remote_root: "/shared/my_name/mlcubes"
 
 # How to run MLCube runner on a remote host - define python environment here.
 interpreter:
     type: "virtualenv"
     python: "python3.6"
     requirements: "mlcube-docker==0.2.1"
-    location: "${HOME}/mlcube/environments"
-    name: "mlcube-docker-0.2.1"
+    location: "/home/my_name/mlcube/environments"
+    name: "mlcube-docker==0.0.4"
