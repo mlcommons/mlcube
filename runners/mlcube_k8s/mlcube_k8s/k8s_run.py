@@ -1,104 +1,124 @@
 import logging
-from typing import List, Dict
-from mlcube.common import mlcube_metadata
-from kubernetes import client, config
+import kubernetes
+import typing as t
+from omegaconf import DictConfig
+from mlcube.runner import (BaseConfig, BaseRunner)
 
-volume_mount_prefix = "/mnt/mlcube/"
+logger = logging.getLogger(__name__)
 
 
-class KubernetesRun(object):
-    logger: logging.Logger = None
-    mlcube_job_manifest: client.V1Job = None
-    namespace: str = "default"
+class Config(BaseConfig):
+    """ Helper class to manage `k8s` environment configuration."""
 
-    def __init__(self, mlcube: mlcube_metadata.MLCube, loglevel: str):
-        """Kubernetes Runner.
-        Args:
-            mlcube (mlcube_metadata.MLCube): MLCube specification. Reuses platform config from Docker.
-        """
-        logging.basicConfig(format='%(asctime)s - %(message)s',
-                            datefmt='%d-%b-%y-%H:%M:%S',
-                            level=loglevel)
-        self.logger = logging.getLogger(__name__)
+    CONFIG_SECTION = 'k8s'
 
-        self.mlcube: mlcube_metadata.MLCube = mlcube
-        logging.info("MLCube instantiated!")
+    DEFAULT_CONFIG = {}
 
-    def binding_to_volumes(self, binding: Dict, args: List[str], volume_mounts: Dict, volumes: Dict):
-        for key, value in binding.items():
-            args.append("--" + key + "=" + volume_mount_prefix +
-                                  value['k8s']['pvc'] + "/" +
-                                  value['path'])
-            volume_mounts[
-                value['k8s']['pvc']] = client.V1VolumeMount(
-                    name=value['k8s']['pvc'],
-                    mount_path=volume_mount_prefix +
-                    value['k8s']['pvc'],
-                )
-            volumes[value['k8s']['pvc']] = client.V1Volume(
-                name=value['k8s']['pvc'],
-                persistent_volume_claim=client.
-                V1PersistentVolumeClaimVolumeSource(
-                    claim_name=value['k8s']['pvc']))
+    """
+    k8s:
+        image:
+        pvc:                  
+        namespace:            # default
+        volume_mount_prefix   # /mnt/mlcube/
+    """
 
-    def create_job_manifest(self):
-        image: str = self.mlcube.platform.container.image
+    @staticmethod
+    def from_dict(k8s_env: DictConfig) -> DictConfig:
+        k8s_env['namespace'] = k8s_env.get('namespace', None) or 'default'
+        k8s_env['volume_mount_prefix'] = k8s_env.get('volume_mount_prefix', None) or '/mnt/mlcube/'
+        Config.assert_keys_not_none('k8s', k8s_env, ['image', 'pvc', 'namespace', 'volume_mount_prefix'])
+        return k8s_env
+
+
+class KubernetesRun(BaseRunner):
+
+    PLATFORM_NAME = 'k8s'
+
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+        super().__init__(mlcube, task, Config)
+
+    def binding_to_volumes(self, params: DictConfig,                                        # inputs
+                           args: t.List[t.Text], volume_mounts: t.Dict, volumes: t.Dict):   # outputs
+        logger.warning(
+            "You are running Kubernetes MLCube runner. In current implementation, the following must be true:"
+            "  - Default workspace must be used."
+            "  - Default workspace must be the PVC named as self.mlcube.k8s.pvc."
+            "  - All paths in tasks must be relative (relative to workspace). Do not prefix them with "
+            "    {runtime.workspace}."
+        )
+        pvc_name = self.mlcube.k8s.pvc
+        vol_mount_prefix = self.mlcube.k8s.volume_mount_prefix
+        for param_name, param_def in params.items():
+            # We assume all paths are RELATIVE! So, just adding parameter value is fine.
+            # Workspace in a host OS ({runtime.workspace}) will be mounted as $vol_mount_prefix/$pvc_name.
+            args.append(f"--{param_name}=" + vol_mount_prefix + pvc_name + "/" + param_def.default)
+            volume_mounts[pvc_name] = kubernetes.client.V1VolumeMount(
+                name=pvc_name,
+                mount_path=vol_mount_prefix + pvc_name
+            )
+            volumes[pvc_name] = kubernetes.client.V1Volume(
+                name=pvc_name,
+                persistent_volume_claim=kubernetes.client.V1PersistentVolumeClaimVolumeSource(claim_name=pvc_name)
+            )
+
+    def create_job_manifest(self) -> kubernetes.client.V1Job:
+        image: t.Text = self.mlcube.k8s.image
         logging.info(f"Using image: {image}")
 
-        container_args: List[str] = []
-        container_volume_mounts: Dict = dict()
-        container_volumes: Dict = dict()
+        container_args: t.List[t.Text] = []
+        container_volume_mounts: t.Dict = dict()
+        container_volumes: t.Dict = dict()
 
-        container_args.append(self.mlcube.invoke.task_name)
-        self.binding_to_volumes(self.mlcube.invoke.input_binding, container_args, container_volume_mounts, container_volumes)
-        self.binding_to_volumes(self.mlcube.invoke.output_binding, container_args, container_volume_mounts, container_volumes)
+        params = self.mlcube.tasks[self.task].parameters
+
+        container_args.append(self.task)
+        self.binding_to_volumes(params.inputs, container_args, container_volume_mounts, container_volumes)
+        self.binding_to_volumes(params.outputs, container_args, container_volume_mounts, container_volumes)
 
         logging.info("Using Container arguments: %s" % container_args)
 
-        container = client.V1Container(name="mlcube-container",
-                                       image=image,
-                                       args=container_args,
-                                       volume_mounts=list(
-                                           container_volume_mounts.values()))
-        pod_template = client.V1PodTemplateSpec(
-            metadata=client.V1ObjectMeta(labels={
+        container = kubernetes.client.V1Container(
+            name="mlcube-container", image=image, args=container_args,
+            volume_mounts=list(container_volume_mounts.values())
+        )
+        pod_template = kubernetes.client.V1PodTemplateSpec(
+            metadata=kubernetes.client.V1ObjectMeta(labels={
                 "app": "mlcube",
                 "app-name": self.mlcube.name,
             }),
-            spec=client.V1PodSpec(restart_policy="Never",
-                                  containers=[container],
-                                  volumes=list(container_volumes.values())))
-        job_spec = client.V1JobSpec(
+            spec=kubernetes.client.V1PodSpec(
+                restart_policy="Never", containers=[container], volumes=list(container_volumes.values()))
+        )
+        job_spec = kubernetes.client.V1JobSpec(
             template=pod_template,
             backoff_limit=4,
         )
 
-        self.mlcube_job_manifest = client.V1Job(
+        mlcube_job_manifest = kubernetes.client.V1Job(
             api_version="batch/v1",
             kind="Job",
-            metadata=client.V1ObjectMeta(generate_name="mlcube-" +
-                                         self.mlcube.name + "-"),
+            metadata=kubernetes.client.V1ObjectMeta(generate_name="mlcube-" + self.mlcube.name + "-"),
             spec=job_spec,
         )
+        logging.info("The MLCube Kubernetes Job manifest %s", mlcube_job_manifest)
+        return mlcube_job_manifest
 
-        logging.info("The MLCube Kubernetes Job manifest %s" %
-                     self.mlcube_job_manifest)
-
-    def create_job(self, k8s_job_client: client.BatchV1Api):
+    def create_job(self, job_manifest: kubernetes.client.V1Job) -> t.Any:
+        k8s_job_client = kubernetes.client.BatchV1Api()
         job_creation_response = k8s_job_client.create_namespaced_job(
-            body=self.mlcube_job_manifest,
-            namespace=self.namespace,
+            body=job_manifest,
+            namespace=self.mlcube.k8s.namespace
         )
+        logging.info("MLCommons Box k8s job created. Status='%s'" % str(job_creation_response.status))
+        return job_creation_response
 
-        logging.info("MLCommons Box k8s job created. Status='%s'" %
-                     str(job_creation_response.status))
+    def configure(self) -> None:
+        ...
 
-    def run(self):
+    def run(self) -> None:
         """Run a cube"""
         logging.info("Configuring MLCube as a Kubernetes Job...")
-        self.create_job_manifest()
+        kubernetes.config.load_kube_config()
 
-        config.load_kube_config()
-        batch_v1 = client.BatchV1Api()
-        # create job on k8s cluster
-        self.create_job(batch_v1)
+        mlcube_job_manifest = self.create_job_manifest()
+        _ = self.create_job(mlcube_job_manifest)
