@@ -22,6 +22,16 @@ class BaseConfig(object):
             cli_args = ' '.join(f'{k}{sep}{v}' for k, v in args.items())
         return cli_args
 
+    @staticmethod
+    def assert_keys_not_none(name: t.Text, config: DictConfig, keys: t.Union[t.Text, t.List[t.Text]]) -> None:
+        if not isinstance(config, (DictConfig, dict)):
+            raise ConnectionError(f"The type({name}) is {type(name)}. Dictionary is expected.")
+        if isinstance(keys, str):
+            keys = [keys]
+        missing_keys: t.List[t.Text] = [key for key in keys if config.get(key, None) is None]
+        if len(missing_keys) > 0:
+            raise ConfigurationError(f"Missing mandatory parameters in '{name}': {str(missing_keys)}")
+
 
 class BaseRunner(object):
     """ Base runner """

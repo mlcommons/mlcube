@@ -1,5 +1,5 @@
 import time
-from typing import (Optional, Union)
+import typing as t
 import googleapiclient.discovery
 from google.oauth2 import service_account
 from mlcube_gcp.gcp_client.operation import Operation
@@ -11,10 +11,10 @@ class Service(object):
     https://stackoverflow.com/questions/51303178/launch-gcp-instance-from-my-pc-using-python
     https://stackoverflow.com/questions/49444290/googleapiclient-authentication-using-personal-account
     """
-    def __init__(self, project_id: str, zone: str, credentials: Optional[dict] = None) -> None:
-        self.project_id: str = project_id
-        self.zone: str = zone
-        if isinstance(credentials, dict) and 'file' in credentials:
+    def __init__(self, project_id: t.Text, zone: t.Text, credentials: t.Optional[t.Text] = None) -> None:
+        self.project_id: t.Text = project_id
+        self.zone: t.Text = zone
+        if isinstance(credentials, t.Dict) and 'file' in credentials:
             credentials = service_account.Credentials.from_service_account_file(
                 credentials.get('file'),
                 scopes=credentials.get('scopes', ['https://www.googleapis.com/auth/cloud-platform'])
@@ -23,26 +23,26 @@ class Service(object):
             credentials = None
         self.service = googleapiclient.discovery.build('compute', 'v1', credentials=credentials)
 
-    def list_instances(self) -> list:
+    def list_instances(self) -> t.List:
         response = self.service.instances().list(project=self.project_id, zone=self.zone).execute()
         return response.get('items', [])
 
-    def get_instance(self, name: str) -> Optional[dict]:
+    def get_instance(self, name: t.Text) -> t.Optional[t.Dict]:
         for instance in self.list_instances():
             if instance.get('name', None) == name:
                 return instance
         return None
 
-    def start_instance(self, name: str) -> dict:
+    def start_instance(self, name: t.Text) -> t.Dict:
         return self.service.instances().start(project=self.project_id, zone=self.zone, instance=name).execute()
 
-    def stop_instance(self, name: str) -> dict:
+    def stop_instance(self, name: t.Text) -> t.Dict:
         return self.service.instances().stop(project=self.project_id, zone=self.zone, instance=name).execute()
 
-    def delete_instance(self, name: str) -> dict:
+    def delete_instance(self, name: t.Text) -> t.Dict:
         return self.service.instances().delete(project=self.project_id, zone=self.zone, instance=name).execute()
 
-    def create_instance(self, **kwargs) -> dict:
+    def create_instance(self, **kwargs) -> t.Dict:
         """
         https://cloud.google.com/compute/docs/reference/rest/v1/instances/setMachineType
         Assumed: https://cloud.google.com/compute/docs/instances/adding-removing-ssh-keys#project-wide
@@ -54,7 +54,7 @@ class Service(object):
         disk_size_gb = kwargs.get('disk_size_gb', 20)
 
         image_response = self.service.images().getFromFamily(project=image['project'], family=image['family']).execute()
-        config: dict = {
+        config: t.Dict = {
             'name': name,
             'machine_type': f"zones/{self.zone}/machineTypes/{machine_type}",
             'disks': [{
@@ -88,8 +88,8 @@ class Service(object):
         }
         return self.service.instances().insert(project=self.project_id, zone=self.zone, body=config).execute()
 
-    def wait_for_operation(self, operation: Union[str, dict, Operation], retry_pause: float = 5):
-        if isinstance(operation, dict):
+    def wait_for_operation(self, operation: t.Union[t.Text, t.Dict, Operation], retry_pause: float = 5):
+        if isinstance(operation, t.Dict):
             operation = operation.get('name', None)
         elif isinstance(operation, Operation):
             operation = operation.name

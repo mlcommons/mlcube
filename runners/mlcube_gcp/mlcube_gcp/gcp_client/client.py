@@ -1,6 +1,7 @@
 import click
-from mlcube_gcp.gcp_client.instance import (Instance, Status)
+import typing as t
 from mlcube_gcp.gcp_client.service import Service
+from mlcube_gcp.gcp_client.instance import (Instance, Status)
 
 
 @click.group(name='mlcube_gcp_client')
@@ -12,7 +13,7 @@ def cli():
 @cli.command(name='list', help='List instances.')
 @click.option('--project-id', required=True, type=str, help='Project identifier.')
 @click.option('--zone', required=True, type=str, help='Zone.')
-def list_instances(project_id: str, zone: str):
+def list_instances(project_id: t.Text, zone: t.Text) -> None:
     service = Service(project_id=project_id, zone=zone)
     print("Instances:")
     for instance in service.list_instances():
@@ -23,7 +24,7 @@ def list_instances(project_id: str, zone: str):
 @click.option('--project-id', required=True, type=str, help='Project identifier.')
 @click.option('--zone', required=True, type=str, help='Zone.')
 @click.argument('name', required=True, type=str)
-def instance_status(project_id: str, zone: str, name: str):
+def instance_status(project_id: t.Text, zone: t.Text, name: t.Text) -> None:
     service = Service(project_id=project_id, zone=zone)
     print(Instance(service.get_instance(name=name)))
 
@@ -32,7 +33,7 @@ def instance_status(project_id: str, zone: str, name: str):
 @click.option('--project-id', required=True, type=str, help='Project identifier.')
 @click.option('--zone', required=True, type=str, help='Zone.')
 @click.argument('name', required=True, type=str)
-def instance_start(project_id: str, zone: str, name: str):
+def instance_start(project_id: t.Text, zone: t.Text, name: t.Text) -> None:
     service = Service(project_id=project_id, zone=zone)
     instance = Instance(service.get_instance(name=name))
     if instance.name is None:
@@ -48,7 +49,7 @@ def instance_start(project_id: str, zone: str, name: str):
 @click.option('--project-id', required=True, type=str, help='Project identifier.')
 @click.option('--zone', required=True, type=str, help='Zone.')
 @click.argument('name', required=True, type=str)
-def instance_stop(project_id: str, zone: str, name: str):
+def instance_stop(project_id: t.Text, zone: t.Text, name: t.Text) -> None:
     service = Service(project_id=project_id, zone=zone)
     instance = Instance(service.get_instance(name=name))
     if instance.name is None:
@@ -63,7 +64,7 @@ def instance_stop(project_id: str, zone: str, name: str):
 @cli.command(name='create', help='List instances.')
 @click.option('--project-id', required=True, type=str, help='Project identifier.')
 @click.option('--zone', required=True, type=str, help='Zone.')
-def instance_create(project_id: str, zone: str):
+def instance_create(project_id: t.Text, zone: t.Text) -> None:
     service = Service(project_id=project_id, zone=zone)
     service.wait_for_operation(service.create_instance())
 
@@ -72,7 +73,7 @@ def instance_create(project_id: str, zone: str):
 @click.option('--project-id', required=True, type=str, help='Project identifier.')
 @click.option('--zone', required=True, type=str, help='Zone.')
 @click.argument('name', required=True, type=str)
-def instance_delete(project_id: str, zone: str, name: str):
+def instance_delete(project_id: t.Text, zone: t.Text, name: t.Text) -> None:
     service = Service(project_id=project_id, zone=zone)
     instance = Instance(service.get_instance(name=name))
     if instance.name is None:
