@@ -72,9 +72,9 @@ class MLCubeConfig(object):
         return runtime_config
 
     @staticmethod
-    def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: DictConfig, task_cli_args: t.Dict,
-                             platform: t.Optional[t.Text], workspace: t.Optional[t.Text] = None,
-                             resolve: bool = True) -> DictConfig:
+    def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig],
+                             task_cli_args: t.Optional[t.Dict], platform: t.Optional[t.Text],
+                             workspace: t.Optional[t.Text] = None, resolve: bool = True) -> DictConfig:
         """ Create MLCube config merging different configs - base, global, local and cli.
         Args:
             mlcube_config_file: Path to mlcube.yaml file.
@@ -85,6 +85,10 @@ class MLCubeConfig(object):
             resolve: If true, compute all values (some of them may reference other parameters or environmental
                 variables).
         """
+        if mlcube_cli_args is None:
+            mlcube_cli_args = OmegaConf.create({})
+        if task_cli_args is None:
+            task_cli_args = {}
         logger.debug("mlcube_config_file = %s", mlcube_config_file)
         logger.debug("mlcube_cli_args = %s", mlcube_cli_args)
         logger.debug("task_cli_args = %s", task_cli_args)

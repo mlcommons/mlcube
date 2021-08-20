@@ -133,5 +133,40 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
         docker_runner.run()
 
 
+@cli.command(name='describe', help='Describe MLCube.')
+@mlcube_option
+def run(mlcube: t.Text) -> None:
+    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
+    validate_type(mlcube_inst, MLCubeDirectory)
+    mlcube_config = MLCubeConfig.create_mlcube_config(
+        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args=None, task_cli_args=None, platform=None,
+        resolve=True
+    )
+    print(f"MLCube")
+    print(f"  path = {mlcube_config.runtime.root}")
+    print(f"  name = {mlcube_config.name}:{mlcube_config.get('version', 'latest')}")
+    print()
+    print(f"  workspace = {mlcube_config.runtime.workspace}")
+    if os.path.exists(mlcube_config.runtime.global_config.uri) and not mlcube_config.runtime.global_config.ignore:
+        print(f"  system settings = {mlcube_config.runtime.global_config.uri}")
+    print()
+    print(f"  Tasks:")
+    for task_name, task_def in mlcube_config.tasks.items():
+        description = f"name = {task_name}"
+        if len(task_def.parameters.inputs) > 0:
+            description = f"{description}, inputs = {list(task_def.parameters.inputs.keys())}"
+        if len(task_def.parameters.outputs) > 0:
+            description = f"{description}, outputs = {list(task_def.parameters.outputs.keys())}"
+        print(f"    {description}")
+    print()
+    print(f"Run this MLCube:")
+    print("  Configure MLCube:")
+    print(f"    mlcube configure --mlcube={mlcube_config.runtime.root} --platform=docker")
+    print("  Run MLCube tasks:")
+    for task_name in mlcube_config.tasks.keys():
+        print(f"    mlcube run --mlcube={mlcube_config.runtime.root} --task={task_name} --platform=docker")
+    print()
+
+
 if __name__ == "__main__":
     cli()
