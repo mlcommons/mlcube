@@ -7,8 +7,9 @@ import logging
 import coloredlogs
 import typing as t
 from omegaconf import OmegaConf
-from mlcube.parser import CliParser
+from mlcube import validate_type
 from mlcube.config import MLCubeConfig
+from mlcube.parser import (CliParser, MLCubeDirectory)
 
 
 logger = logging.getLogger(__name__)
@@ -92,10 +93,12 @@ def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, works
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
         resolve: if True, compute values in MLCube configuration.
     """
-    mlcube_root, mlcube_file = CliParser.parse_mlcube_arg(mlcube)
+    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
+    validate_type(mlcube_inst, MLCubeDirectory)
     mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
     mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_root, mlcube_file), mlcube_cli_args, task_cli_args, platform, workspace, resolve=resolve
+        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, platform, workspace,
+        resolve=resolve
     )
     print(OmegaConf.to_yaml(mlcube_config))
 
@@ -116,10 +119,12 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
         task: Comma separated list of tasks to run.
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
     """
-    mlcube_root, mlcube_file = CliParser.parse_mlcube_arg(mlcube)
+    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
+    validate_type(mlcube_inst, MLCubeDirectory)
     mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
     mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_root, mlcube_file), mlcube_cli_args, task_cli_args, platform, workspace, resolve=True
+        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, platform, workspace,
+        resolve=True
     )
     runner_cls: t.Callable = Platforms.get_runner(platform)
     tasks: t.List[str] = CliParser.parse_list_arg(task, default='main')

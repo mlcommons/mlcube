@@ -1,25 +1,45 @@
 import os
+import abc
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
 
 
+class MLCubeInstance(abc.ABC):
+    """ Base class for different instantiations of MLCube (local, remote, directory, archive, container ...). """
+    @abc.abstractmethod
+    def uri(self) -> t.Text:
+        raise NotImplementedError
+
+
+MLCubeInstanceType = t.TypeVar('MLCubeInstanceType', bound=MLCubeInstance)
+
+
+class MLCubeDirectory(MLCubeInstance):
+    """ An MLCube instantiation as a local directory. """
+    def __init__(self, path: t.Optional[t.Text] = None) -> None:
+        if path is None:
+            path = os.getcwd()
+        path = os.path.abspath(path)
+        if os.path.isfile(path):
+            self.path, self.file = os.path.split(path)
+        else:
+            self.path, self.file = os.path.abspath(path), 'mlcube.yaml'
+
+    def uri(self) -> t.Text:
+        return os.path.join(self.path, self.file)
+
+
 class CliParser(object):
     @staticmethod
-    def parse_mlcube_arg(mlcube: t.Optional[t.Text]) -> t.Tuple[t.Text, t.Text]:
+    def parse_mlcube_arg(mlcube: t.Optional[t.Text]) -> MLCubeInstanceType:
         """ Parse value of the `--mlcube` command line argument.
         Args:
             mlcube: Path to a MLCube directory or `mlcube.yaml` file. If it's a directory, standard name
                 `mlcube.yaml` is assumed for MLCube definition file.
         Returns:
-            Tuple (mlcube_root_directory, mlcube_file_name), `mlcube_file_name` is a file name inside
-                `mlcube_root_directory` directory.
+            One of child classes of MLCubeInstance that represents this MLCube.
         """
-        if mlcube is None:
-            mlcube = os.getcwd()
-        mlcube_root, mlcube_file = os.path.abspath(mlcube), 'mlcube.yaml'
-        if os.path.isfile(mlcube_root):
-            mlcube_root, mlcube_file = os.path.split(mlcube_root)
-        return mlcube_root, mlcube_file
+        return MLCubeDirectory(mlcube)
 
     @staticmethod
     def parse_list_arg(arg: t.Optional[t.Text], default: t.Optional[t.Text] = None) -> t.List[t.Text]:
