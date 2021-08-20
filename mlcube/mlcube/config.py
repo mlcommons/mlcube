@@ -64,7 +64,7 @@ class MLCubeConfig(object):
                 'workspace': '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace),
                 # Default path to a global (user) config.
                 'global_config': {
-                    'uri': '${oc.env:MLCUBE_GLOBAL_CONFIG, ${oc.env:HOME}/.mlcube.yaml}',
+                    'uri': '${oc.env:MLCUBE_GLOBAL_CONFIG, ${oc.env:HOME}/mlcube.yaml}',
                     'ignore': False
                 }
             }

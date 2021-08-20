@@ -16,7 +16,7 @@ class Config(BaseConfig):
 
     """
     k8s:
-        image:
+        image: ${docker.image}
         pvc:                  
         namespace:            # default
         volume_mount_prefix   # /mnt/mlcube/
