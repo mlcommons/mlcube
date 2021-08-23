@@ -139,7 +139,7 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
 
 @cli.command(name='describe', help='Describe MLCube.')
 @mlcube_option
-def run(mlcube: t.Text) -> None:
+def describe(mlcube: t.Text) -> None:
     mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
     validate_type(mlcube_inst, MLCubeDirectory)
     mlcube_config = MLCubeConfig.create_mlcube_config(
