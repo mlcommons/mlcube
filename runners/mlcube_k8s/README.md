@@ -9,6 +9,7 @@
      image: ${docker.image}
      pvc: "Persistent Volume Claim name (?). Actual location must be `workspace` directory of MLCube to run".                  
    ```
+   The `pvc` field above has the default value equal to MLCube name (mnist, matmul etc).
    What to do:
      - Update `k8s.pvc` value.
      - Keep `k8s.image` value as it is shown above (`${docker.image}`).

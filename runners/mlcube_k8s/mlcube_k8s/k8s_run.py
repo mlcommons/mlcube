@@ -1,7 +1,8 @@
 import logging
+import urllib3
 import kubernetes
 import typing as t
-from omegaconf import DictConfig
+from omegaconf import (DictConfig, OmegaConf)
 from mlcube.runner import (BaseConfig, BaseRunner)
 
 logger = logging.getLogger(__name__)
@@ -17,13 +18,15 @@ class Config(BaseConfig):
     """
     k8s:
         image: ${docker.image}
-        pvc:                  
+        pvc: ${name}
         namespace:            # default
         volume_mount_prefix   # /mnt/mlcube/
     """
 
     @staticmethod
     def from_dict(k8s_env: DictConfig) -> DictConfig:
+        k8s_env['image'] = k8s_env.get('image', None) or '${docker.image}'
+        k8s_env['pvc'] = k8s_env.get('pvc', None) or '${name}'
         k8s_env['namespace'] = k8s_env.get('namespace', None) or 'default'
         k8s_env['volume_mount_prefix'] = k8s_env.get('volume_mount_prefix', None) or '/mnt/mlcube/'
         Config.assert_keys_not_none('k8s', k8s_env, ['image', 'pvc', 'namespace', 'volume_mount_prefix'])
@@ -117,8 +120,14 @@ class KubernetesRun(BaseRunner):
 
     def run(self) -> None:
         """Run a cube"""
-        logging.info("Configuring MLCube as a Kubernetes Job...")
-        kubernetes.config.load_kube_config()
+        try:
+            logging.info("Configuring MLCube as a Kubernetes Job...")
+            kubernetes.config.load_kube_config()
 
-        mlcube_job_manifest = self.create_job_manifest()
-        _ = self.create_job(mlcube_job_manifest)
+            mlcube_job_manifest = self.create_job_manifest()
+            _ = self.create_job(mlcube_job_manifest)
+        except urllib3.exceptions.HTTPError:
+            print(f"K8S runner failed to run MLCube. The actual error is printed below. "
+                  "Your MLCube k8s configuration was:")
+            print(OmegaConf.to_yaml(self.mlcube.k8s, resolve=True))
+            raise

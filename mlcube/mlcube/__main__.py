@@ -1,6 +1,7 @@
 """
 This requires the MLCube 2.0 that's located somewhere in one of dev branches.
 """
+import importlib
 import os
 import click
 import logging
@@ -24,21 +25,24 @@ class Platforms(object):
         Returns:
             Callable object (e.g. runner class) that can create runner instance.
         """
+        from mlcube import default_runners
         platform = platform.lower()
-        if platform in ('docker', 'podman'):
-            try:
-                from mlcube_docker.docker_run import DockerRun as Runner
-            except ImportError:
-                print(f"Docker/Podman runner (platform={platform}) could not be imported.")
-                raise
-        elif platform in ('singularity',):
-            try:
-                from mlcube_singularity.singularity_run import SingularityRun as Runner
-            except ImportError:
-                print(f"Singularity runner (platform={platform}) could not be imported.")
-                raise
-        else:
-            raise ValueError(f"Runner for platform '{platform}' is not supported yet.")
+        runner_csl: t.Optional[t.Text] = None
+        for default_runner in default_runners:
+            if default_runner['platform'] == platform:
+                runner_csl = default_runner['cls']
+                break
+        if runner_csl is None:
+            raise RuntimeError(f"Unknown platform: '{platform}'.")
+
+        module_name, cls_name = runner_csl.rsplit('.', 1)
+        try:
+            runner_module = importlib.import_module(module_name)
+            Runner = getattr(runner_module, cls_name)
+            logger.info("[RUNNER] platform = %s, module = %s, cls = %s imported OK.", platform, module_name, cls_name)
+        except (ImportError, AttributeError):
+            logger.warning("Runner (%s) could not imported.", runner_csl)
+            raise
         return Runner
 
 
