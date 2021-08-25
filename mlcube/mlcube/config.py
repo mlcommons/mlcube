@@ -3,6 +3,7 @@ import logging
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
 
+from mlcube.system_settings import SystemSettings
 
 logger = logging.getLogger(__name__)
 
@@ -57,16 +58,8 @@ class MLCubeConfig(object):
             'runtime': {
                 # MLCube root folder
                 'root': root,
-                # Path to a default workspace which is located inside MLCube root directory. We need this to copy
-                # configuration files to user-provided workspaces.
-                'default_workspace': '${runtime.root}/workspace',
                 # Default workspace path
-                'workspace': '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace),
-                # Default path to a global (user) config.
-                'global_config': {
-                    'uri': '${oc.env:MLCUBE_GLOBAL_CONFIG, ${oc.env:HOME}/mlcube.yaml}',
-                    'ignore': False
-                }
+                'workspace': '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
             }
         })
         return runtime_config
@@ -75,10 +68,10 @@ class MLCubeConfig(object):
     def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig],
                              task_cli_args: t.Optional[t.Dict], platform: t.Optional[t.Text],
                              workspace: t.Optional[t.Text] = None, resolve: bool = True) -> DictConfig:
-        """ Create MLCube config merging different configs - base, global, local and cli.
+        """ Create MLCube mlcube merging different configs - base, global, local and cli.
         Args:
             mlcube_config_file: Path to mlcube.yaml file.
-            mlcube_cli_args: MLCube config from command line.
+            mlcube_cli_args: MLCube mlcube from command line.
             task_cli_args: Task parameters from command line.
             platform: Runner name.
             workspace: Workspace path to use in this MLCube run.
@@ -94,26 +87,18 @@ class MLCubeConfig(object):
         logger.debug("task_cli_args = %s", task_cli_args)
         logger.debug("platform = %s", platform)
         logger.debug("workspace = %s", workspace)
-        # TODO: sergey - it's not really clear now why I use list here.
-        platforms = [platform] if platform else []
-        # Merge default runtime config, local mlcube config and mlcube config from CLI.
+        # Merge default runtime mlcube, local mlcube mlcube and mlcube mlcube from CLI.
+        mlcube_config = OmegaConf.load(mlcube_config_file)
+        if 'runtime' in mlcube_config or 'runner' in mlcube_config:
+            logger.warning("MLCube configuration file contains one of the following keys ['runtime', 'runner']. "
+                           "These keys are reserved for internal use. MLCube will proceed, but most likely this will "
+                           "result in an unexpected behavior.")
         mlcube_config = OmegaConf.merge(
             MLCubeConfig.create_runtime_config(os.path.dirname(mlcube_config_file), workspace),
-            OmegaConf.load(mlcube_config_file),
+            mlcube_config,
+            OmegaConf.create({'runner': SystemSettings().get_platform(platform)}),
             mlcube_cli_args
         )
-        # If available, load global MLCube config. We really need only the right platform section from global config.
-        if not mlcube_config.runtime.global_config.ignore:
-            uri = mlcube_config.runtime.global_config.uri
-            try:
-                global_config = OmegaConf.load(uri)
-                if len(platforms) != 0:
-                    global_config = OmegaConf.create({
-                        platform: global_config.get(platform, {}) for platform in platforms
-                    })
-                mlcube_config = OmegaConf.merge(global_config, mlcube_config)
-            except (IsADirectoryError, FileNotFoundError):
-                logger.warning("Global configuration (%s) not loaded.", uri)
 
         for task_name in mlcube_config.tasks.keys():
             [task] = MLCubeConfig.ensure_values_exist(mlcube_config.tasks, task_name, dict)

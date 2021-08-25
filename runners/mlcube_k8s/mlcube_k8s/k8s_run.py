@@ -4,6 +4,7 @@ import kubernetes
 import typing as t
 from omegaconf import (DictConfig, OmegaConf)
 from mlcube.runner import (BaseConfig, BaseRunner)
+from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
@@ -11,46 +12,43 @@ logger = logging.getLogger(__name__)
 class Config(BaseConfig):
     """ Helper class to manage `k8s` environment configuration."""
 
-    CONFIG_SECTION = 'k8s'
+    DEFAULT = OmegaConf.create({
+        'runner': 'k8s',
 
-    DEFAULT_CONFIG = {}
-
-    """
-    k8s:
-        image: ${docker.image}
-        pvc: ${name}
-        namespace:            # default
-        volume_mount_prefix   # /mnt/mlcube/
-    """
+        'pvc': '${name}',             # By default, PVC name equals to the name of this MLCube (mnist, matmul, ...).
+        'image': '${docker.image}',   # Use image name from docker configuration section.
+        'namespace': 'default'        # ...
+    })
 
     @staticmethod
-    def from_dict(k8s_env: DictConfig) -> DictConfig:
-        k8s_env['image'] = k8s_env.get('image', None) or '${docker.image}'
-        k8s_env['pvc'] = k8s_env.get('pvc', None) or '${name}'
-        k8s_env['namespace'] = k8s_env.get('namespace', None) or 'default'
-        k8s_env['volume_mount_prefix'] = k8s_env.get('volume_mount_prefix', None) or '/mnt/mlcube/'
-        Config.assert_keys_not_none('k8s', k8s_env, ['image', 'pvc', 'namespace', 'volume_mount_prefix'])
-        return k8s_env
+    def validate(mlcube: DictConfig) -> DictConfig:
+        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
+
+        Validate(mlcube.runner, 'runner')\
+            .check_unknown_keys(Config.DEFAULT.keys())\
+            .check_values(['pvc', 'image', 'namespace'], str, blanks=False)
+
+        return mlcube
 
 
 class KubernetesRun(BaseRunner):
 
-    PLATFORM_NAME = 'k8s'
+    CONFIG = Config
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
-        super().__init__(mlcube, task, Config)
+        super().__init__(mlcube, task)
 
     def binding_to_volumes(self, params: DictConfig,                                        # inputs
                            args: t.List[t.Text], volume_mounts: t.Dict, volumes: t.Dict):   # outputs
         logger.warning(
             "You are running Kubernetes MLCube runner. In current implementation, the following must be true:"
             "  - Default workspace must be used."
-            "  - Default workspace must be the PVC named as self.mlcube.k8s.pvc."
+            "  - Default workspace must be the PVC named as self.mlcube.runner.pvc."
             "  - All paths in tasks must be relative (relative to workspace). Do not prefix them with "
             "    {runtime.workspace}."
         )
-        pvc_name = self.mlcube.k8s.pvc
-        vol_mount_prefix = self.mlcube.k8s.volume_mount_prefix
+        pvc_name = self.mlcube.runner.pvc
+        vol_mount_prefix = '/mnt/mlcube'
         for param_name, param_def in params.items():
             # We assume all paths are RELATIVE! So, just adding parameter value is fine.
             # Workspace in a host OS ({runtime.workspace}) will be mounted as $vol_mount_prefix/$pvc_name.
@@ -65,7 +63,7 @@ class KubernetesRun(BaseRunner):
             )
 
     def create_job_manifest(self) -> kubernetes.client.V1Job:
-        image: t.Text = self.mlcube.k8s.image
+        image: t.Text = self.mlcube.runner.image
         logging.info(f"Using image: {image}")
 
         container_args: t.List[t.Text] = []
@@ -129,5 +127,5 @@ class KubernetesRun(BaseRunner):
         except urllib3.exceptions.HTTPError:
             print(f"K8S runner failed to run MLCube. The actual error is printed below. "
                   "Your MLCube k8s configuration was:")
-            print(OmegaConf.to_yaml(self.mlcube.k8s, resolve=True))
+            print(OmegaConf.to_yaml(self.mlcube.runner, resolve=True))
             raise

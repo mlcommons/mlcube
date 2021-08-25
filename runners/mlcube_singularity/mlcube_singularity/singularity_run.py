@@ -2,13 +2,13 @@ import os
 import logging
 import typing as t
 from omegaconf import DictConfig, OmegaConf
-from mlcube.errors import IllegalParameterError
 from mlcube.shell import Shell
 from mlcube.runner import (BaseRunner, BaseConfig)
 
 
 __all__ = ['Config', 'SingularityRun']
 
+from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
@@ -16,47 +16,40 @@ logger = logging.getLogger(__name__)
 class Config(BaseConfig):
     """ Helper class to manage `singularity` environment configuration."""
 
-    CONFIG_SECTION = 'singularity'
+    DEFAULT = OmegaConf.create({
+        'runner': 'singularity',
 
-    DEFAULT_CONFIG = {
-        'image': '???',
+        'image': '${singularity.image}',
         'image_dir': '${runtime.workspace}/.image',
 
         'singularity': 'singularity',
 
         'build_args': '--fakeroot',
         'build_file': 'Singularity.recipe'
-    }
+    })
 
     @staticmethod
-    def from_dict(singularity_env: DictConfig) -> DictConfig:
-        """ Initialize singularity configuration from user config
-        Args:
-            singularity_env: MLCube `singularity` configuration, possible merged with user local configuration.
-        Return:
-            Initialized configuration.
-        """
+    def validate(mlcube: DictConfig) -> DictConfig:
         # Make sure all parameters present with their default values.
-        for name, value in Config.DEFAULT_CONFIG.items():
-            singularity_env[name] = singularity_env.get(name, None) or value
+        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
 
-        if not singularity_env.image:
-            raise IllegalParameterError(f'{Config.CONFIG_SECTION}.image', singularity_env.image)
+        validator = Validate(mlcube.runner, 'runner')
+        validator.check_unknown_keys(Config.DEFAULT.keys())\
+                 .check_values(['image', 'image_dir', 'singularity'], str, blanks=False)
 
-        logger.info(f"SingularityRun configuration: {str(singularity_env)}")
-        return singularity_env
+        return mlcube
 
 
 class SingularityRun(BaseRunner):
 
-    PLATFORM_NAME = 'singularity'
+    CONFIG = Config
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
-        super().__init__(mlcube, task, Config)
+        super().__init__(mlcube, task)
 
     def configure(self) -> None:
         """Build Singularity Image on a current host."""
-        s_cfg: DictConfig = self.mlcube.singularity
+        s_cfg: DictConfig = self.mlcube.runner
 
         # Get full path to a singularity image. By design, we compute it relative to {mlcube.root}/workspace.
         image_uri: t.Text = os.path.join(s_cfg.image_dir, s_cfg.image)
@@ -78,8 +71,7 @@ class SingularityRun(BaseRunner):
 
     def run(self) -> None:
         """  """
-        s_cfg: DictConfig = self.mlcube.singularity
-        image_uri: t.Text = os.path.join(s_cfg.image_dir, s_cfg.image)
+        image_uri: t.Text = os.path.join(self.mlcube.runner.image_dir, self.mlcube.runner.image)
         if not os.path.exists(image_uri):
             self.configure()
 
@@ -88,4 +80,4 @@ class SingularityRun(BaseRunner):
 
         volumes = Config.dict_to_cli(mounts, sep=':', parent_arg='--bind')
 
-        Shell.run(s_cfg.singularity, 'run', volumes, image_uri, ' '.join(task_args))
+        Shell.run(self.mlcube.runner.singularity, 'run', volumes, image_uri, ' '.join(task_args))

@@ -1,14 +1,15 @@
 import os
 import logging
 import typing as t
-from omegaconf import DictConfig
+from omegaconf import (DictConfig, OmegaConf)
 from mlcube.shell import Shell
-from mlcube.errors import IllegalParameterError
 from mlcube.runner import (BaseRunner, BaseConfig)
+from mlcube.errors import IllegalParameterValueError
 
 
 __all__ = ['Config', 'DockerRun']
 
+from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
@@ -16,15 +17,20 @@ logger = logging.getLogger(__name__)
 class Config(BaseConfig):
     """ Helper class to manage `docker` environment configuration."""
 
-    CONFIG_SECTION = 'docker'         # Section name in MLCube configuration file.
-
     class BuildStrategy(object):
         PULL = 'pull'
         AUTO = 'auto'
         ALWAYS = 'always'
 
-    DEFAULT_CONFIG = {
-        'image': '???',               # Image name.
+        @staticmethod
+        def validate(build_strategy: t.Text) -> None:
+            if build_strategy not in ('pull', 'auto', 'always'):
+                raise IllegalParameterValueError('build_strategy', build_strategy, "['pull', 'auto', 'always']")
+
+    DEFAULT = OmegaConf.create({
+        'runner': 'docker',
+
+        'image': '${docker.image}',   # Image name.
         'docker': 'docker',           # Executable (docker, podman, sudo docker ...).
 
         'env_args': {},               # Environmental variables for build and run actions.
@@ -42,49 +48,49 @@ class Config(BaseConfig):
                                       #   'always': build even if image found
         # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
         #       switch as build arg to force pulling the base image.
-    }
+    })
 
     @staticmethod
-    def from_dict(docker_env: DictConfig) -> DictConfig:
+    def validate(mlcube: DictConfig) -> DictConfig:
         """ Initialize configuration from user config
         Args:
-            docker_env: MLCube `container` configuration, possible merged with user local configuration.
+            mlcube: MLCube `container` configuration, possible merged with user local configuration.
         Return:
             Initialized configuration.
         """
         # Make sure all parameters present with their default values.
-        for name, value in Config.DEFAULT_CONFIG.items():
-            docker_env[name] = docker_env.get(name, None) or value
+        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
 
-        if not docker_env.image:
-            raise IllegalParameterError(f'{Config.CONFIG_SECTION}.image', docker_env.image)
+        validator = Validate(mlcube.runner, 'runner')
+        _ = validator.check_unknown_keys(Config.DEFAULT.keys())\
+                     .check_values(['image', 'docker', 'build_strategy'], str, blanks=False)
+        Config.BuildStrategy.validate(mlcube.runner.build_strategy)
 
-        if isinstance(docker_env.build_args, DictConfig):
-            docker_env.build_args = Config.dict_to_cli(docker_env.build_args, parent_arg='--build-arg')
-        if isinstance(docker_env.env_args, DictConfig):
-            docker_env.env_args = Config.dict_to_cli(docker_env.env_args, parent_arg='-e')
+        if isinstance(mlcube.runner.build_args, DictConfig):
+            mlcube.runner.build_args = Config.dict_to_cli(mlcube.runner.build_args, parent_arg='--build-arg')
+        if isinstance(mlcube.runner.env_args, DictConfig):
+            mlcube.runner.env_args = Config.dict_to_cli(mlcube.runner.env_args, parent_arg='-e')
 
-        logger.debug(f"DockerRun configuration: {str(docker_env)}")
-        return docker_env
+        return mlcube
 
 
 class DockerRun(BaseRunner):
     """ Docker runner. """
 
-    PLATFORM_NAME = 'docker'
+    CONFIG = Config
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
-        super().__init__(mlcube, task, Config)
+        super().__init__(mlcube, task)
 
     def configure(self) -> None:
         """Build Docker image on a current host."""
-        image: t.Text = self.mlcube.docker.image
-        context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.docker.build_context)
-        recipe: t.Text = os.path.join(context, self.mlcube.docker.build_file)
-        docker: t.Text = self.mlcube.docker.docker
+        image: t.Text = self.mlcube.runner.image
+        context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
+        recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
+        docker: t.Text = self.mlcube.runner.docker
 
         # Build strategies: `pull`, `auto` and `always`.
-        build_strategy: t.Text = self.mlcube.docker.build_strategy
+        build_strategy: t.Text = self.mlcube.runner.build_strategy
         build_recipe_exists: bool = os.path.exists(recipe)
         if build_strategy == Config.BuildStrategy.PULL or not build_recipe_exists:
             logger.info("Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
@@ -97,26 +103,26 @@ class DockerRun(BaseRunner):
         else:
             logger.info("Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
                         image, build_strategy, build_recipe_exists)
-            build_args: t.Text = self.mlcube.docker.build_args
+            build_args: t.Text = self.mlcube.runner.build_args
             Shell.run(docker, 'build', build_args, '-t', image, '-f', recipe, context)
 
     def run(self) -> None:
         """ Run a cube. """
-        docker: t.Text = self.mlcube.docker.docker
-        image: t.Text = self.mlcube.docker.image
+        docker: t.Text = self.mlcube.runner.docker
+        image: t.Text = self.mlcube.runner.image
 
-        build_strategy: t.Text = self.mlcube.docker.build_strategy
+        build_strategy: t.Text = self.mlcube.runner.build_strategy
         if build_strategy == Config.BuildStrategy.ALWAYS or not Shell.docker_image_exists(docker, image):
             logger.warning("Docker image (%s) does not exist or build strategy is 'always'. "
                            "Will run 'configure' phase.", image)
             try:
                 self.configure()
             except RuntimeError:
-                context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.docker.build_context)
-                recipe: t.Text = os.path.join(context, self.mlcube.docker.build_file)
+                context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
+                recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
                 if build_strategy == Config.BuildStrategy.PULL and os.path.exists(recipe):
                     logger.warning("MLCube configuration failed. Docker recipe (%s) exists, but your build strategy is "
-                                   "set to pull. Rerun with: -Pdocker.build_strategy=auto to build image locally.",
+                                   "set to pull. Rerun with: -Prunner.build_strategy=auto to build image locally.",
                                    recipe)
                 raise
 
@@ -125,8 +131,8 @@ class DockerRun(BaseRunner):
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
         volumes = Config.dict_to_cli(mounts, sep=':', parent_arg='--volume')
-        env_args = self.mlcube.docker.env_args
+        env_args = self.mlcube.runner.env_args
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
-        run_args: t.Text = self.mlcube.docker.cpu_args if num_gpus == 0 else self.mlcube.docker.gpu_args
+        run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
         Shell.run(docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args))
