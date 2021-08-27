@@ -74,6 +74,9 @@ class SingularityRun(Runner):
         if not os.path.exists(image_uri):
             self.configure()
 
+        # Deal with user-provided workspace
+        Shell.sync_workspace(self.mlcube, self.task)
+
         mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
         logger.info(f"mounts={mounts}, task_args={task_args}")
 

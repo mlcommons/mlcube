@@ -74,17 +74,23 @@ class MLCubeConfig(object):
         logger.debug("workspace = %s", workspace)
 
         # Load MLCube configuration and maybe override parameters from command line (like -Pdocker.build_strategy=...).
+        actual_workspace = '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
         mlcube_config = OmegaConf.merge(
             OmegaConf.load(mlcube_config_file),
             mlcube_cli_args,
             OmegaConf.create({
                 'runtime': {
                     'root': os.path.dirname(mlcube_config_file),
-                    'workspace': '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
+                    'workspace': actual_workspace
                 },
                 'runner': runner_config
             })
         )
+        # Maybe this is not the best idea, but originally MLCube used $WORKSPACE token to refer to the internal
+        # workspace. So, this value is here to simplify access to workspace value. BTW, in general, if files are to be
+        # located inside workspace (internal or custom), users are encouraged not to use ${runtime.workspace} or
+        # ${workspace} in their MLCube configuration files.
+        mlcube_config['workspace'] = actual_workspace
         # Merge, for instance, docker runner config from system settings with docker config from MLCube config.
         if runner_cls:
             runner_cls.CONFIG.merge(mlcube_config)

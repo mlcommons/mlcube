@@ -125,6 +125,8 @@ class DockerRun(Runner):
                                    "set to pull. Rerun with: -Prunner.build_strategy=auto to build image locally.",
                                    recipe)
                 raise
+        # Deal with user-provided workspace
+        Shell.sync_workspace(self.mlcube, self.task)
 
         # The 'mounts' dictionary maps host paths to container paths
         mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
