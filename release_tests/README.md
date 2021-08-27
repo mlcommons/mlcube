@@ -38,7 +38,7 @@ Proposed semi-automated workflow:
    ```
    python -m unittest discover release_tests/
    ```
-   Some of the tests will check things like project versions and will re-run projects' unit tests.
+   Some tests will check things like project versions and will re-run projects' unit tests.
    > TODO: The release tests are Work In Progress.
 4. If something fails, fix and go to #3.
 5. If updates are required, commit, push and create a new PR. Once merged, repeat all steps above.

@@ -21,9 +21,6 @@ nav:
 
 theme:
   name: 'material'
-
-theme:
-  name: material
   favicon: 'assets/favicon.ico'
   language: 'en'
   palette:

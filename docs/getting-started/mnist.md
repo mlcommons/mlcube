@@ -11,7 +11,7 @@ packages that can run cubes on different platforms including docker and singular
 
 
 ## MNIST training code
-Training a ML model is a process involving multiple steps such as getting data, analyzing and cleaning data, 
+Training an ML model is a process involving multiple steps such as getting data, analyzing and cleaning data, 
 splitting into train/validation/test data sets, running hyper-parameter optimization experiments and performing final
 model testing. It is a relatively small and well studied dataset that provides standard train/test split. In this simple
 example a developer needs to implement two steps - (1) downloading data and (2) training a model. We'll call these steps
@@ -28,7 +28,7 @@ files, training snapshots and ML models. We can characterize these two tasks in 
 
 We have intentionally made all input/output parameters to be file system artifacts. By doing so, we support
 reproducibility. Instead of command line arguments that can easily be lost, we store them in files. There are many
-different ways to implement the MNIST example. For simplicity, we assume the following:  
+ways to implement the MNIST example. For simplicity, we assume the following:  
 - We use one python file.  
 - Task name (download, train) is a command line positional parameter.  
 - Both tasks write logs, so it makes sense to add parameter accepting directory for log files.  
@@ -74,8 +74,8 @@ mnist/
     Dockerfile
     Singularity.recipe
 ```
-A good test at this point would be ensure that project is runnable from the build directory, and docker and singularity
-images can be built.  
+A good test at this point would be to ensure that project is runnable from the build directory, and docker and 
+singularity images can be built.  
 
 
 ### MLCube definition file
@@ -162,7 +162,7 @@ mnist/
 
 ### Workspace
 The workspace is a directory inside cube (`workspace`) where, by default, input/output file system artifacts are
-stored. The are multiple reasons to have one. One is to formally have default place for data sets, configuration
+stored. There are multiple reasons to have one. One is to formally have default place for data sets, configuration
 and log files etc. Having all these parameters in one place makes it simpler to run cubes on remote hosts and then
 sync results back to users' local machines.
 
@@ -300,8 +300,8 @@ mnist/                                   # MLCube root directory.
 
 
 ## Running MNIST MLCube
-We need to setup the Python virtual environment. These are the steps outlined in the `Introduction` section except we do
-not clone GitHub repository with the example MLCube cubes. 
+We need to set up the Python virtual environment. These are the steps outlined in the `Introduction` section except we 
+do not clone GitHub repository with the example MLCube cubes. 
 ```
 # Create Python Virtual Environment
 virtualenv -p python3 ./env && source ./env/bin/activate
@@ -319,7 +319,7 @@ pip install mlcube-docker mlcube-singularity
 
 
 ### Docker Runner
-Configure MNIST cube (this is optional step, docker runner checks if image exists, and if does not, runs `configure`
+Configure MNIST cube (this is optional step, docker runner checks if image exists, and if it does not, runs `configure`
 phase automatically):
 ```
 mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml

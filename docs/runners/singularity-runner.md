@@ -19,7 +19,7 @@ The `image` field above is a path to a singularity container. It is relative to 
 - If it is a relative path, it is relative to `{MLCUBE_ROOT}/workspace`.
 - Absolute paths (starting with /) are used as is.
 
-In the example above, Singularity image is stored in the directory outside of the `{MLCUBE_ROOT}` to avoid
+In the example above, Singularity image is stored in the directory outside the `{MLCUBE_ROOT}` to avoid
 copying it back to a user host when using runners such as SSH.
 
 

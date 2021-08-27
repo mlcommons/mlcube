@@ -7,7 +7,7 @@ The Kubernetes Runner runs a MLCube on a Kubernetes cluster.
 ## Why Kubernetes?
 
 One of the key goals of the MLCube project is to enable portability of ML models.
-Kubernetes offers the a good set of abstractions to enable model training to be portable
+Kubernetes offers a good set of abstractions to enable model training to be portable
 across different compute platforms.
 
 ## Design

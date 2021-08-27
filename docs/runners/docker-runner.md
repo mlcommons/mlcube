@@ -27,7 +27,7 @@ that must be packaged in a docker image, must be located in that directory, incl
 resource files, ML models etc. The docker recipe must have the standard name `Dockerfile`.
 
 If `Dockerfile` file exists in `{MLCUBE_ROOT}/build`, the Docker runner assumes that it needs to `build` a docker
-image. If that file does not exists, the Docker runner will try to `pull` image with the specified name.
+image. If that file does not exist, the Docker runner will try to `pull` image with the specified name.
 
 Docker runner under the hood runs the following command line:  
 ```
@@ -42,7 +42,7 @@ where:
 > The `configure` command is optional and users do not necessarily need to be aware about it. The Docker runner
 > auto-detects if docker image exists before running a task, and if it does not exist, the docker runner runs the 
 > `configure` command. During the `configure` phase, docker runner does not check if docker image exists. This means the
-> following. If some of the implementation files have been modified, to rebuild the docker image users need to run
+> following. If some implementation files have been modified, to rebuild the docker image users need to run
 > the `configure` command explicitly.
 
 

@@ -49,7 +49,7 @@ gcp:
     project_id: 'atomic-envelope-293722'
     zone: 'us-central1-a'
     credentials:
-        # As described above, ensure you have servuce account activated and download your JSON key file.
+        # As described above, ensure you have service account activated and download your JSON key file.
         file: '${HOME}/.gcp/service_account_key_file.json'
         scopes: ['https://www.googleapis.com/auth/cloud-platform']
 
@@ -65,15 +65,15 @@ instance:
     disk_size_gb: 100
 
 # As described above, primary role of GCP runners is to ensure a remote instance exists before delegating the actual
-# `MLCube run` functionality to other runners. Currently, the only available option is a SSH runner (that assumes 
+# `MLCube run` functionality to other runners. Currently, the only available option is an SSH runner (that assumes 
 # remote instances are available vis SSH i.e. they have public IPs). The `platform` field below specifies what runner
-# the GCP runner should be using once GCP virtual instance has been created. A SSH runner needs to be configured
+# the GCP runner should be using once GCP virtual instance has been created. An SSH runner needs to be configured
 # separately (see sections below for some recommendations and best practices). 
 platform: 'ssh.yaml'
 ``` 
 
 ## GCP runner `configure` phase
-GCP runners execute the following steps during the configure phase:
+GCP runners execute the following steps during the configuration phase:
 1.  Check that SSH access has been configured. A runner loads users `${HOME}/.ssh/config` file and verifies it 
     contains a section for the remote instance there (specified by the name). The configuration section must define 
     `User` and `IdentityFile`.
@@ -81,14 +81,14 @@ GCP runners execute the following steps during the configure phase:
 3. GCP runner checks if a remote instance exists with the provided name. If it does not exist, it creates it using three
    parameters described above - instance name, machine type and disk size.
 4. If a remote instance is not running, GCP runner starts it.
-5. GCP runner retrieves a remote instance's meta data that includes public IP address. If public IP address does not 
+5. GCP runner retrieves a remote instance's metadata that includes public IP address. If public IP address does not 
    match `HostName` in ssh configuration file, __GCP RUNNER UPDATES USER SSH CONFIG FILE__.
 6. Currently, GCP runner automatically installs such packages, as `docker`, `python3` and `virtualenv`.
 7. GCP runner calls SSH runner to continue configuring remote instance in a MLCube-specific way.
 
 
 ##  GCP runner `run` phase
-GCP runner does not implement any specific logic and redirects its functionality to a SSH runner.   
+GCP runner does not implement any specific logic and redirects its functionality to an SSH runner.   
 
 
 ## Recommendations

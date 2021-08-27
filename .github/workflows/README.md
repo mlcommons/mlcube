@@ -16,7 +16,7 @@ on:
   push:
 ```
 
-We don't want the Action to be run on all commits because most changes aren't going to be related to documentation. To filter out and run the `docs-site` **only** on changes relevant to documentation, we set the `paths` field in the workflow. We trigger the Action on a `event:push` with changes to files inside the `docs/` directory or to the `docs-site` workflow.
+We don't want the Action to be run on all commits because most changes are not going to be related to documentation. To filter out and run the `docs-site` **only** on changes relevant to documentation, we set the `paths` field in the workflow. We trigger the Action on a `event:push` with changes to files inside the `docs/` directory or to the `docs-site` workflow.
 
 ```yaml
 on:
