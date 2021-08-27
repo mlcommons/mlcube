@@ -2,10 +2,11 @@ import os
 import logging
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
-
-from mlcube.system_settings import SystemSettings
+from mlcube.runner import Runner
 
 logger = logging.getLogger(__name__)
+
+__all__ = ['IOType', 'ParameterType', 'MLCubeConfig']
 
 
 class IOType(object):
@@ -45,79 +46,70 @@ class MLCubeConfig(object):
         return os.path.abspath(os.path.expanduser(value))
 
     @staticmethod
-    def create_runtime_config(root: t.Text, workspace: t.Optional[t.Text] = None) -> DictConfig:
-        """ Return base configuration for all MLCubes.
-        Args:
-            root: Path to MLCube root directory.
-            workspace: Workspace path to use in this MLCube run.
-        Returns:
-            Base configuration.
-        """
-        runtime_config = OmegaConf.create({
-            # This configuration contains single entry - `runtime`. It is assumed that users do not use `runtime` key.
-            'runtime': {
-                # MLCube root folder
-                'root': root,
-                # Default workspace path
-                'workspace': '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
-            }
-        })
-        return runtime_config
-
-    @staticmethod
-    def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig],
-                             task_cli_args: t.Optional[t.Dict], platform: t.Optional[t.Text],
-                             workspace: t.Optional[t.Text] = None, resolve: bool = True) -> DictConfig:
+    def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig] = None,
+                             task_cli_args: t.Optional[t.Dict] = None, runner_config: t.Optional[DictConfig] = None,
+                             workspace: t.Optional[t.Text] = None, resolve: bool = True,
+                             runner_cls: t.Optional[t.Type[Runner]] = None) -> DictConfig:
         """ Create MLCube mlcube merging different configs - base, global, local and cli.
         Args:
             mlcube_config_file: Path to mlcube.yaml file.
             mlcube_cli_args: MLCube mlcube from command line.
             task_cli_args: Task parameters from command line.
-            platform: Runner name.
+            runner_config: MLCube runner configuration, usually comes from system settings file.
             workspace: Workspace path to use in this MLCube run.
             resolve: If true, compute all values (some of them may reference other parameters or environmental
                 variables).
+            runner_cls: A python class for the runner type specified in `runner_config`.
         """
         if mlcube_cli_args is None:
             mlcube_cli_args = OmegaConf.create({})
         if task_cli_args is None:
             task_cli_args = {}
+        if runner_config is None:
+            runner_config = OmegaConf.create({})
         logger.debug("mlcube_config_file = %s", mlcube_config_file)
         logger.debug("mlcube_cli_args = %s", mlcube_cli_args)
         logger.debug("task_cli_args = %s", task_cli_args)
-        logger.debug("platform = %s", platform)
+        logger.debug("runner_config = %s", str(runner_config))
         logger.debug("workspace = %s", workspace)
-        # Merge default runtime mlcube, local mlcube mlcube and mlcube mlcube from CLI.
-        mlcube_config = OmegaConf.load(mlcube_config_file)
-        if 'runtime' in mlcube_config or 'runner' in mlcube_config:
-            logger.warning("MLCube configuration file contains one of the following keys ['runtime', 'runner']. "
-                           "These keys are reserved for internal use. MLCube will proceed, but most likely this will "
-                           "result in an unexpected behavior.")
+
+        # Load MLCube configuration and maybe override parameters from command line (like -Pdocker.build_strategy=...).
         mlcube_config = OmegaConf.merge(
-            MLCubeConfig.create_runtime_config(os.path.dirname(mlcube_config_file), workspace),
-            mlcube_config,
-            OmegaConf.create({'runner': SystemSettings().get_platform(platform)}),
-            mlcube_cli_args
+            OmegaConf.load(mlcube_config_file),
+            mlcube_cli_args,
+            OmegaConf.create({
+                'runtime': {
+                    'root': os.path.dirname(mlcube_config_file),
+                    'workspace': '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
+                },
+                'runner': runner_config
+            })
         )
+        # Merge, for instance, docker runner config from system settings with docker config from MLCube config.
+        if runner_cls:
+            runner_cls.CONFIG.merge(mlcube_config)
+        # Need to apply CLI arguments again just in case users provided something like -Prunner.build_strategy=...
+        mlcube_config = OmegaConf.merge(mlcube_config, mlcube_cli_args)
+        if runner_cls:
+            runner_cls.CONFIG.validate(mlcube_config)
 
         for task_name in mlcube_config.tasks.keys():
             [task] = MLCubeConfig.ensure_values_exist(mlcube_config.tasks, task_name, dict)
             [parameters] = MLCubeConfig.ensure_values_exist(task, 'parameters', dict)
             [inputs, outputs] = MLCubeConfig.ensure_values_exist(parameters, ['inputs', 'outputs'], dict)
 
-            MLCubeConfig.check_parameters(inputs, IOType.INPUT, task_cli_args)
-            MLCubeConfig.check_parameters(outputs, IOType.OUTPUT, task_cli_args)
+            MLCubeConfig.check_parameters(inputs, task_cli_args)
+            MLCubeConfig.check_parameters(outputs, task_cli_args)
 
         if resolve:
             OmegaConf.resolve(mlcube_config)
         return mlcube_config
 
     @staticmethod
-    def check_parameters(parameters: DictConfig, io: t.Text, task_cli_args: t.Dict) -> None:
+    def check_parameters(parameters: DictConfig, task_cli_args: t.Dict) -> None:
         """ Check that task parameters are defined according to MLCube schema.
         Args:
             parameters: Task parameters (`inputs` or `outputs`).
-            io: `input` or `output`.
             task_cli_args: Task parameters from command line.
         This function does not set `type` of parameters (if not present) in all cases.
         """

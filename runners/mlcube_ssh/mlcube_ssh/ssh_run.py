@@ -2,7 +2,7 @@ import os
 import logging
 import typing as t
 from omegaconf import DictConfig, OmegaConf
-from mlcube.runner import (BaseConfig, BaseRunner)
+from mlcube.runner import (RunnerConfig, Runner)
 from mlcube.shell import Shell
 from mlcube.validate import Validate
 from mlcube_ssh.ssh_metadata import PythonInterpreter
@@ -11,7 +11,7 @@ from mlcube_ssh.ssh_metadata import PythonInterpreter
 logger = logging.getLogger(__name__)
 
 
-class Config(BaseConfig):
+class Config(RunnerConfig):
     """ Helper class to manage `ssh` environment configuration."""
 
     DEFAULT = OmegaConf.create({
@@ -28,7 +28,7 @@ class Config(BaseConfig):
     })
 
     @staticmethod
-    def validate(mlcube: DictConfig) -> DictConfig:
+    def validate(mlcube: DictConfig) -> None:
         mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
 
         Validate(mlcube.runner, 'runner')\
@@ -37,10 +37,8 @@ class Config(BaseConfig):
             .check_values(['interpreter', 'authentication'], DictConfig)
         PythonInterpreter.get(mlcube.runner.interpreter).validate(mlcube.runner.interpreter)
 
-        return mlcube
 
-
-class SSHRun(BaseRunner):
+class SSHRun(Runner):
     """
     Reference implementation of the remote runner based on SSH.
 

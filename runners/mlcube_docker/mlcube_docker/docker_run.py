@@ -3,7 +3,7 @@ import logging
 import typing as t
 from omegaconf import (DictConfig, OmegaConf)
 from mlcube.shell import Shell
-from mlcube.runner import (BaseRunner, BaseConfig)
+from mlcube.runner import (Runner, RunnerConfig)
 from mlcube.errors import IllegalParameterValueError
 
 
@@ -14,7 +14,7 @@ from mlcube.validate import Validate
 logger = logging.getLogger(__name__)
 
 
-class Config(BaseConfig):
+class Config(RunnerConfig):
     """ Helper class to manage `docker` environment configuration."""
 
     class BuildStrategy(object):
@@ -51,7 +51,11 @@ class Config(BaseConfig):
     })
 
     @staticmethod
-    def validate(mlcube: DictConfig) -> DictConfig:
+    def merge(mlcube: DictConfig) -> None:
+        mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('docker', OmegaConf.create({})))
+
+    @staticmethod
+    def validate(mlcube: DictConfig) -> None:
         """ Initialize configuration from user config
         Args:
             mlcube: MLCube `container` configuration, possible merged with user local configuration.
@@ -59,22 +63,18 @@ class Config(BaseConfig):
             Initialized configuration.
         """
         # Make sure all parameters present with their default values.
-        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
-
         validator = Validate(mlcube.runner, 'runner')
         _ = validator.check_unknown_keys(Config.DEFAULT.keys())\
                      .check_values(['image', 'docker', 'build_strategy'], str, blanks=False)
         Config.BuildStrategy.validate(mlcube.runner.build_strategy)
 
         if isinstance(mlcube.runner.build_args, DictConfig):
-            mlcube.runner.build_args = Config.dict_to_cli(mlcube.runner.build_args, parent_arg='--build-arg')
+            mlcube.runner.build_args = Shell.to_cli_args(mlcube.runner.build_args, parent_arg='--build-arg')
         if isinstance(mlcube.runner.env_args, DictConfig):
-            mlcube.runner.env_args = Config.dict_to_cli(mlcube.runner.env_args, parent_arg='-e')
-
-        return mlcube
+            mlcube.runner.env_args = Shell.to_cli_args(mlcube.runner.env_args, parent_arg='-e')
 
 
-class DockerRun(BaseRunner):
+class DockerRun(Runner):
     """ Docker runner. """
 
     CONFIG = Config
@@ -130,7 +130,7 @@ class DockerRun(BaseRunner):
         mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
-        volumes = Config.dict_to_cli(mounts, sep=':', parent_arg='--volume')
+        volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--volume')
         env_args = self.mlcube.runner.env_args
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args

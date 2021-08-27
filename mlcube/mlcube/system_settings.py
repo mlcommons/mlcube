@@ -5,6 +5,7 @@ from pathlib import Path
 from omegaconf import (OmegaConf, DictConfig)
 from mlcube.errors import MLCubeError
 from mlcube.platform import Platform
+from mlcube.runner import Runner
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,18 @@ class SystemSettings(object):
                 self.settings[key] = {}
         if updated:
             self.save()
+
+    @property
+    def runners(self) -> DictConfig:
+        return self.settings.runners
+
+    @property
+    def platforms(self) -> DictConfig:
+        return self.settings.platforms
+
+    @property
+    def storage(self) -> DictConfig:
+        return self.settings.storage
 
     def save(self, resolve: bool = False) -> 'SystemSettings':
         OmegaConf.save(self.settings, self.path, resolve=resolve)
@@ -66,7 +79,7 @@ class SystemSettings(object):
             raise MLCubeError(f"Platform ({platform}) already exists ({self.settings.platforms[platform]}).")
         if runner not in self.settings.runners:
             raise MLCubeError(f"Unknown runner ({runner}). Installed runners = {str(self.settings.runners.keys())}")
-        runner_cls: t.Callable = Platform.get_runner(runner, self.settings.runners)
+        runner_cls: t.Type[Runner] = Platform.get_runner(self.runners.get(runner, None))
         self.settings.platforms[platform] = runner_cls.CONFIG.DEFAULT
         self.save()
         return self

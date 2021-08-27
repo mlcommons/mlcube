@@ -110,3 +110,14 @@ class Shell(object):
         _generate(params.outputs, IOType.OUTPUT)
 
         return mounts, args
+
+    @staticmethod
+    def to_cli_args(args: t.Mapping[t.Text, t.Any], sep: t.Text = '=', parent_arg: t.Optional[t.Text] = None) -> t.Text:
+        """ Convert dict to CLI arguments.
+        Args:
+            args: Dictionary with parameters.
+            sep: Key-value separator. For build args and environment variables it's '=', for mount points it is ':'.
+            parent_arg: If not None, a parent parameter name for each arg in args, e.g. --build-arg
+        """
+        parent_arg = '' if not parent_arg else parent_arg + ' '
+        return ' '.join(f'{parent_arg}{k}{sep}{v}' for k, v in args.items())

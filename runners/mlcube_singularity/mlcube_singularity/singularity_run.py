@@ -3,7 +3,7 @@ import logging
 import typing as t
 from omegaconf import DictConfig, OmegaConf
 from mlcube.shell import Shell
-from mlcube.runner import (BaseRunner, BaseConfig)
+from mlcube.runner import (Runner, RunnerConfig)
 
 
 __all__ = ['Config', 'SingularityRun']
@@ -13,7 +13,7 @@ from mlcube.validate import Validate
 logger = logging.getLogger(__name__)
 
 
-class Config(BaseConfig):
+class Config(RunnerConfig):
     """ Helper class to manage `singularity` environment configuration."""
 
     DEFAULT = OmegaConf.create({
@@ -29,18 +29,17 @@ class Config(BaseConfig):
     })
 
     @staticmethod
-    def validate(mlcube: DictConfig) -> DictConfig:
-        # Make sure all parameters present with their default values.
-        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
+    def merge(mlcube: DictConfig) -> None:
+        mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('singularity', OmegaConf.create({})))
 
+    @staticmethod
+    def validate(mlcube: DictConfig) -> None:
         validator = Validate(mlcube.runner, 'runner')
         validator.check_unknown_keys(Config.DEFAULT.keys())\
                  .check_values(['image', 'image_dir', 'singularity'], str, blanks=False)
 
-        return mlcube
 
-
-class SingularityRun(BaseRunner):
+class SingularityRun(Runner):
 
     CONFIG = Config
 
@@ -78,6 +77,6 @@ class SingularityRun(BaseRunner):
         mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
-        volumes = Config.dict_to_cli(mounts, sep=':', parent_arg='--bind')
+        volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--bind')
 
         Shell.run(self.mlcube.runner.singularity, 'run', volumes, image_uri, ' '.join(task_args))

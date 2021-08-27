@@ -6,7 +6,7 @@ from omegaconf import (DictConfig, OmegaConf)
 from mlcube.validate import Validate
 from mlcube_ssh.ssh_run import Shell
 from ssh_config.client import (SSHConfig, Host)
-from mlcube.runner import (BaseConfig, BaseRunner)
+from mlcube.runner import (RunnerConfig, Runner)
 from mlcube_gcp.gcp_client.instance import Instance as GCPInstance, Status as GCPInstanceStatus
 from mlcube_gcp.gcp_client.service import Service
 
@@ -14,7 +14,7 @@ from mlcube_gcp.gcp_client.service import Service
 logger = logging.getLogger(__name__)
 
 
-class Config(BaseConfig):
+class Config(RunnerConfig):
 
     DEFAULT = OmegaConf.create({
         'runner': 'gcp',
@@ -33,9 +33,7 @@ class Config(BaseConfig):
     })
 
     @staticmethod
-    def validate(mlcube: DictConfig) -> DictConfig:
-        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
-
+    def validate(mlcube: DictConfig) -> None:
         Validate(mlcube.runner, 'runner')\
             .check_unknown_keys(Config.DEFAULT.keys())\
             .check_values(['gcp', 'instance'], DictConfig)\
@@ -49,10 +47,8 @@ class Config(BaseConfig):
             .not_none(['name', 'machine_type', 'disk_size_gb']) \
             .check_values(['name', 'machine_type'], str, blanks=False)
 
-        return mlcube
 
-
-class GCPRun(BaseRunner):
+class GCPRun(Runner):
 
     CONFIG = Config
 

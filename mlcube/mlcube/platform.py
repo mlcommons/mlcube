@@ -3,9 +3,11 @@ import logging
 import importlib
 import typing as t
 from omegaconf import DictConfig
-from mlcube.runner import BaseRunner
+from mlcube.runner import Runner
 
 logger = logging.getLogger(__name__)
+
+__all__ = ['Platform']
 
 
 class Platform(object):
@@ -26,9 +28,9 @@ class Platform(object):
         for pkg_name, module in candidate_runners.items():
             try:
                 get_runner_class: t.Callable = getattr(module, 'get_runner_class')
-                runner_cls = get_runner_class()
-                if not issubclass(runner_cls, BaseRunner):
-                    raise TypeError(f"Invalid type of a runner ({runner_cls}). Expecting subclass of {BaseRunner}.")
+                runner_cls: t.Type[Runner] = get_runner_class()
+                if not issubclass(runner_cls, Runner):
+                    raise TypeError(f"Invalid type of a runner ({runner_cls}). Expecting subclass of {Runner}.")
                 runner_name = runner_cls.CONFIG.DEFAULT.runner
                 installed_runners[runner_name] = dict(config=dict(pkg=pkg_name), runner_cls=runner_cls)
                 logger.info("Found installed MLCube runner: platform=%s, pkg=%s", runner_name, pkg_name)
@@ -37,13 +39,11 @@ class Platform(object):
         return installed_runners
 
     @staticmethod
-    def get_runner(platform: t.Text, runners: DictConfig) -> t.Any:
-        if platform not in runners:
-            raise RuntimeError(f"Unknown platform: '{platform}'. Known platforms: {runners.keys()}.")
-        runner_config = runners[platform]
+    def get_runner(runner_config: t.Optional[DictConfig]) -> t.Type[Runner]:
+        if not runner_config:
+            raise RuntimeError("Can't create runner. Runner config is null or empty.")
         if 'pkg' not in runner_config:
-            raise RuntimeError(f"Do not know how to instantiate a runner: platform={platform}, "
-                               f"runner_config={str(runner_config)}")
+            raise RuntimeError(f"Do not know how to instantiate a runner. Runner config={str(runner_config)}")
         module = importlib.import_module(runner_config.pkg)
         get_runner_class: t.Callable = getattr(module, 'get_runner_class')
         return get_runner_class()

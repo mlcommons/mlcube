@@ -3,13 +3,13 @@ import urllib3
 import kubernetes
 import typing as t
 from omegaconf import (DictConfig, OmegaConf)
-from mlcube.runner import (BaseConfig, BaseRunner)
+from mlcube.runner import (RunnerConfig, Runner)
 from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
 
-class Config(BaseConfig):
+class Config(RunnerConfig):
     """ Helper class to manage `k8s` environment configuration."""
 
     DEFAULT = OmegaConf.create({
@@ -21,17 +21,13 @@ class Config(BaseConfig):
     })
 
     @staticmethod
-    def validate(mlcube: DictConfig) -> DictConfig:
-        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
-
+    def validate(mlcube: DictConfig) -> None:
         Validate(mlcube.runner, 'runner')\
             .check_unknown_keys(Config.DEFAULT.keys())\
             .check_values(['pvc', 'image', 'namespace'], str, blanks=False)
 
-        return mlcube
 
-
-class KubernetesRun(BaseRunner):
+class KubernetesRun(Runner):
 
     CONFIG = Config
 

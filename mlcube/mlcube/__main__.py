@@ -8,11 +8,12 @@ import click
 import logging
 import coloredlogs
 import typing as t
-from omegaconf import OmegaConf
+from omegaconf import (OmegaConf, DictConfig)
 from mlcube.config import MLCubeConfig
 from mlcube.errors import (IllegalParameterValueError, MLCubeError)
 from mlcube.parser import (CliParser, MLCubeDirectory)
 from mlcube.platform import Platform
+from mlcube.runner import Runner
 from mlcube.system_settings import SystemSettings
 from mlcube.validate import Validate
 
@@ -45,6 +46,38 @@ class MultiValueOption(click.Option):
                 self._previous_parser_process = our_parser.process
                 our_parser.process = parser_process
                 break
+
+
+def _parse_cli_args(ctx: t.Optional[click.core.Context], mlcube: t.Text, platform: t.Optional[t.Text],
+                    workspace: t.Optional[t.Text],
+                    resolve: bool) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
+    """
+    Args:
+        ctx: Click context. We need this to get access to extra CLI arguments.
+        mlcube: Path to MLCube root directory or mlcube.yaml file.
+        platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
+        workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
+        resolve: if True, compute values in MLCube configuration.
+    """
+    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
+    Validate.validate_type(mlcube_inst, MLCubeDirectory)
+    if ctx is not None:
+        mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
+    else:
+        mlcube_cli_args, task_cli_args = None, None
+    if platform is not None:
+        system_settings = SystemSettings()
+        runner_config: t.Optional[DictConfig] = system_settings.get_platform(platform)
+        runner_cls: t.Optional[t.Type[Runner]] = Platform.get_runner(
+            system_settings.runners.get(runner_config.runner, None)
+        )
+    else:
+        runner_cls, runner_config = None, None
+    mlcube_config = MLCubeConfig.create_mlcube_config(
+        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, runner_config, workspace,
+        resolve=resolve, runner_cls=runner_cls
+    )
+    return runner_cls, mlcube_config
 
 
 log_level_option = click.option(
@@ -99,13 +132,7 @@ def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, works
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
         resolve: if True, compute values in MLCube configuration.
     """
-    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
-    Validate.validate_type(mlcube_inst, MLCubeDirectory)
-    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
-    mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, platform, workspace,
-        resolve=resolve
-    )
+    _, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, resolve)
     print(OmegaConf.to_yaml(mlcube_config))
 
 
@@ -125,14 +152,7 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
         task: Comma separated list of tasks to run.
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
     """
-    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
-    Validate.validate_type(mlcube_inst, MLCubeDirectory)
-    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
-    mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, platform, workspace,
-        resolve=True
-    )
-    runner_cls: t.Callable = Platform.get_runner(mlcube_config.runner.runner, SystemSettings().settings.runners)
+    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, resolve=True)
     tasks: t.List[str] = CliParser.parse_list_arg(task, default='main')
     for task in tasks:
         docker_runner = runner_cls(mlcube_config, task=task)
@@ -142,12 +162,7 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
 @cli.command(name='describe', help='Describe MLCube.')
 @mlcube_option
 def describe(mlcube: t.Text) -> None:
-    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
-    Validate.validate_type(mlcube_inst, MLCubeDirectory)
-    mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args=None, task_cli_args=None, platform=None,
-        resolve=True
-    )
+    _, mlcube_config = _parse_cli_args(None, mlcube, None, None, resolve=True)
     print(f"MLCube")
     print(f"  path = {mlcube_config.runtime.root}")
     print(f"  name = {mlcube_config.name}:{mlcube_config.get('version', 'latest')}")
@@ -173,7 +188,7 @@ def describe(mlcube: t.Text) -> None:
     print()
 
 
-@cli.command(name='config', help='Perform various operations with system settings file',
+@cli.command(name='config', help='Perform various operations with system settings file.',
              context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
 @click.option('--list', 'list_all', is_flag=True, help="List configuration in MLCube system settings file.")
 @click.option('--get', required=False, type=str, default=None,
