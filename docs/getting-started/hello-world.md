@@ -30,7 +30,7 @@ mlcube_docker run --mlcube=. --platform=platforms/docker.yaml --task=run/alice/b
 ```
 
 ## Setup Docker
-MLCube Docker runner used Docker runtime and they must be available in the system.
+MLCube Docker runner used Docker runtime, and they must be available in the system.
 Installation guides for various operating systems can be found [here](https://docs.docker.com/engine/install/). This
 example was tested on a system where users are in the docker group and run docker without `sudo`. To add yourself to a
 docker group, run the following:
@@ -50,7 +50,7 @@ parameters, including Docker image name:
 mlcube_docker configure --mlcube=. --platform=platforms/docker.yaml
 ```
 The Docker runner will build a docker image for the Hello World cube. In general, this step is optional and is only
-required when MLCube needs to be rebuild. This can happen when users change implementation files and want to
+required when MLCube needs to be rebuilt. This can happen when users change implementation files and want to
 re-package their ML project into MLCube. In other situations, MLCube runners can auto-detect if
 `configure` command needs to be run before running a MLCube task.
 
@@ -119,9 +119,11 @@ Because how Hello World cube was implemented, the greeting message is always the
 update the implementation so that if this is not the first time Alice says `hello`, the  MLCube will respond: `Nice to 
 see you again.`.
 
-Modify the file `build/hello_world.py`. Update the function named `get_greeting_message` on line
-14. It should have the following implementation:
+Modify the file `build/hello_world.py`. Update the function named `get_greeting_message` on line 14. It should have the
+following implementation:
 ```python
+import os
+
 def get_greeting_message(chat_file: str) -> str:
     return "Nice to meet you." if not os.path.exists(chat_file) else "Nice to see you again."
 ```

@@ -1,133 +1,140 @@
-import logging
 import os
-import typing
+import logging
+import typing as t
+from omegaconf import (DictConfig, OmegaConf)
+from mlcube.shell import Shell
+from mlcube.runner import (Runner, RunnerConfig)
+from mlcube.errors import IllegalParameterValueError
 
-from mlcube.common import mlcube_metadata
 
+__all__ = ['Config', 'DockerRun']
+
+from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
 
-class DockerRun(object):
-    def __init__(self, mlcube: mlcube_metadata.MLCube):
-        """Docker Runner.
-        Args:
-            mlcube (mlcube_metadata.MLCube): MLCube specification including platform configuration for Docker.
-        """
-        self.mlcube: mlcube_metadata.MLCube = mlcube
+class Config(RunnerConfig):
+    """ Helper class to manage `docker` environment configuration."""
+
+    class BuildStrategy(object):
+        PULL = 'pull'
+        AUTO = 'auto'
+        ALWAYS = 'always'
+
+        @staticmethod
+        def validate(build_strategy: t.Text) -> None:
+            if build_strategy not in ('pull', 'auto', 'always'):
+                raise IllegalParameterValueError('build_strategy', build_strategy, "['pull', 'auto', 'always']")
+
+    DEFAULT = OmegaConf.create({
+        'runner': 'docker',
+
+        'image': '${docker.image}',   # Image name.
+        'docker': 'docker',           # Executable (docker, podman, sudo docker ...).
+
+        'env_args': {},               # Environmental variables for build and run actions.
+
+        'gpu_args': '',               # Docker run arguments when accelerator_count > 0.
+        'cpu_args': '',               # Docker run arguments when accelerator_count == 0.
+
+        'build_args': {},             # Docker build arguments
+        'build_context': '.',         # Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.
+        'build_file': 'Dockerfile',   # Docker file relative to $MLCUBE_ROOT, default is:
+                                      # `$MLCUBE_ROOT/Dockerfile`.
+        'build_strategy': 'pull',     # How to configure MLCube:
+                                      #   'pull': never try to build, always pull
+                                      #   'auto': build if image not found and dockerfile found
+                                      #   'always': build even if image found
+        # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
+        #       switch as build arg to force pulling the base image.
+    })
 
     @staticmethod
-    def get_env_variables() -> dict:
-        env_vars = {}
-        for proxy_var in ('http_proxy', 'https_proxy'):
-            if os.environ.get(proxy_var, None) is not None:
-                env_vars[proxy_var] = os.environ[proxy_var]
-        return env_vars
+    def merge(mlcube: DictConfig) -> None:
+        mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('docker', OmegaConf.create({})))
 
     @staticmethod
-    def get_string_value(value: typing.Optional[typing.Any], default_value: str) -> str:
-        value = str(value).strip() if value is not None else ""
-        return value or default_value
-
-    def image_exists(self, image_name: str) -> bool:
-        """Check if docker image exists.
+    def validate(mlcube: DictConfig) -> None:
+        """ Initialize configuration from user config
         Args:
-            image_name (str): Name of a docker image.
-        Returns:
-            True if image exists, else false.
+            mlcube: MLCube `container` configuration, possible merged with user local configuration.
+        Return:
+            Initialized configuration.
         """
-        cmd: str = DockerRun.get_string_value(self.mlcube.platform.container.command, "docker")
-        return self._run_or_die(f"{cmd} inspect --type=image {image_name} > /dev/null 2>&1", die_on_error=False) == 0
+        # Make sure all parameters present with their default values.
+        validator = Validate(mlcube.runner, 'runner')
+        _ = validator.check_unknown_keys(Config.DEFAULT.keys())\
+                     .check_values(['image', 'docker', 'build_strategy'], str, blanks=False)
+        Config.BuildStrategy.validate(mlcube.runner.build_strategy)
 
-    def configure(self):
-        """Build Docker Image on a current host."""
-        image_name: str = self.mlcube.platform.container.image
+        if isinstance(mlcube.runner.build_args, DictConfig):
+            mlcube.runner.build_args = Shell.to_cli_args(mlcube.runner.build_args, parent_arg='--build-arg')
+        if isinstance(mlcube.runner.env_args, DictConfig):
+            mlcube.runner.env_args = Shell.to_cli_args(mlcube.runner.env_args, parent_arg='-e')
 
-        # According to MLCube specs (?), build directory is {mlcube.root}/build that contains all files to build MLCube.
-        # Dockerfiles are built taking into account that {mlcube.root}/build is the context (build) directory.
-        build_path: str = self.mlcube.build_path
-        docker_file: str = os.path.join(build_path, 'Dockerfile')
 
-        cmd: str = DockerRun.get_string_value(self.mlcube.platform.container.command, "docker")
-        if not os.path.exists(docker_file):
-            cmd = f"{cmd} pull {image_name}"
+class DockerRun(Runner):
+    """ Docker runner. """
+
+    CONFIG = Config
+
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+        super().__init__(mlcube, task)
+
+    def configure(self) -> None:
+        """Build Docker image on a current host."""
+        image: t.Text = self.mlcube.runner.image
+        context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
+        recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
+        docker: t.Text = self.mlcube.runner.docker
+
+        # Build strategies: `pull`, `auto` and `always`.
+        build_strategy: t.Text = self.mlcube.runner.build_strategy
+        build_recipe_exists: bool = os.path.exists(recipe)
+        if build_strategy == Config.BuildStrategy.PULL or not build_recipe_exists:
+            logger.info("Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
+                        image, build_strategy, build_recipe_exists)
+            Shell.run(docker, 'pull', image)
+            if build_recipe_exists:
+                logger.warning("Docker recipe exists (%s), but your build strategy is '%s', and so the image has been "
+                               "pulled, not built. Make sure your image is up-to-data with your source code.",
+                               recipe, build_strategy)
         else:
-            env_args = ' '.join([f"--build-arg {var}={name}" for var, name in DockerRun.get_env_variables().items()])
-            cmd = f"{cmd} build {env_args} -t {image_name} -f {docker_file} {build_path}"
+            logger.info("Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
+                        image, build_strategy, build_recipe_exists)
+            build_args: t.Text = self.mlcube.runner.build_args
+            Shell.run(docker, 'build', build_args, '-t', image, '-f', recipe, context)
 
-        logger.info(cmd)
-        self._run_or_die(cmd)
+    def run(self) -> None:
+        """ Run a cube. """
+        docker: t.Text = self.mlcube.runner.docker
+        image: t.Text = self.mlcube.runner.image
 
-    def run(self):
-        """Run a cube."""
-        image_name: str = self.mlcube.platform.container.image
-        if not self.image_exists(image_name):
-            logger.warning("Docker image (%s) does not exist. Running 'configure' phase.", image_name)
-            self.configure()
+        build_strategy: t.Text = self.mlcube.runner.build_strategy
+        if build_strategy == Config.BuildStrategy.ALWAYS or not Shell.docker_image_exists(docker, image):
+            logger.warning("Docker image (%s) does not exist or build strategy is 'always'. "
+                           "Will run 'configure' phase.", image)
+            try:
+                self.configure()
+            except RuntimeError:
+                context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
+                recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
+                if build_strategy == Config.BuildStrategy.PULL and os.path.exists(recipe):
+                    logger.warning("MLCube configuration failed. Docker recipe (%s) exists, but your build strategy is "
+                                   "set to pull. Rerun with: -Prunner.build_strategy=auto to build image locally.",
+                                   recipe)
+                raise
+        # Deal with user-provided workspace
+        Shell.sync_workspace(self.mlcube, self.task)
 
-        # The 'mounts' dictionary maps host path to container path
-        mounts, args = self._generate_mounts_and_args()
-        print(f"mounts={mounts}, args={args}")
+        # The 'mounts' dictionary maps host paths to container paths
+        mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+        logger.info(f"mounts={mounts}, task_args={task_args}")
 
-        volumes_str = ' '.join(['--volume {}:{}'.format(t[0], t[1]) for t in mounts.items()])
-        env_args = ' '.join([f"-e {var}={name}" for var, name in DockerRun.get_env_variables().items()])
-        run_args: str = DockerRun.get_string_value(self.mlcube.platform.container.run_args, "")
+        volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--volume')
+        env_args = self.mlcube.runner.env_args
+        num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
+        run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
-        runtime = DockerRun.get_string_value(self.mlcube.platform.container.runtime, "")
-        if runtime != "":
-            logger.warning(f"The 'runtime' parameter is deprecated. Please, use: 'run_args: --runtime={runtime}'")
-            exit(1)
-
-        # Let's assume singularity containers provide entry point in the right way.
-        args = ' '.join(args)
-
-        cmd: str = DockerRun.get_string_value(self.mlcube.platform.container.command, "docker")
-        cmd = f"{cmd} run {run_args} {env_args} {volumes_str} {image_name} {args}"
-
-        logger.info(cmd)
-        self._run_or_die(cmd)
-
-    def _generate_mounts_and_args(self) -> typing.Tuple[dict, list]:
-        mounts, args = {}, [self.mlcube.invoke.task_name]
-
-        def _create(binding_: dict, input_specs_: dict):
-            # name: parameter name, path: parameter value
-            for name, path in binding_.items():
-                path = path.replace('$WORKSPACE', self.mlcube.workspace_path)
-                path_type = input_specs_[name]
-                if path_type == 'directory':
-                    os.makedirs(path, exist_ok=True)
-                    mounts[path] = mounts.get(
-                        path,
-                        '/mlcube_io{}/{}'.format(len(mounts), os.path.basename(path))
-                    )
-                    args.append('--{}={}'.format(name, mounts[path]))
-                elif path_type == 'file':
-                    file_path, file_name = os.path.split(path)
-                    os.makedirs(file_path, exist_ok=True)
-                    mounts[file_path] = mounts.get(
-                        file_path,
-                        '/mlcube_io{}/{}'.format(len(mounts), file_path)
-                    )
-                    args.append('--{}={}'.format(name, mounts[file_path] + '/' + file_name))
-                else:
-                    raise RuntimeError(f"Invalid path type: '{path_type}'")
-
-        _create(self.mlcube.invoke.input_binding, self.mlcube.task.inputs)
-        _create(self.mlcube.invoke.output_binding, self.mlcube.task.outputs)
-
-        return mounts, args
-
-    def _run_or_die(self, cmd: str, die_on_error: bool = True) -> int:
-        """Execute shell command.
-        Args:
-            cmd(str): Command to execute.
-            die_on_error (bool): If true and shell returns non-zero exit status, raise RuntimeError.
-        Returns:
-            Exit code.
-        """
-        print(cmd)
-        return_code: int = os.system(cmd)
-        if return_code != 0 and die_on_error:
-            raise RuntimeError('Command failed: {}'.format(cmd))
-        return return_code
+        Shell.run(docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args))

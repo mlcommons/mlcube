@@ -20,7 +20,7 @@ Reference runners are:
 
 ## Runner commands
 Each runner exposes mandatory and optional functionality through a set of commands. This is similar to, for instance,
-how Git implements its CLI (`git` followed by a specific command such as `checkout`, `pull`, `push` etc). Mandatory
+how Git implements its CLI (`git` followed by a specific command such as `checkout`, `pull`, `push` etc.). Mandatory
 MLCube runner commands are `configure` and `run`:  
 - `configure`: Configure MLCube. Exact functionality depends on a runner type, but the goal is to ensure that 
   a cube is ready to run. The following are the examples of what can be done at configure phase: build docker or 
@@ -29,7 +29,7 @@ MLCube runner commands are `configure` and `run`:
 - `run`: Run tasks defined in MLCube.  
 
 Reference runners recognize three parameters - mlcube, platform and task.  
-- `mlcube`: Path to a cube root directory. In future versions, this can be an URI with a specific protocol. Runners
+- `mlcube`: Path to a cube root directory. In future versions, this can be a URI with a specific protocol. Runners
   could support various MLCube implementations (excluding reference directory-based) such as docker/singularity 
   containers, GitHub repositories, compressed archives and others.  
 - `platform`: Path to a YAML-based platform configuration file. If not present, a runner should use the

@@ -17,7 +17,7 @@ host: REMOTE_HOST
 # Authentication section is optional, and can be null, empty or non-empty dictionary. If value is null or empty 
 # string/dict, it is assumed the authentication is not required, or is configured in user environment 
 # (e.g. ~/.ssh/config). SSH runner will not provide any additional information on a command line for ssh, rsync or scp.
-# If the value is a dictionary, optional fields that SSH runner recognizes are user name on a remote host (user) and 
+# If the value is a dictionary, optional fields that SSH runner recognizes are username on a remote host (user) and 
 # path to a user private key file (identity_file). If all fields are present, the following connection string is used 
 # by the SSH runner: `-i $identity_file $user@$host`.
 authentication:
@@ -54,13 +54,13 @@ interpreter:
 #     name: "mlcube-docker-0.2.1"
 ```
 
-SSH runner uses IP or name of a remote host (`host`) and ssh tool to login and execute shell commands on remote hosts. 
+SSH runner uses IP or name of a remote host (`host`) and ssh tool to log in and execute shell commands on remote hosts. 
 If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  
   
 SSH runner depends on other runners to run MLCube cubes. The `platform` field specifies what runner should be
 used on a remote host. This is a file name located in `{MLCUBE_ROOT}/platforms`.  
 
-In current implementation, SSH runner synchronizes only an mlcube workload between local and remote hosts. Runners
+In current implementation, SSH runner synchronizes only a mlcube workload between local and remote hosts. Runners
 are assumed to be either available on remote hosts or specified as package dependencies in python interpreter 
 configuration section. 
 

@@ -1,5 +1,9 @@
 # MLCube Release process
 
+To run unitests in projects, run:
+```shell
+python -m pytest
+```
 
 Hard requirements:
 1. Versions of all projects must be the same, e.g. 0.2.3. This applies to [mlcube](https://github.com/mlcommons/mlcube/tree/master/mlcube)
@@ -34,7 +38,7 @@ Proposed semi-automated workflow:
    ```
    python -m unittest discover release_tests/
    ```
-   Some of the tests will check things like project versions and will re-run projects' unit tests.
+   Some tests will check things like project versions and will re-run projects' unit tests.
    > TODO: The release tests are Work In Progress.
 4. If something fails, fix and go to #3.
 5. If updates are required, commit, push and create a new PR. Once merged, repeat all steps above.

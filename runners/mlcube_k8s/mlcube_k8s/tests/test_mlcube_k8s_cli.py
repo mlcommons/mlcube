@@ -1,11 +1,9 @@
 from click.testing import CliRunner
-from mlcube_k8s.main import cli
+
 
 runner = CliRunner()
 
 
-def test_mlcube_k8s():
-    response = runner.invoke(cli)
-    assert response.exit_code == 0
-    assert 'Usage: mlcube_k8s [OPTIONS] COMMAND [ARGS]...' in response.output
-    assert "  run  Runs a MLCube in a Kubernetes cluster." in response.output
+def test_mlcube_docker():
+    from mlcube.tests.test_mlcommons_mlcube_cli import test_mlcube
+    test_mlcube()

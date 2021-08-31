@@ -38,7 +38,7 @@ extra_files = schemas()
 
 setup(
     name="mlcube_gcp",
-    version="0.0.3",
+    version="0.0.4",
     packages=find_packages(exclude=["tests"]),
     license="Apache 2.0",
     entry_points='''

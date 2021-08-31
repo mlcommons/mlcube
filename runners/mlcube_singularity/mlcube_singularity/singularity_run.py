@@ -1,65 +1,85 @@
 import os
 import logging
-from mlcube.common import mlcube_metadata
-from mlcube.common.utils import Utils
+import typing as t
+from omegaconf import DictConfig, OmegaConf
+from mlcube.shell import Shell
+from mlcube.runner import (Runner, RunnerConfig)
 
+
+__all__ = ['Config', 'SingularityRun']
+
+from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
 
-class SingularityRun(object):
+class Config(RunnerConfig):
+    """ Helper class to manage `singularity` environment configuration."""
 
-    PLATFORM_NAME = 'singularity'
+    DEFAULT = OmegaConf.create({
+        'runner': 'singularity',
 
-    def __init__(self, mlcube: mlcube_metadata.MLCube) -> None:
-        """Singularity Runner.
-        Args:
-            mlcube (mlcube_metadata.MLCube): MLCube specification including platform configuration for Singularity.
-        """
-        self.mlcube: mlcube_metadata.MLCube = mlcube
-        if self.mlcube.platform.platform.name != SingularityRun.PLATFORM_NAME:
-            raise ValueError(f"Invalid platform name '{self.mlcube.platform.platform.name}' ('singularity' expected)")
+        'image': '${singularity.image}',
+        'image_dir': '${runtime.workspace}/.image',
 
-    def image_path(self) -> str:
-        """ Return full path to Singularity images taking into account user environment variables. """
-        return os.path.join(
-            self.mlcube.workspace_path,
-            os.path.expandvars(self.mlcube.platform.container.image)
-        )
+        'singularity': 'singularity',
+
+        'build_args': '--fakeroot',
+        'build_file': 'Singularity.recipe'
+    })
+
+    @staticmethod
+    def merge(mlcube: DictConfig) -> None:
+        mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('singularity', OmegaConf.create({})))
+
+    @staticmethod
+    def validate(mlcube: DictConfig) -> None:
+        validator = Validate(mlcube.runner, 'runner')
+        validator.check_unknown_keys(Config.DEFAULT.keys())\
+                 .check_values(['image', 'image_dir', 'singularity'], str, blanks=False)
+
+
+class SingularityRun(Runner):
+
+    CONFIG = Config
+
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+        super().__init__(mlcube, task)
 
     def configure(self) -> None:
         """Build Singularity Image on a current host."""
+        s_cfg: DictConfig = self.mlcube.runner
+
         # Get full path to a singularity image. By design, we compute it relative to {mlcube.root}/workspace.
-        image_path: str = self.image_path()
-        if os.path.exists(image_path):
-            logger.info("Image found (%s).", image_path)
+        image_uri: t.Text = os.path.join(s_cfg.image_dir, s_cfg.image)
+        if os.path.exists(image_uri):
+            logger.info("Image found (%s).", image_uri)
             return
         # Make sure a directory to store image exists. If paths are like "/opt/...", the call may fail.
-        os.makedirs(os.path.dirname(image_path), exist_ok=True)
+        os.makedirs(os.path.dirname(image_uri), exist_ok=True)
 
-        # According to MLCube specs (?), build directory is {mlcube.root}/build that contains all files to build MLCube.
-        # Singularity recipes are built taking into account that {mlcube.root}/build is the context (build) directory.
-        recipe_path: str = self.mlcube.build_path
-        recipe_file: str = os.path.join(recipe_path, 'Singularity.recipe')
+        # Let's assume build context is the root MLCube directory
+        recipe_path: t.Text = self.mlcube.runtime.root
+        recipe_file: t.Text = os.path.join(recipe_path, s_cfg.build_file)
         if not os.path.exists(recipe_file):
-            raise RuntimeError(f"Singularity recipe not found: {recipe_file}")
-
-        cmd: str = "cd {}; singularity build --fakeroot '{}' 'Singularity.recipe'".format(recipe_path, image_path)
-        logger.info(cmd)
-        Utils.run_or_die(cmd)
+            raise IOError(f"Singularity recipe not found: {recipe_file}")
+        Shell.run(
+            'cd', recipe_path, ';',
+            s_cfg.singularity, 'build', s_cfg.build_args, image_uri, s_cfg.build_file
+        )
 
     def run(self) -> None:
         """  """
-        image_path: str = self.image_path()
-        if not os.path.exists(image_path):
+        image_uri: t.Text = os.path.join(self.mlcube.runner.image_dir, self.mlcube.runner.image)
+        if not os.path.exists(image_uri):
             self.configure()
-        # The 'mounts' dictionary maps host path to container path
-        mounts, args = Utils.container_args(self.mlcube)
-        print(f"mounts={mounts}, args={args}")
 
-        volumes_str = ' '.join(['--bind {}:{}'.format(t[0], t[1]) for t in mounts.items()])
+        # Deal with user-provided workspace
+        Shell.sync_workspace(self.mlcube, self.task)
 
-        # Let's assume singularity containers provide entry point in the right way.
-        cmd = "singularity run {} {} {}".format(volumes_str, image_path, ' '.join(args))
-        logger.info(cmd)
-        Utils.run_or_die(cmd)
+        mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+        logger.info(f"mounts={mounts}, task_args={task_args}")
+
+        volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--bind')
+
+        Shell.run(self.mlcube.runner.singularity, 'run', volumes, image_uri, ' '.join(task_args))

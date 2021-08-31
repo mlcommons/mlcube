@@ -1,35 +1,44 @@
 import os
 import logging
-from typing import Optional
-from mlcube import parse   # Do not remove (it registers schemas on import)
-from mlcube.common import mlcube_metadata
-from mlcube.common.utils import StandardPaths
+import typing as t
+from omegaconf import DictConfig, OmegaConf
+from mlcube.runner import (RunnerConfig, Runner)
+from mlcube.shell import Shell
+from mlcube.validate import Validate
 from mlcube_ssh.ssh_metadata import PythonInterpreter
-from mlcube_ssh.utils import Utils
 
 
 logger = logging.getLogger(__name__)
 
 
-class Shell(object):
-    @staticmethod
-    def run_or_die(cmd):
-        print(cmd)
-        return_code = os.system(cmd)
-        if return_code != 0:
-            raise Exception(f'[COMMAND FAILED] return_code={return_code}, command="{cmd}"')
+class Config(RunnerConfig):
+    """ Helper class to manage `ssh` environment configuration."""
+
+    DEFAULT = OmegaConf.create({
+        'runner': 'ssh',
+
+        'host': '',                 # Remote host
+        'platform': '',             # Platform (runner) to use on remote host
+        'remote_root': '',          # Root path for MLCubes on remote host
+        'interpreter': {},          # Remote python interpreter# Remote python interpreter
+                                    #   1. type: system, python: ..., requirements: ...
+                                    #   2. type: virtualenv, python: ..., requirements: ..., location: ..., name: ...
+        'authentication': {}        # Authentication on remote host
+                                    #   1. identity_file, user
+    })
 
     @staticmethod
-    def ssh(conn: str, cmd: Optional[str]):
-        if cmd:
-            Shell.run_or_die(f"ssh -o StrictHostKeyChecking=no {conn} '{cmd}'")
+    def validate(mlcube: DictConfig) -> None:
+        mlcube.runner = OmegaConf.merge(Config.DEFAULT, mlcube.runner)
 
-    @staticmethod
-    def rsync_dirs(source: str, dest: str):
-        Shell.run_or_die(f"rsync -e 'ssh' -r '{source}' '{dest}'")
+        Validate(mlcube.runner, 'runner')\
+            .check_unknown_keys(Config.DEFAULT.keys())\
+            .check_values(['host', 'platform', 'remote_root'], str, blanks=False)\
+            .check_values(['interpreter', 'authentication'], DictConfig)
+        PythonInterpreter.get(mlcube.runner.interpreter).validate(mlcube.runner.interpreter)
 
 
-class SSHRun(object):
+class SSHRun(Runner):
     """
     Reference implementation of the remote runner based on SSH.
 
@@ -38,68 +47,55 @@ class SSHRun(object):
     the same MLCubes locally. So, the only difference is the requirement for platform configuration file.
     """
 
-    def get_runner_on_remote_host(self) -> str:
-        config: dict = Utils.load_yaml(os.path.join(self.mlcube.root, 'platforms', self.mlcube.platform.platform))
+    CONFIG = Config
 
-        # Old-style definition
-        if config.get('schema_type', None) == 'mlcube_singularity':
-            return 'mlcube_singularity'
-        if config.get('schema_type', None) == 'mlcube_docker':
-            return 'mlcube_docker'
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+        super().__init__(mlcube, task)
 
-        # New-style definition
-        if config.get('schema_type', None) == 'mlcube_platform':
-            platform_name = config.get('platform', {}).get('name', None)
-            if platform_name == 'docker':
-                return 'mlcube_docker'
-        raise ValueError(f"Invalid platform configuration file")
+    def get_connection_string(self) -> str:
+        """ Return authentication string for tools like `ssh` and `rsync`.
 
-    def __init__(self, mlcube: mlcube_metadata.MLCube) -> None:
-        """"""
-        self.mlcube: mlcube_metadata.MLCube = mlcube
-        self.remote_runner: str = self.get_runner_on_remote_host()
+            ssh -i PATH_TO_PRIVATE_KEY USER_NAME@HOST_NAME
+        """
+        auth_str = ''
+        identify_file = self.mlcube.runner.authentication.get('identify_file', None)
+        if identify_file:
+            auth_str += f"-i {identify_file} "
+        user = self.mlcube.runner.authentication.get('user', None)
+        if user:
+            auth_str += f'{user}@'
+        return auth_str + self.mlcube.runner.host
 
     def configure(self) -> None:
         """Run 'configure' phase for SHH runner."""
-        conn: str = self.mlcube.platform.get_connection_string()
-        remote_env: PythonInterpreter = self.mlcube.platform.interpreter
+        conn: t.Text = self.get_connection_string()
+        remote_env: PythonInterpreter = PythonInterpreter.create(self.mlcube.runner.interpreter)
 
         # If required, create and configure python environment on remote host
         Shell.ssh(conn, remote_env.create_cmd())
         Shell.ssh(conn, remote_env.configure_cmd())
 
         # The 'local_path' and 'remote_path' must both be directories.
-        local_path: str = self.mlcube.root
-        remote_path: str = os.path.join(StandardPaths.BOXES, os.path.basename(self.mlcube.root))
+        local_path: str = self.mlcube.runtime.root
+        remote_path: str = os.path.join(self.mlcube.runner.remote_root, os.path.basename(local_path))
         Shell.ssh(conn, f'mkdir -p {remote_path}')
         Shell.rsync_dirs(source=f'{local_path}/', dest=f'{conn}:{remote_path}/')
 
         # Configure remote MLCube runner. Idea is that we use chain of runners, for instance, SHH Runner -> Docker
         # runner. So, the runner to be used on a remote host must configure itself.
-        cmd = f"{remote_env.python} -m {self.remote_runner} configure "\
-              f"--mlcube=. --platform=platforms/{self.mlcube.platform.platform}"
+        cmd = f"mlcube configure --mlcube=. --platform={self.mlcube.runner.platform}"
         Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
 
-    def run(self, task_file: str) -> None:
-        """ Run 'run' phase, one of the MLCube tasks.
-        Args:
-             task_file (str): A file path to a task file on a local host. It is assumed the relative path to the mlcube
-                root folder is "run/{task_name}.yaml"
-        """
-        conn: str = self.mlcube.platform.get_connection_string()
-        remote_env: PythonInterpreter = self.mlcube.platform.interpreter
+    def run(self) -> None:
+        conn: t.Text = self.get_connection_string()
+        remote_env: PythonInterpreter = PythonInterpreter.create(self.mlcube.runner.interpreter)
 
         # The 'remote_path' variable points to the MLCube root directory on remote host.
-        remote_path = os.path.join(StandardPaths.BOXES, os.path.basename(self.mlcube.root))
-        task_file_rel = os.path.relpath(  # -- Path to a task file relative to MLCube root directory
-            os.path.abspath(task_file),   # ----- Local absolute path to a task file
-            self.mlcube.root               # ----- Local MLCube root directory
-        )
+        remote_path: t.Text = os.path.join(self.mlcube.runner.remote_root, os.path.basename(self.mlcube.runtime.root))
 
-        cmd = f"{remote_env.python} -m {self.remote_runner} run "\
-              f"--mlcube=. --platform=platforms/{self.mlcube.platform.platform} --task={task_file_rel}"
+        cmd = f"mlcube run --mlcube=. --platform={self.mlcube.runner.platform} --task={self.task}"
         Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
 
         # Sync back results
         # TODO: Only workspace/ directory is synced. Better solution?
-        Shell.rsync_dirs(source=f'{conn}:{remote_path}/workspace/', dest=f'{self.mlcube.root}/workspace/')
+        Shell.rsync_dirs(source=f'{conn}:{remote_path}/workspace/', dest=f'{self.mlcube.runtime.root}/workspace/')

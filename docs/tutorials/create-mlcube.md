@@ -14,7 +14,7 @@ pip install mlcube mlcube-docker cookiecutter
 ```
 
 ## Step 2: Configure MLCube using the mlcube_cookiecutter 
-Let's use the 'matmult' example, that we downloaded in the previous step, to illustrate how to make an MLCube. Matmul is a simple matrix multiply example written in Python with TensorFlow. 
+Let's use the 'matmul' example, that we downloaded in the previous step, to illustrate how to make an MLCube. Matmul is a simple matrix multiply example written in Python with TensorFlow. 
 When you create an MLCube for your own model you will use your own code, data and dockerfile.
  
 ```
@@ -99,7 +99,7 @@ inputs:
 
 # List of output parameters (list of dictionaries). Every parameter is a dictionary with two mandatory fields - `name`
 # and `type`. The `name` must have value that can be used as a command line parameter name (--data_dir, --log_dir). The
-# `type` is a categorical parameter that can be either `directory` or `file`. Every intput/output parameter is always
+# `type` is a categorical parameter that can be either `directory` or `file`. Every input/output parameter is always
 # a file system path.
 # Only parameters with their types are defined in this file. Run configurations defined in the `run` sub-folder
 # associate parameter names and their values. There can be multiple run configurations for one task. One example is
@@ -184,7 +184,7 @@ You will need a docker image to create an MLCube.  We will use the Dockerfile fo
 <sub><sup><span style="color:blue">Note: the last line of the Dockerfile must be    
 "ENTRYPOINT ["python3", "/workspace/your_mlcube_name.py"]" as shown below.</span></sup></sub> 
 
-Now we will edit the my_mlcube/build/Dockerfile
+Now we will edit my_mlcube/build/Dockerfile
 ```
 cd ../build 
 ```
