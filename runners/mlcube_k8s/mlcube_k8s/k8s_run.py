@@ -1,6 +1,7 @@
 import logging
 import urllib3
 import kubernetes
+import time
 import typing as t
 from omegaconf import (DictConfig, OmegaConf)
 from mlcube.runner import (RunnerConfig, Runner)
@@ -104,10 +105,27 @@ class KubernetesRun(Runner):
         k8s_job_client = kubernetes.client.BatchV1Api()
         job_creation_response = k8s_job_client.create_namespaced_job(
             body=job_manifest,
-            namespace=self.mlcube.k8s.namespace
+            namespace=self.mlcube.runner.namespace
         )
         logging.info("MLCommons Box k8s job created. Status='%s'" % str(job_creation_response.status))
+        print("MLCommons Box k8s job created with name= %s for task= %s" % (str(job_creation_response.metadata.name), str(self.task)))
         return job_creation_response
+
+    def wait_for_completion(self, job):
+        k8s_job_client = kubernetes.client.BatchV1Api()
+        print("Waiting for Job to complete in the kubernetes cluster")
+        while(1):
+            job = k8s_job_client.read_namespaced_job_status(job.metadata.name, job.metadata.namespace)
+            status = job.status
+            logging.info("Current job status='%s'" % str(status))
+            if  status.conditions:
+                if status.conditions[0].status and status.conditions[0].type == "Complete":
+                    print("Job is successful")
+                else:
+                    print("Job has failed")
+                break
+            time.sleep(10)
+
 
     def configure(self) -> None:
         ...
@@ -119,7 +137,8 @@ class KubernetesRun(Runner):
             kubernetes.config.load_kube_config()
 
             mlcube_job_manifest = self.create_job_manifest()
-            _ = self.create_job(mlcube_job_manifest)
+            job = self.create_job(mlcube_job_manifest)
+            self.wait_for_completion(job)
         except urllib3.exceptions.HTTPError:
             print(f"K8S runner failed to run MLCube. The actual error is printed below. "
                   "Your MLCube k8s configuration was:")
