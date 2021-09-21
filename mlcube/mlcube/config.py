@@ -2,6 +2,7 @@ import os
 import logging
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
+from mlcube.errors import ConfigurationError
 from mlcube.runner import Runner
 
 logger = logging.getLogger(__name__)
@@ -48,8 +49,8 @@ class MLCubeConfig(object):
     @staticmethod
     def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig] = None,
                              task_cli_args: t.Optional[t.Dict] = None, runner_config: t.Optional[DictConfig] = None,
-                             workspace: t.Optional[t.Text] = None, resolve: bool = True,
-                             runner_cls: t.Optional[t.Type[Runner]] = None) -> DictConfig:
+                             workspace: t.Optional[t.Text] = None, tasks: t.Optional[t.List[t.Text]] = None,
+                             resolve: bool = True, runner_cls: t.Optional[t.Type[Runner]] = None) -> DictConfig:
         """ Create MLCube mlcube merging different configs - base, global, local and cli.
         Args:
             mlcube_config_file: Path to mlcube.yaml file.
@@ -57,14 +58,13 @@ class MLCubeConfig(object):
             task_cli_args: Task parameters from command line.
             runner_config: MLCube runner configuration, usually comes from system settings file.
             workspace: Workspace path to use in this MLCube run.
+            tasks: List of tasks to be executed. If empty or None, consider all tasks in MLCube config.
             resolve: If true, compute all values (some of them may reference other parameters or environmental
                 variables).
             runner_cls: A python class for the runner type specified in `runner_config`.
         """
         if mlcube_cli_args is None:
             mlcube_cli_args = OmegaConf.create({})
-        if task_cli_args is None:
-            task_cli_args = {}
         if runner_config is None:
             runner_config = OmegaConf.create({})
         logger.debug("mlcube_config_file = %s", mlcube_config_file)
@@ -72,6 +72,7 @@ class MLCubeConfig(object):
         logger.debug("task_cli_args = %s", task_cli_args)
         logger.debug("runner_config = %s", str(runner_config))
         logger.debug("workspace = %s", workspace)
+        logger.debug("tasks = %s", tasks)
 
         # Load MLCube configuration and maybe override parameters from command line (like -Pdocker.build_strategy=...).
         actual_workspace = '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
@@ -99,26 +100,49 @@ class MLCubeConfig(object):
         if runner_cls:
             runner_cls.CONFIG.validate(mlcube_config)
 
+        # TODO: This needs some discussion. Originally, one task was supposed to run at a time. Now, we seem to converge
+        #   to support lists of tasks. Current implementation continues to use old format of task parameters, i.e.
+        #   `param_name=param_value`. This may result in an unexpected behavior when many tasks run, so we should think
+        #   about a different rule: `task_name.param_name=param_value`. This is similar to parameter specification in
+        #   DVC.
+
+        # We will iterate over all tasks and make them representation canonical, but will use only tasks to run to
+        # check if users provided unrecognized parameters.
+        task_cli_args = task_cli_args or dict()                   # Dictionary of task arguments from a CL.
+        tasks_to_run = tasks or list(mlcube_config.tasks.keys())  # These tasks need to run later.
+        overridden_parameters = set()                             # Set of parameters from task_cli_args that were used.
         for task_name in mlcube_config.tasks.keys():
             [task] = MLCubeConfig.ensure_values_exist(mlcube_config.tasks, task_name, dict)
             [parameters] = MLCubeConfig.ensure_values_exist(task, 'parameters', dict)
             [inputs, outputs] = MLCubeConfig.ensure_values_exist(parameters, ['inputs', 'outputs'], dict)
 
-            MLCubeConfig.check_parameters(inputs, task_cli_args)
-            MLCubeConfig.check_parameters(outputs, task_cli_args)
+            overridden_inputs = MLCubeConfig.check_parameters(inputs, task_cli_args)
+            overridden_outputs = MLCubeConfig.check_parameters(outputs, task_cli_args)
+
+            if task_name in tasks_to_run:
+                overridden_parameters.update(overridden_inputs)
+                overridden_parameters.update(overridden_outputs)
+
+        unknown_task_cli_args = set([name for name in task_cli_args if name not in overridden_parameters])
+        if unknown_task_cli_args:
+            MLCubeConfig.report_unknown_task_cli_args(task_cli_args, unknown_task_cli_args)
+            raise ConfigurationError(f"Unknown task CLI arguments: {unknown_task_cli_args}")
 
         if resolve:
             OmegaConf.resolve(mlcube_config)
         return mlcube_config
 
     @staticmethod
-    def check_parameters(parameters: DictConfig, task_cli_args: t.Dict) -> None:
+    def check_parameters(parameters: DictConfig, task_cli_args: t.Dict) -> t.Set:
         """ Check that task parameters are defined according to MLCube schema.
         Args:
             parameters: Task parameters (`inputs` or `outputs`).
-            task_cli_args: Task parameters from command line.
+            task_cli_args: Task parameters that a user provided on a command line.
+        Returns:
+            Set of parameters that were overridden using task parameters on a command line.
         This function does not set `type` of parameters (if not present) in all cases.
         """
+        overridden_parameters = set()
         for name in parameters.keys():
             # The `_param_name` is anyway there, so check it's not None.
             [param_def] = MLCubeConfig.ensure_values_exist(parameters, name, dict)
@@ -137,7 +161,9 @@ class MLCubeConfig(object):
             if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
                 param_def.type = ParameterType.DIRECTORY
             # See if there is value on a command line
-            param_def.default = task_cli_args.get(name, param_def.default)
+            if name in task_cli_args:
+                param_def.default = task_cli_args.get(name)
+                overridden_parameters.add(name)
             # Check again parameter type. Users in certain number of cases will not be providing final slash on a
             # command line for directories, so we tried to infer types above using default values. Just in case, see
             # if we can do the same with user-provided values.
@@ -150,3 +176,25 @@ class MLCubeConfig(object):
 
             # It probably does not make too much sense to see, let's say, if an input parameter exists and set its
             # type at this moment, because MLCube can run on remote hosts.
+        return overridden_parameters
+
+    @staticmethod
+    def check_task_cli_args(tasks: DictConfig, task_cli_args: t.Dict) -> None:
+        """Find any unknown task CLI arguments and report error.
+        Args:
+            tasks: Dictionary of task definitions.
+            task_cli_args: Dictionary of task parameters that a user provided on a command line.
+        Raises:
+            ConfigurationError if at least one task CLI argument is not recognized.
+        """
+
+    @staticmethod
+    def report_unknown_task_cli_args(task_cli_args: t.Dict, unknown_task_cli_args: t.Set) -> None:
+        """Task CLI argument (s) has not been recognized, report this error.
+        Args:
+            task_cli_args: Dictionary of all task CLI arguments.
+            unknown_task_cli_args: Arguments that have not been used (recognized).
+        """
+        print("The following task CLI arguments have not been used:")
+        for arg in unknown_task_cli_args:
+            print(f"\t{arg} = {task_cli_args[arg]}")
