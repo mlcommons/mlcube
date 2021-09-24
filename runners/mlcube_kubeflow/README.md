@@ -12,7 +12,9 @@
                  
    ```
    The `pvc` field above has the default value equal to MLCube name (mnist, matmul etc.).
-   The `pipeline_host field has the default value equal to `http://127.0.0.1:8000/pipeline` which used during port-forwarding of `svc/ml-pipeline-ui` in namespace `kubeflow` to port 8000 
+   Set `pipeline_host` field to Kubeflow Pipeline host endpoint.
+   
+   eg: Set `pipeline_host` to `http://127.0.0.1:8000/pipeline` if Kubeflow Pipelines is used locally by port-forwarding `svc/ml-pipeline-ui` in namespace `kubeflow` to port 8000 
    What to do:
      - Update `k8s.pvc` value.
      - Update `kubeflow.pipeline_host` value
