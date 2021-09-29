@@ -17,6 +17,7 @@ class Platform(object):
         'ssh': dict(pkg='mlcube_ssh'),
         'gcp': dict(pkg='mlcube_gcp'),
         'k8s': dict(pkg='mlcube_k8s'),
+        'kubeflow': dict(pkg='mlcube_kubeflow'),
     }
 
     @staticmethod
