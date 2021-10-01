@@ -6,6 +6,8 @@ from unittest import TestCase
 
 
 class CurrentDir(object):
+    """ Context manager that temporarily changes current working directory. """
+
     def __init__(self, new_work_dir: Path) -> None:
         self.new_work_dir: Path = new_work_dir
         self.old_work_dir = os.getcwd()
@@ -19,6 +21,8 @@ class CurrentDir(object):
 
 
 class SysPath(object):
+    """ Context manager that temporarily updates python path. """
+
     def __init__(self, prepend_path: Path) -> None:
         self.prepend_path: Path = prepend_path.resolve()
 

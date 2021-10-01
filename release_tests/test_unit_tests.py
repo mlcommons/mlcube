@@ -1,4 +1,5 @@
 import unittest
+import typing as t
 from pathlib import Path
 from release_tests import (ReleaseTest, SysPath)
 
@@ -7,7 +8,8 @@ class UnitTestsTest(ReleaseTest):
     """  """
 
     @staticmethod
-    def run_unit_tests(proj_dir: Path, proj_name: str) -> unittest.TestResult:
+    def run_unit_tests(proj_dir: Path, proj_name: t.Text) -> unittest.TestResult:
+        """ Run unit test within `proj_dir` directory. """
         return unittest.TextTestRunner().run(
             unittest.defaultTestLoader.discover(
                 start_dir=str(proj_dir.joinpath(proj_name).resolve()),
@@ -17,6 +19,7 @@ class UnitTestsTest(ReleaseTest):
         )
 
     def test_mlcube(self):
+        """ Run MLCube unit tests. """
         with SysPath(self.mlcube_dir):
             results: unittest.TestResult = UnitTestsTest.run_unit_tests(
                 self.mlcube_dir,
@@ -27,6 +30,7 @@ class UnitTestsTest(ReleaseTest):
         self.assertTrue(results.wasSuccessful())
 
     def test_runners(self):
+        """ Run MLCube runners unit tests. """
         failed_tests = []
         with SysPath(self.mlcube_dir):
             for runner_dir in self.runner_dirs:
