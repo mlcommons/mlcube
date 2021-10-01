@@ -3,7 +3,6 @@ This requires the MLCube 2.0 that's located somewhere in one of dev branches.
 """
 import os
 import sys
-
 import click
 import logging
 import coloredlogs
@@ -14,6 +13,7 @@ from mlcube.errors import (IllegalParameterValueError, MLCubeError)
 from mlcube.parser import (CliParser, MLCubeDirectory)
 from mlcube.platform import Platform
 from mlcube.runner import Runner
+from mlcube.shell import Shell
 from mlcube.system_settings import SystemSettings
 from mlcube.validate import Validate
 
@@ -269,6 +269,25 @@ def config(ctx: click.core.Context,
             settings.remove_runner(remove_runner, remove_platforms=remove_platforms)
     except MLCubeError as e:
         logger.error("Command failed, command = '%s' error = '%s'", ' '.join(sys.argv), str(e))
+
+
+@cli.command(name='create',
+             help='Create a new MLCube using cookiecutter.')
+def create() -> None:
+    """ Create a new MLCube using cookiecutter template.
+      - MLCube cookiecutter: https://github.com/mlcommons/mlcube_cookiecutter
+      - Example: https://mlcommons.github.io/mlcube/tutorials/create-mlcube/
+    """
+    mlcube_cookiecutter_url = 'https://github.com/mlcommons/mlcube_cookiecutter'
+    try:
+        from cookiecutter.main import cookiecutter
+        proj_dir: t.Text = cookiecutter(mlcube_cookiecutter_url)
+        if proj_dir and os.path.isfile(os.path.join(proj_dir, 'mlcube.yaml')):
+            Shell.run('mlcube', 'describe', '--mlcube', proj_dir)
+    except ImportError:
+        print("Cookiecutter library not found.")
+        print("\tInstall it: pip install cookiecutter")
+        print(f"\tMore details: {mlcube_cookiecutter_url}")
 
 
 if __name__ == "__main__":
