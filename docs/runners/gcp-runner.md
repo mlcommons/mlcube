@@ -40,39 +40,36 @@ Remote instances for running MLCubes can be created manually or automatically.
    supported. Basically, users can only specify `machine type` and `disk size`. Ubuntu 18.04 OS will be used as a base
    image.
 
-## Platform configuration file
-The following is an example of the actual GCP platform configuration file used in one of the tutorials:
+## Configuration parameters
 ```yaml
-# GCP login credentials
 gcp:
-    # These are your project ID and zone names. 
-    project_id: 'atomic-envelope-293722'
-    zone: 'us-central1-a'
-    credentials:
-        # As described above, ensure you have service account activated and download your JSON key file.
-        file: '${HOME}/.gcp/service_account_key_file.json'
-        scopes: ['https://www.googleapis.com/auth/cloud-platform']
-
-
+  # These are your project ID and zone names. 
+  project_id: ''
+  zone: ''
+  # As described above, ensure you have service account activated and download your JSON key file.
+  credentials:
+    file: '${HOME}/.gcp/service_account_key_file.json'
+    scopes: ['https://www.googleapis.com/auth/cloud-platform']
 # Instance parameters.
-#    If existing remote instance is used, only `name` field is used. Other fields are not taken into account.
-#    If users want GCP runners to automatically create remote instances, all three fields must present. Instance name
-#       is arbitrary name for this instance. Machine type must be the valid GCP machine type. Ubuntu 18.04 is used
-#       as a base OS. 
+#    If existing remote instance is used, only `name` field is used. Other fields are not taken 
+#    into account. If users want GCP runners to automatically create remote instances, all three 
+#    fields must present. Instance name is arbitrary name for this instance. Machine type must be
+#    the valid GCP machine type. Ubuntu 18.04 is used as a base OS. 
 instance:
-    name: 'mlcube-gcp-instance-n1s4'
-    machine_type: 'n1-standard-4'
-    disk_size_gb: 100
+  name: ''
+  machine_type: ''
+  disk_size_gb: ''
+# As described above, primary role of GCP runners is to ensure a remote instance exists before 
+# delegating the actual `MLCube run` functionality to other runners. Currently, the only available 
+# option is an SSH runner (that assumes remote instances are available vis SSH i.e. they have 
+# public IPs). The `platform` field below specifies what runner the GCP runner should be using
+# once GCP virtual instance has been created. An SSH runner needs to be configured separately 
+# (see sections below for some recommendations and best practices). 
+platform: ''
+```
 
-# As described above, primary role of GCP runners is to ensure a remote instance exists before delegating the actual
-# `MLCube run` functionality to other runners. Currently, the only available option is an SSH runner (that assumes 
-# remote instances are available vis SSH i.e. they have public IPs). The `platform` field below specifies what runner
-# the GCP runner should be using once GCP virtual instance has been created. An SSH runner needs to be configured
-# separately (see sections below for some recommendations and best practices). 
-platform: 'ssh.yaml'
-``` 
 
-## GCP runner `configure` phase
+## Configuring MLCubes
 GCP runners execute the following steps during the configuration phase:
 1.  Check that SSH access has been configured. A runner loads users `${HOME}/.ssh/config` file and verifies it 
     contains a section for the remote instance there (specified by the name). The configuration section must define 
@@ -87,7 +84,7 @@ GCP runners execute the following steps during the configuration phase:
 7. GCP runner calls SSH runner to continue configuring remote instance in a MLCube-specific way.
 
 
-##  GCP runner `run` phase
+## Running MLCubes
 GCP runner does not implement any specific logic and redirects its functionality to an SSH runner.   
 
 
