@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.5">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.3.0">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.be71726b.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.8b42a75e.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
@@ -76,7 +76,9 @@
       
     </div>
     
-      <header class="md-header" data-md-component="header">
+      
+
+<header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="MLCube" class="md-header__button md-logo" aria-label="MLCube" data-md-component="logo">
       
@@ -142,11 +144,14 @@
     
     
   </nav>
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
+        
+          
         
       
       <main class="md-main" data-md-component="main">
@@ -203,10 +208,14 @@
       
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
       
-      <label class="md-nav__link" for="__nav_2">
-        Getting Started
-        <span class="md-nav__icon md-icon"></span>
-      </label>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
         <label class="md-nav__title" for="__nav_2">
           <span class="md-nav__icon md-icon"></span>
@@ -215,6 +224,7 @@
         <ul class="md-nav__list" data-md-scrollfix>
           
             
+              
   
   
     
@@ -279,8 +289,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -291,8 +303,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -303,6 +317,7 @@
     </li>
   
 
+            
           
         </ul>
       </nav>
@@ -323,10 +338,14 @@
       
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
       
-      <label class="md-nav__link" for="__nav_3">
-        Tutorials
-        <span class="md-nav__icon md-icon"></span>
-      </label>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
         <label class="md-nav__title" for="__nav_3">
           <span class="md-nav__icon md-icon"></span>
@@ -335,6 +354,7 @@
         <ul class="md-nav__list" data-md-scrollfix>
           
             
+              
   
   
   
@@ -345,6 +365,7 @@
     </li>
   
 
+            
           
         </ul>
       </nav>
@@ -365,10 +386,14 @@
       
         <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
       
-      <label class="md-nav__link" for="__nav_4">
-        Runners
-        <span class="md-nav__icon md-icon"></span>
-      </label>
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Runners
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <nav class="md-nav" aria-label="Runners" data-md-level="1">
         <label class="md-nav__title" for="__nav_4">
           <span class="md-nav__icon md-icon"></span>
@@ -377,6 +402,7 @@
         <ul class="md-nav__list" data-md-scrollfix>
           
             
+              
   
   
   
@@ -387,8 +413,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -399,8 +427,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -411,8 +441,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -423,8 +455,10 @@
     </li>
   
 
+            
           
             
+              
   
   
   
@@ -435,8 +469,24 @@
     </li>
   
 
+            
           
             
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runners/kubeflow/" class="md-nav__link">
+        Kubeflow Runner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
   
   
   
@@ -447,6 +497,7 @@
     </li>
   
 
+            
           
         </ul>
       </nav>
@@ -514,28 +565,48 @@
                 
                 
                 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
-<p>Here is the step-by-step guide to run simple MLCube cubes.</p>
+<p>Here is the step-by-step guide to install MLCube library and run simple MLCube cubes.</p>
 <h2 id="create-a-python-environment">Create a python environment<a class="headerlink" href="#create-a-python-environment" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code># Create Python Virtual Environment
-virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate
+<div class="highlight"><pre><span></span><code># Option 1: use python virtual environment `virtualenv`.
+virtualenv -p python3.6 ./env_mlcube &amp;&amp; source ./env_mlcube/bin/activate
+
+# Option 2: use conda.
+conda create -n mlcube python=3.6 &amp;&amp; conda activate mlcube
 </code></pre></div>
 <h2 id="install-mlcube-runners">Install MLCube Runners<a class="headerlink" href="#install-mlcube-runners" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code># Install MLCube Docker runner 
+<div class="highlight"><pre><span></span><code># Install MLCube Docker runner.
 pip install mlcube-docker
 
-# Optionally, setup host environment by providing the correct `http_proxy` and `https_proxy` environmental variables.
-# export http_proxy=...
-# export https_proxy=..
-
-# Optionally, install other runners
+# Optionally, install other runners.
+# pip install mlcube-gcp
+# pip install mlcube-k8s
+# pip install mlcube-kubeflow
 # pip install mlcube-singularity
 # pip install mlcube-ssh
-# pip install mlcube-k8s
+
+# Check that the docker runner has been installed.
+mlcube config --get runners
+
+# Show MLCube system settings.
+mlcube config --list
+
+# This system settings file (~/mlcube.yaml) configures local MLCube runners. Documentation
+# for MLCube runners describes each of these parameters in details. A typical first step for
+# enterprise environments that are usually behind a firewall is to configure proxy servers.
+#  platforms:
+#    docker:
+#      env_args:
+#        http_proxy: http://ADDRESS:PORT
+#        https_proxy: https://ADDRESS:PORT
+#      build_args:
+#        http_proxy: http://ADDRESS:PORT
+#        https_proxy: https://ADDRESS:PORT
 </code></pre></div>
 <h2 id="explore-with-examples">Explore with examples<a class="headerlink" href="#explore-with-examples" title="Permanent link">&para;</a></h2>
-<p><div class="highlight"><pre><span></span><code>git clone https://github.com/mlcommons/mlcube_examples.git &amp;&amp; cd ./mlcube_examples
-</code></pre></div>
-A great way to learn about MLCube is try out the example MLCube cubes located <a href="https://github.com/mlcommons/mlcube_examples">here</a>.</p>
+<p>A great way to learn about MLCube is try out the example MLCube cubes located <a href="https://github.com/mlcommons/mlcube_examples">here</a>.
+<div class="highlight"><pre><span></span><code>git clone https://github.com/mlcommons/mlcube_examples.git &amp;&amp; cd ./mlcube_examples
+mlcube describe --mlcube ./mnist
+</code></pre></div></p>
                 
               
               
@@ -591,10 +662,12 @@ A great way to learn about MLCube is try out the example MLCube cubes located <a
     <div class="md-footer-meta__inner md-grid">
       <div class="md-footer-copyright">
         
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
+        
+          Made with
+          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+            Material for MkDocs
+          </a>
+        
         
       </div>
       
@@ -606,10 +679,10 @@ A great way to learn about MLCube is try out the example MLCube cubes located <a
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.409db549.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.f8263e09.min.js", "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.56a63758.min.js"></script>
+      <script src="../assets/javascripts/bundle.4fc53ad4.min.js"></script>
       
     
   </body>
