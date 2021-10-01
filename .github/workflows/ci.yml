@@ -74,3 +74,11 @@ jobs:
         run: |
           cd runners/mlcube_gcp
           pytest
+      - name: Install MLCube Kubeflow Runner
+        run: |
+          cd runners/mlcube_kubeflow
+          python setup.py install
+      - name: Test MLCube Kubeflow CLI
+        run: |
+          cd runners/mlcube_kubeflow
+          pytest
