@@ -136,6 +136,23 @@ def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, works
     print(OmegaConf.to_yaml(mlcube_config))
 
 
+@cli.command(name='configure', help='Configure MLCube.',
+             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@mlcube_option
+@platform_option
+@click.pass_context
+def configure(ctx: click.core.Context, mlcube: t.Text, platform: t.Text) -> None:
+    """
+    Args:
+        ctx: Click context. We need this to get access to extra CLI arguments.
+        mlcube: Path to MLCube root directory or mlcube.yaml file.
+        platform: Platform to use to configure this MLCube for (docker, singularity, gcp, k8s etc).
+    """
+    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace=None, resolve=True)
+    docker_runner = runner_cls(mlcube_config, task=None)
+    docker_runner.configure()
+
+
 @cli.command(name='run', help='Run MLCube ML task.',
              context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
 @mlcube_option

@@ -31,7 +31,7 @@ class Runner(object):
 
     CONFIG: RunnerConfigType = RunnerConfig
 
-    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[t.Text]) -> None:
         """Base runner.
         Args:
             mlcube: MLCube configuration.
