@@ -1,63 +1,75 @@
 # Docker Runner
-Docker runner uses docker/nvidia-docker to run MLCube cubes. It supports two mandatory commands - `configure` and
-`run` with standard arguments - `mlcube`, `platform` and `task`. Docker platform configuration is used to configure
-docker runner.
+Docker runner uses docker/nvidia-docker/podman to run MLCube cubes. It supports two mandatory commands - `configure` and
+`run` with standard arguments - `mlcube`, `platform` and `task`. Users can configure docker runner in MLCube 
+configuration file, system setting file, and override parameters on a command line.
 
-## Platform Configuration File
-Docker platform configuration file is a YAML file that follows `mlcube_docker` ML schema. The configuration file for the
-reference MNIST cube is the following:
+
+## Configuration parameters
+MLCube reference docker runner supports the following configuration parameters (with default values):
 ```yaml
-schema_version: 1.0.0
-schema_type: mlcube_docker
+# Docker Image name, for instance "mlcommons/mnist:0.0.1"
+image: ${docker.image}
+# Docker executable (docker, podman, sudo docker ...).
+docker: docker
 
-image: mlcommons/mlcube:mnist   # Docker image name
-docker_runtime: docker      # Docker executable: docker or nvidia-docker
+# Environmental variables for run command (-e name=value).
+env_args: {}               
+
+# Docker run arguments when ${platform.accelerator_count} > 0.
+gpu_args: ''
+# Docker run arguments when ${platform.accelerator_count} == 0.
+cpu_args: ''
+
+# Docker build arguments (--build-arg name=value)
+build_args: {}
+# Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.
+build_context: .
+# Docker file relative to $MLCUBE_ROOT, default is `$MLCUBE_ROOT/Dockerfile`.
+build_file: Dockerfile
+# MLCube configuration strategy
+#   'pull': never try to build, always pull
+#   'auto': build if image not found and dockerfile found
+#   'always': build even if image found
+build_strategy: pull
 ```
-
-## Additional configuration
-In current implementation, Docker runner uses `http_proxy` and `https_proxy` environmental variables (if set) during
-configure and run phases:  
-- __configure__: `docker build ... --build-args http_proxy=${http_proxy} --build-args https_proxy=${https_proxy} ...`  
-- __run__: `docker run ... -e http_proxy=${http_proxy} -e https_proxy=${https_proxy} ...`  
 
 
 ## Configuring MLCubes
-Docker runner uses `{MLCUBE_ROOT}/build` directory as the build context directory. This implies that all files
-that must be packaged in a docker image, must be located in that directory, including source files, python requirements,
-resource files, ML models etc. The docker recipe must have the standard name `Dockerfile`.
+Docker runner uses `build_strategy` configuration parameter to decide on build strategy:
 
-If `Dockerfile` file exists in `{MLCUBE_ROOT}/build`, the Docker runner assumes that it needs to `build` a docker
-image. If that file does not exist, the Docker runner will try to `pull` image with the specified name.
+- `pull`: always try to pull docker image, never attempt to build.
+- `auto`: use `build_context` and `build_file` to decide if `Dockerfile` exists. If it exists, build the image.
+- `always`: build docker image always when running MLCube tasks.
 
 Docker runner under the hood runs the following command line:  
 ```
-cd {build_path}; docker build {env_args} -t {image_name} -f Dockerfile .
+${docker.docker} build ${docker.build_args} -t ${docker.image} -f ${recipe} ${context}
 ```  
-where:  
-- `{build_path}` is `{MLCUBE_ROOT}/build` root directory.  
-- `{env_args}` is the arguments retrieved from user environment. Currently, only `http_proxy` and `https_proxy` are
-  supported.  
--  `{image_name}` is the image name defined in the platform configuration file.  
+where:
 
-> The `configure` command is optional and users do not necessarily need to be aware about it. The Docker runner
-> auto-detects if docker image exists before running a task, and if it does not exist, the docker runner runs the 
-> `configure` command. During the `configure` phase, docker runner does not check if docker image exists. This means the
-> following. If some implementation files have been modified, to rebuild the docker image users need to run
-> the `configure` command explicitly.
+- `${docker.docker}` is the docker executable.
+- `${docker.build_args}` docker build arguments.
+- `${docker.image}` is the docker image name.  
+- `${recipe}` is the `${docker.build_file}` relative to context
+- `${context}` is the `${docker.build_context}` relative to MLCube root directory.
 
+Users do not need to run the configure command explicitly, docker runner uses the following logic to decide what to do
+before running any task. If strategy is `always`, build the docker image. Else, if docker image exists, do nothing, else
+build or pull depending on what strategy is and if Dockerfile exists in MLCube directory. 
 
 
 ## Running MLCubes
 Docker runner runs the following command:    
 ```
-{docker_runtime} run --rm --net=host --privileged=true {volumes} {env_args} {image_name} {args}
+${docker.docker} run {run_args} ${docker.env_args} {volumes} ${docker.image} {task_args}
 ```  
-where:    
-- `{docker_exec}` is the docker_runtime value from the Docker platform configuration file.  
+where:
+
+- `${docker.docker}` is the docker executable.
+- `{run_args}` are either `${docker.cpu_args}` or `${docker.gpu_args}` depending on `${platform.num_accelerators}` value.
+- `${docker.env_args}` are the docker environmental variables.
 - `{volumes}` are the mount points that the runner automatically constructs based upon the task input/output
   specifications.  
-- `{env_args}` is the arguments retrieved from user environment, currently, only `http_proxy` and `https_proxy` are
-  supported.  
-- `{image_name}` is the image name from the platform configuration file.  
-- `{args}` is the task command line arguments, constructed automatically by the runner.  
+- `${docker.image}` is the docker image name.  
+- `{task_args}` is the task command line arguments, constructed automatically by the runner.  
  
