@@ -6,7 +6,7 @@ The mkdocs action builds and deploys the documentation site into the `gh-pages` 
 
 ### How it works
 
-The [mlcube repo](https://github.com/mlperf/mlcube) has Pull Requests pushed into the `master` branch on every merge. So the event associated with every PR merge is a `event:push`.
+The [mlcube repo](https://github.com/mlcommons/mlcube) has Pull Requests pushed into the `master` branch on every merge. So the event associated with every PR merge is a `event:push`.
 
 So the `docs-site` GitHub Action is triggered on every push into the repo. 
 
@@ -16,7 +16,7 @@ on:
   push:
 ```
 
-We don't want the Action to be run on all commits because most changes aren't going to be related to documentation. To filter out and run the `docs-site` **only** on changes relevant to documentation, we set the `paths` field in the workflow. We trigger the Action on a `event:push` with changes to files inside the `docs/` directory or to the `docs-site` workflow.
+We don't want the Action to be run on all commits because most changes are not going to be related to documentation. To filter out and run the `docs-site` **only** on changes relevant to documentation, we set the `paths` field in the workflow. We trigger the Action on a `event:push` with changes to files inside the `docs/` directory or to the `docs-site` workflow.
 
 ```yaml
 on:

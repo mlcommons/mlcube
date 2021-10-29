@@ -5,7 +5,10 @@ host: "gcp-f1-micro"
 authentication:
 
 # A platform file to use on remote host.
-platform: "docker.yaml"
+platform: "docker"
+
+# Full path on a remote host to sync MLCube content.
+remote_root: "/shared/my_name/mlcubes"
 
 # How to run MLCube runner on a remote host - define python environment here. The 'system' types means either
 # interpreter is available be default, or interpreter is an absolute path.

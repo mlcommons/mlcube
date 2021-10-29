@@ -1,4 +1,4 @@
-# This workflows will upload a Python Package using Twine when a release is created
+# These workflows will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 name: Upload Python Package
@@ -45,5 +45,5 @@ jobs:
         uses: peter-evans/repository-dispatch@v1
         with:
           token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
-          repository: mlperf/mlcube
+          repository: mlcommons/mlcube
           event-type: publish-runners

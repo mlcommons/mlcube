@@ -1,4 +1,4 @@
-# This workflows will upload a Python Package using Twine when a release is created
+# These workflows will upload a Python Package using Twine when a release is created
 # For more information see: https://help.github.com/en/actions/language-and-framework-guides/using-python-with-github-actions#publishing-to-package-registries
 
 name: Upload Python Package
@@ -122,3 +122,61 @@ jobs:
         verbose: true
       env:
         LOGLEVEL: DEBUG
+
+  gcp_runner_deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install setuptools wheel twine
+    - name: Build distribution
+      run: |
+        cd runners/mlcube_gcp
+        python setup.py sdist bdist_wheel
+    - name: Publish
+      uses: pypa/gh-action-pypi-publish@master
+      with:
+        user: ${{ secrets.PYPI_USER }}
+        verify_metadata: true
+        skip_existing: true
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: runners/mlcube_gcp/dist/
+        repository_url: https://upload.pypi.org/legacy/
+        verbose: true
+      env:
+        LOGLEVEL: DEBUG
+
+  kubeflow_runner_deploy:
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install setuptools wheel twine
+      - name: Build distribution
+        run: |
+          cd runners/mlcube_kubeflow
+          python setup.py sdist bdist_wheel
+      - name: Publish
+        uses: pypa/gh-action-pypi-publish@master
+        with:
+          user: ${{ secrets.PYPI_USER }}
+          verify_metadata: true
+          skip_existing: true
+          password: ${{ secrets.PYPI_PASSWORD }}
+          packages_dir: runners/mlcube_kubeflow/dist/
+          repository_url: https://upload.pypi.org/legacy/
+          verbose: true
+        env:
+          LOGLEVEL: DEBUG

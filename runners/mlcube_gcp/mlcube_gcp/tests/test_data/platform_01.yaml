@@ -1,0 +1,21 @@
+
+# Credentials to use Google Api Service. The following options are supported:
+#   - If it is not present, none or empty dictionary. Credentials are not passed to `googleapiclient.discovery.build`.
+#     I think a path to a JSON Key file could be provided via env variable GOOGLE_APPLICATION_CREDENTIALS
+#   - If `file` is present, it is considered to be a Service Account JSON Key File.
+#     Optionally, the list of `scopes` can present. Default value is ['https://www.googleapis.com/auth/cloud-platform']
+gcp:
+    project_id: 'atomic-envelope-293722'
+    zone: 'us-central1-a'
+    credentials:
+        file: '${HOME}/.gcp/atomic-envelope-293722-3b3a34c269c8.json'
+        scopes: ['https://www.googleapis.com/auth/cloud-platform']
+
+# MLBox provides 'configure' semantics. When does a GCP runner stop/delete instances?
+instance:
+    name: 'gcp-f1-micro'
+    machine_type: 'f1-micro'
+    disk_size_gb: 20
+
+
+# Send to SSH runner: user, IP address and path to an identity file.
