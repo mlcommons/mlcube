@@ -57,4 +57,38 @@ In order to not fill-up space on the repo with the docs-site related files, the 
 
 - Permissions
 
-    The `docs-site` GitHub Action uses a deploy key specifically created for it. To revoke access to the GitHub Action, delete the secret `ACTIONS_DEPLOY_KEY` in [Repository Settings](https://github.com/mlcommons/mlcube/settings/secrets/).
+    The `docs-site` GitHub Action uses a deploy key specifically created for it. To revoke access to the GitHub Action, delete the secret `ACTIONS_DEPLOY_KEY` in [Repository Settings](https://github.com/mlperf/mlcube/settings/secrets/).
+
+## python-publish action
+
+The python-publish action builds and publishes the python packages to PyPI. For more details on the workflow spec, [python-publish.yml].  
+  Once the python-publish job completes it triggers Repository Dispatch Event which uses `MLCOMMONS_REPO_ACCESS` to trigger a event to the repositoy.
+  ```yaml
+    dispatch:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v1
+        with:
+          token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
+          repository: mlperf/mlcube
+          event-type: publish-runners  
+  ```
+This event is captured by runner-publish action which builds and publishes all the runners packages to PyPI.
+  ```yaml
+    on:
+    repository_dispatch:
+      types: publish-runner`
+  ```
+
+More Information on python-publish action & Repository Dispatch action can be found here:
+  - https://github.com/marketplace/actions/repository-dispatch
+  - https://github.com/marketplace/actions/pypi-publish
+
+### Secrets used
+| Name  |   |
+|---|---|
+|PYPI_USER        |pypi login credentials used in GitHub workflows    |
+|PYPI_PASSWORD    |pypi login credentials used in GitHub workflows    |
+|MLCOMMONS_REPO_ACCESS   |public_repo ACL for request dispatch in GitHub workflows  |
