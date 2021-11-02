@@ -3,7 +3,7 @@ MLCube Docker Runner runs cubes (packaged Machine Learning (ML) workloads) in th
 
 1. Create MLCube system settings file. It should be located in a user home directory: `${HOME}/mlcube.yaml`. If this 
    is not possible or not convenient, this file can be placed in any location given that environment variable
-   `MLCUBE_GLOBAL_CONFIG` points to this file. 
+   `MLCUBE_SYSTEM_SETTINGS` points to this file. 
 2. Put the following in this file:
    ```yaml
    docker:
