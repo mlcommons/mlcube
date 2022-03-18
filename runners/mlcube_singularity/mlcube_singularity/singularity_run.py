@@ -17,20 +17,52 @@ class Config(RunnerConfig):
     """ Helper class to manage `singularity` environment configuration."""
 
     DEFAULT = OmegaConf.create({
-        'runner': 'singularity',
+        'runner': 'singularity',                           # Name of this runner.
 
-        'image': '${singularity.image}',
-        'image_dir': '${runtime.workspace}/.image',
+        'image': '${singularity.image}',                   # Path to Singularity image, relative to ${image_dir}.
+        'image_dir': '${runtime.workspace}/.image',        # Root image directory for the image.
 
-        'singularity': 'singularity',
+        'singularity': 'singularity',                      # Executable file for singularity runtime.
 
-        'build_args': '--fakeroot',
-        'build_file': 'Singularity.recipe'
+        'build_args': '--fakeroot',                        # Image build arguments.
+        # Sergey: there seems to be a better name for this parameter. Originally, the only source was a singularity
+        # recipe (build file). Later, MLCube started to support other sources, such as docker images.
+        'build_file': 'Singularity.recipe'                 # Source for the image build process.
     })
 
     @staticmethod
     def merge(mlcube: DictConfig) -> None:
-        mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('singularity', OmegaConf.create({})))
+        """Merge current (mostly default) configuration with configuration from MLCube yaml file.
+        Args:
+            mlcube: Current MLCube configuration. Contains all fields from MLCube configuration file (YAML) including
+                platform-specific configuration sections (docker/singularity). In addition, this dictionary contains
+                'runtime' configuration (`root` and `workspace`), and `runner` configuration that contains default
+                runner configuration (Singularity in this case) from system settings file (it is exact or modified
+                version of `Config.DEFAULT` dictionary to account for user local environment).
+        Idea is that if mlcube contains `singularity` section, then it means that we use it as is. Else, we can try
+        to run this MLCube using information from `docker` section if it exists.
+        """
+        s_cfg: t.Optional[DictConfig] = mlcube.get('singularity', None)
+        if not s_cfg:
+            # Singularity runner will try to use docker section. At this point, it will work as long as we assume we
+            # pull docker images from a docker hub.
+            logger.warning("Singularity configuration not found in MLCube file (singularity=%s).", str(s_cfg))
+
+            d_cfg = mlcube.get('docker', None)
+            if not d_cfg:
+                logger.warning("Docker configuration not found too. Singularity runner will likely fail to run.")
+                return
+
+            # The idea is that we can use the remote docker image as a source for the build process, automatically
+            # generating an image name in a local environment. Key here is that the source has a scheme - `docker://`
+            s_cfg = OmegaConf.create(dict(
+                image=''.join(c for c in d_cfg['image'] if c.isalnum()) + '.sif',
+                build_file='docker://' + d_cfg['image']
+            ))
+            logger.info(f"Singularity runner has converted docker configuration into singularity (%s).",
+                        str(OmegaConf.to_container(s_cfg)))
+
+        mlcube.runner = OmegaConf.merge(mlcube.runner, s_cfg)
 
     @staticmethod
     def validate(mlcube: DictConfig) -> None:
@@ -58,11 +90,16 @@ class SingularityRun(Runner):
         # Make sure a directory to store image exists. If paths are like "/opt/...", the call may fail.
         os.makedirs(os.path.dirname(image_uri), exist_ok=True)
 
-        # Let's assume build context is the root MLCube directory
+        # Let's assume that build context is the root MLCube directory
         recipe_path: t.Text = self.mlcube.runtime.root
-        recipe_file: t.Text = os.path.join(recipe_path, s_cfg.build_file)
-        if not os.path.exists(recipe_file):
-            raise IOError(f"Singularity recipe not found: {recipe_file}")
+        if s_cfg.build_file.startswith('docker://'):
+            # https://sylabs.io/guides/3.0/user-guide/build_a_container.html
+            # URI beginning with docker:// to build from Docker Hub
+            ...
+        else:
+            recipe_file: t.Text = os.path.join(recipe_path, s_cfg.build_file)
+            if not os.path.exists(recipe_file):
+                raise IOError(f"Singularity recipe not found: {recipe_file}")
         Shell.run(
             'cd', recipe_path, ';',
             s_cfg.singularity, 'build', s_cfg.build_args, image_uri, s_cfg.build_file
