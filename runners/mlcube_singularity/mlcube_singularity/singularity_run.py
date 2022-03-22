@@ -75,7 +75,7 @@ class SingularityRun(Runner):
 
     CONFIG = Config
 
-    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: str) -> None:
         super().__init__(mlcube, task)
 
     def configure(self) -> None:
@@ -83,31 +83,35 @@ class SingularityRun(Runner):
         s_cfg: DictConfig = self.mlcube.runner
 
         # Get full path to a singularity image. By design, we compute it relative to {mlcube.root}/workspace.
-        image_uri: t.Text = os.path.join(s_cfg.image_dir, s_cfg.image)
-        if os.path.exists(image_uri):
-            logger.info("Image found (%s).", image_uri)
+        image_file: str = os.path.join(s_cfg.image_dir, s_cfg.image)
+        if os.path.exists(image_file):
+            logger.info("SIF exists (%s). MLCube configuration is not required.", image_file)
             return
+
         # Make sure a directory to store image exists. If paths are like "/opt/...", the call may fail.
-        os.makedirs(os.path.dirname(image_uri), exist_ok=True)
+        os.makedirs(os.path.dirname(image_file), exist_ok=True)
 
         # Let's assume that build context is the root MLCube directory
-        recipe_path: t.Text = self.mlcube.runtime.root
-        if s_cfg.build_file.startswith('docker://'):
+        build_path: str = self.mlcube.runtime.root
+        build_source: str = s_cfg.build_file
+        if build_source.startswith('docker://'):
             # https://sylabs.io/guides/3.0/user-guide/build_a_container.html
             # URI beginning with docker:// to build from Docker Hub
-            ...
+            logger.info("Building SIF from docker image (%s).", build_source)
         else:
-            recipe_file: t.Text = os.path.join(recipe_path, s_cfg.build_file)
+            # This must be a recipe file. Make sure it exists.
+            recipe_file: str = os.path.join(build_path, build_source)
             if not os.path.exists(recipe_file):
-                raise IOError(f"Singularity recipe not found: {recipe_file}")
+                raise IOError(f"SIF recipe file does not exist (path={build_path}, file={build_source})")
+            logger.info("Building SIF from recipe file (path=%s, file=%s).", build_path, build_source)
         Shell.run(
-            'cd', recipe_path, ';',
-            s_cfg.singularity, 'build', s_cfg.build_args, image_uri, s_cfg.build_file
+            'cd', build_path, ';',
+            s_cfg.singularity, 'build', s_cfg.build_args, image_file, build_source
         )
 
     def run(self) -> None:
         """  """
-        image_uri: t.Text = os.path.join(self.mlcube.runner.image_dir, self.mlcube.runner.image)
+        image_uri: str = os.path.join(self.mlcube.runner.image_dir, self.mlcube.runner.image)
         if not os.path.exists(image_uri):
             self.configure()
 
