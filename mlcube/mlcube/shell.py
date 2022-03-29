@@ -3,6 +3,7 @@ import copy
 import shutil
 import logging
 import typing as t
+from pathlib import Path
 from distutils import dir_util
 from omegaconf import DictConfig
 from mlcube.errors import ConfigurationError
@@ -76,7 +77,7 @@ class Shell(object):
                 if not ParameterType.is_valid(_param_def.type):
                     raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
                                              f"type={_param_def.type}. Type is invalid.")
-                _host_path = os.path.join(mlcube.runtime.workspace, _param_def.default)
+                _host_path = Path(mlcube.runtime.workspace) / _param_def.default
 
                 if _param_def.type == ParameterType.UNKNOWN:
                     if _io == IOType.OUTPUT:
@@ -102,10 +103,16 @@ class Shell(object):
                 elif _param_def.type == ParameterType.FILE:
                     _host_path, _file_name = os.path.split(_host_path)
                     os.makedirs(_host_path, exist_ok=True)
-                    mounts[_host_path] = mounts.get(
+                    new_mount = mounts.get(
                         _host_path,
                         '/mlcube_io{}/{}'.format(len(mounts), _host_path)
                     )
+                    windows_match = ':\\'
+                    if windows_match in new_mount:
+                        index = new_mount.index(windows_match)
+                        substring = new_mount[index-1:index+2]
+                        new_mount = new_mount.replace(substring, '').replace('\\', '/')
+                    mounts[_host_path] = new_mount
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
         params = mlcube.tasks[task].parameters
@@ -165,9 +172,8 @@ class Shell(object):
             """ Check of this artifact is an output of some task. """
             for _task_name, _task_def in target_mlcube.tasks.items():
                 for _output_param_name, _output_param_def in _task_def.parameters.outputs.items():
-                    _target_output_artifact: t.Text = os.path.join(
-                        target_workspace, _storage_not_supported(_output_param_def.default)
-                    )
+                    _target_output_artifact: t.Text = Path(target_workspace) / _storage_not_supported(_output_param_def.default)
+
                     # Can't really use `os.path.samefile` here since files may not exist.
                     # if os.path.samefile(_target_artifact, _target_output_artifact):
                     if _target_artifact == _target_output_artifact:
@@ -180,7 +186,7 @@ class Shell(object):
         target_workspace = os.path.abspath(_storage_not_supported(target_mlcube.runtime.workspace))
         os.makedirs(target_workspace, exist_ok=True)
 
-        source_workspace = os.path.abspath(os.path.join(target_mlcube.runtime.root, 'workspace'))
+        source_workspace = os.path.abspath(Path(target_mlcube.runtime.root) / 'workspace')
         if not os.path.exists(source_workspace):
             logger.debug("[sync_workspace] source workspace (%s) does not exist, nothing to sync.", source_workspace)
             return
@@ -206,11 +212,12 @@ class Shell(object):
             #       means that the `storage` section defines some storage labelled as `home`, and MLCube needs to use
             #       ${name} path within that storage.
 
-            source_uri: t.Text = os.path.join(source_workspace, _storage_not_supported(input_def.default))
+            source_uri: t.Text = Path(source_workspace) / _storage_not_supported(input_def.default)
+
             if not _is_ok(input_name, 'source', source_workspace, source_uri, _must_exist=True):
                 continue
 
-            target_uri: t.Text = os.path.join(target_workspace, _storage_not_supported(input_def.default))
+            target_uri: t.Text = Path(target_workspace) / _storage_not_supported(input_def.default)
             if not _is_ok(input_name, 'target', target_workspace, target_uri, _must_exist=False):
                 continue
 
