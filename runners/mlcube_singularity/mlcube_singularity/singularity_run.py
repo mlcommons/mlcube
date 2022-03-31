@@ -1,7 +1,9 @@
-import os
 import logging
 import typing as t
-from omegaconf import DictConfig, OmegaConf
+from pathlib import Path
+from omegaconf import (DictConfig, OmegaConf)
+import semver
+from spython.utils.terminal import get_singularity_version_info
 from mlcube.shell import Shell
 from mlcube.runner import (Runner, RunnerConfig)
 
@@ -46,20 +48,37 @@ class Config(RunnerConfig):
         if not s_cfg:
             # Singularity runner will try to use docker section. At this point, it will work as long as we assume we
             # pull docker images from a docker hub.
-            logger.warning("Singularity configuration not found in MLCube file (singularity=%s).", str(s_cfg))
+            logger.warning("SingularityRun singularity configuration not found in MLCube file (singularity=%s).",
+                           str(s_cfg))
 
             d_cfg = mlcube.get('docker', None)
             if not d_cfg:
-                logger.warning("Docker configuration not found too. Singularity runner will likely fail to run.")
+                logger.warning("SingularityRun docker configuration not found too. Singularity runner will likely "
+                               "fail to run.")
                 return
 
             # The idea is that we can use the remote docker image as a source for the build process, automatically
             # generating an image name in a local environment. Key here is that the source has a scheme - `docker://`
+            # The --fakeroot switch is useful and is supported in singularity version >= 3.5
+            build_args = ''
+            try:
+                # TODO: this API does not expose the `software` parameter (path to singularity executable).
+                version: semver.VersionInfo = get_singularity_version_info()
+                logger.info("SingularityRun singularity version %s", str(version))
+                if version >= semver.VersionInfo(major=3, minor=5):
+                    logger.info("SingularityRun will use --fakeroot CLI switch (version >= 3.5).")
+                    build_args = '--fakeroot'
+                else:
+                    logger.warning("SingularityRun will not use --fakeroot CLI switch (version < 3.5)")
+            except:
+                logger.warning("SingularityRun can't get singularity version (do you have singularity installed?).")
+
             s_cfg = OmegaConf.create(dict(
                 image=''.join(c for c in d_cfg['image'] if c.isalnum()) + '.sif',
-                build_file='docker://' + d_cfg['image']
+                build_file='docker://' + d_cfg['image'],
+                build_args=build_args
             ))
-            logger.info(f"Singularity runner has converted docker configuration into singularity (%s).",
+            logger.info(f"SingularityRun singularity runner has converted docker configuration to singularity (%s).",
                         str(OmegaConf.to_container(s_cfg)))
 
         mlcube.runner = OmegaConf.merge(mlcube.runner, s_cfg)
@@ -77,42 +96,50 @@ class SingularityRun(Runner):
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: str) -> None:
         super().__init__(mlcube, task)
+        try:
+            # Check version and log a warning message if fakeroot is used with singularity version < 3.5
+            version: semver.VersionInfo = get_singularity_version_info()
+            logger.info("SingularityRun singularity version = %s", str(version))
+            if version < semver.VersionInfo(major=3, minor=5) and '--fakeroot' in (self.mlcube.runner.build_args or ""):
+                logger.warning("SingularityRun singularity version < 3.5, and it probably does not support --fakeroot "
+                               "parameter that is present in MLCube configuration.")
+        except:
+            logger.warning("SingularityRun can't get singularity version (do you have singularity installed?).")
 
     def configure(self) -> None:
         """Build Singularity Image on a current host."""
         s_cfg: DictConfig = self.mlcube.runner
 
         # Get full path to a singularity image. By design, we compute it relative to {mlcube.root}/workspace.
-        image_file: str = os.path.join(s_cfg.image_dir, s_cfg.image)
-        if os.path.exists(image_file):
-            logger.info("SIF exists (%s). MLCube configuration is not required.", image_file)
+        image_file = Path(s_cfg.image_dir, s_cfg.image)
+        if image_file.exists():
+            logger.info("SingularityRun SIF exists (%s) - no need to run the configure step.", image_file)
             return
 
         # Make sure a directory to store image exists. If paths are like "/opt/...", the call may fail.
-        os.makedirs(os.path.dirname(image_file), exist_ok=True)
+        image_file.parent.mkdir(parents=True, exist_ok=True)
 
-        # Let's assume that build context is the root MLCube directory
-        build_path: str = self.mlcube.runtime.root
-        build_source: str = s_cfg.build_file
-        if build_source.startswith('docker://'):
+        build_path = Path(self.mlcube.runtime.root)     # Let's assume that build context is the root MLCube directory
+        recipe: str = s_cfg.build_file                  # This is the recipe file, or docker image.
+        if recipe.startswith('docker://'):
             # https://sylabs.io/guides/3.0/user-guide/build_a_container.html
             # URI beginning with docker:// to build from Docker Hub
-            logger.info("Building SIF from docker image (%s).", build_source)
+            logger.info("SingularityRun building SIF from docker image (%s).", recipe)
         else:
             # This must be a recipe file. Make sure it exists.
-            recipe_file: str = os.path.join(build_path, build_source)
-            if not os.path.exists(recipe_file):
-                raise IOError(f"SIF recipe file does not exist (path={build_path}, file={build_source})")
-            logger.info("Building SIF from recipe file (path=%s, file=%s).", build_path, build_source)
+            if not Path(build_path, recipe).exists():
+                raise IOError(f"SIF recipe file does not exist (path={build_path}, file={recipe})")
+            logger.info("Building SIF from recipe file (path=%s, file=%s).", build_path, recipe)
         Shell.run(
-            'cd', build_path, ';',
-            s_cfg.singularity, 'build', s_cfg.build_args, image_file, build_source
+            'cd', str(build_path), ';',
+            s_cfg.singularity, 'build', s_cfg.build_args, str(image_file), recipe,
+            die_on_error=True
         )
 
     def run(self) -> None:
         """  """
-        image_uri: str = os.path.join(self.mlcube.runner.image_dir, self.mlcube.runner.image)
-        if not os.path.exists(image_uri):
+        image_file = Path(self.mlcube.runner.image_dir) / self.mlcube.runner.image
+        if not image_file.exists():
             self.configure()
 
         # Deal with user-provided workspace
@@ -123,4 +150,4 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--bind')
 
-        Shell.run(self.mlcube.runner.singularity, 'run', volumes, image_uri, ' '.join(task_args))
+        Shell.run(self.mlcube.runner.singularity, 'run', volumes, str(image_file), ' '.join(task_args))
