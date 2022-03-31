@@ -3,7 +3,7 @@ import typing as t
 from pathlib import Path
 from omegaconf import (DictConfig, OmegaConf)
 import semver
-from spython.utils.terminal import get_singularity_version_info
+from spython.utils.terminal import (get_singularity_version_info, check_install as check_singularity_installed)
 from mlcube.shell import Shell
 from mlcube.runner import (Runner, RunnerConfig)
 
@@ -62,7 +62,7 @@ class Config(RunnerConfig):
             # The --fakeroot switch is useful and is supported in singularity version >= 3.5
             build_args = ''
             try:
-                # TODO: this API does not expose the `software` parameter (path to singularity executable).
+                SingularityRun.check_install()
                 version: semver.VersionInfo = get_singularity_version_info()
                 logger.info("SingularityRun singularity version %s", str(version))
                 if version >= semver.VersionInfo(major=3, minor=5):
@@ -76,7 +76,8 @@ class Config(RunnerConfig):
             s_cfg = OmegaConf.create(dict(
                 image=''.join(c for c in d_cfg['image'] if c.isalnum()) + '.sif',
                 build_file='docker://' + d_cfg['image'],
-                build_args=build_args
+                build_args=build_args,
+                singularity='singularity'
             ))
             logger.info(f"SingularityRun singularity runner has converted docker configuration to singularity (%s).",
                         str(OmegaConf.to_container(s_cfg)))
@@ -94,6 +95,15 @@ class SingularityRun(Runner):
 
     CONFIG = Config
 
+    @staticmethod
+    def check_install(singularity_exec: str = 'singularity') -> None:
+        if not check_singularity_installed(software=singularity_exec):
+            msg = "SingularityRun check_install returned false ('singularity --version' failed to run). MLCube cannot "\
+                  "run singularity images unless this check passes. Singularity runner uses `check_install` function "\
+                  "from singularity-cli python library (https://github.com/singularityhub/singularity-cli)"
+            logger.error(msg)
+            raise RuntimeError(msg)
+
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: str) -> None:
         super().__init__(mlcube, task)
         try:
@@ -108,6 +118,8 @@ class SingularityRun(Runner):
 
     def configure(self) -> None:
         """Build Singularity Image on a current host."""
+        SingularityRun.check_install()
+
         s_cfg: DictConfig = self.mlcube.runner
 
         # Get full path to a singularity image. By design, we compute it relative to {mlcube.root}/workspace.
@@ -141,6 +153,8 @@ class SingularityRun(Runner):
         image_file = Path(self.mlcube.runner.image_dir) / self.mlcube.runner.image
         if not image_file.exists():
             self.configure()
+        else:
+            SingularityRun.check_install()
 
         # Deal with user-provided workspace
         Shell.sync_workspace(self.mlcube, self.task)
