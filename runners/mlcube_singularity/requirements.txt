@@ -1,2 +1,2 @@
 click==7.1.2
-mlcube==0.0.4
+mlcube==0.0.5
