@@ -9,12 +9,11 @@
         <meta name="description" content="Documentation site for MLCube">
       
       
-      
         <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-8.2.7">
     
     
       
@@ -22,29 +21,29 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.cdeb8541.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.9d5733d3.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.e6a45f82.min.css">
         
       
     
     
     
       
+        
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
-    
     
     
       <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
     
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -59,7 +58,6 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
-    <script>function __prefix(e){return new URL("../..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -75,6 +73,7 @@
     <div data-md-component="announce">
       
     </div>
+    
     
       
 
@@ -111,8 +110,7 @@
       <label class="md-header__button md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
       </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
+      <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -276,7 +274,6 @@
       </a>
       
         
-
 
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
@@ -574,7 +571,6 @@
                   <div class="md-sidebar__inner">
                     
 
-
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -675,8 +671,9 @@
             <article class="md-content__inner md-typeset">
               
                 
-                
-                <h1 id="mnist">MNIST<a class="headerlink" href="#mnist" title="Permanent link">&para;</a></h1>
+
+
+<h1 id="mnist">MNIST<a class="headerlink" href="#mnist" title="Permanent link">&para;</a></h1>
 <p>The <a href="http://yann.lecun.com/exdb/mnist/">MNIST dataset</a> is a collection of 60,000 handwritten digits widely used for
 training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCube example demonstrates
 how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
@@ -763,48 +760,48 @@ singularity images can be built.  </p>
 an MLCube folder. This is a YAML file that provides information such as name, author, version, named as <code>mlcube.yaml</code>
 and located in the cube root directory . The most important section is the one that lists what tasks are implemented in
 this cube:
-<div class="highlight"><pre><span></span><code><span class="c1"># Name of this MLCube.</span>
-<span class="nt">name</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mnist</span>
-<span class="c1"># Brief description for this MLCube.</span>
-<span class="nt">description</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">MLCommons MNIST MLCube example</span>
-<span class="c1"># List of authors/developers. </span>
-<span class="nt">authors</span><span class="p">:</span>
-  <span class="p p-Indicator">-</span> <span class="nt">name</span><span class="p">:</span> <span class="s">&quot;First</span><span class="nv"> </span><span class="s">Second&quot;</span>
-    <span class="nt">email</span><span class="p">:</span> <span class="s">&quot;first.second@company.com&quot;</span>
-    <span class="nt">org</span><span class="p">:</span> <span class="s">&quot;Company</span><span class="nv"> </span><span class="s">Inc.&quot;</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Name of this MLCube.</span><span class="w"></span>
+<span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mnist</span><span class="w"></span>
+<span class="c1"># Brief description for this MLCube.</span><span class="w"></span>
+<span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MLCommons MNIST MLCube example</span><span class="w"></span>
+<span class="c1"># List of authors/developers. </span><span class="w"></span>
+<span class="nt">authors</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;First</span><span class="nv"> </span><span class="s">Second&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">email</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;first.second@company.com&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">org</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Company</span><span class="nv"> </span><span class="s">Inc.&quot;</span><span class="w"></span>
 
-<span class="c1"># Platform description. This is where users can specify MLCube resource requirements, such as </span>
-<span class="c1"># number of accelerators, memory and disk requirements etc. The exact structure and intended </span>
-<span class="c1"># usage of information in this section is work in progress. This section is optional now.</span>
-<span class="nt">platform</span><span class="p">:</span>
-  <span class="nt">accelerator_count</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">0</span>
-  <span class="nt">accelerator_maker</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">NVIDIA</span>
-  <span class="nt">accelerator_model</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">A100-80GB</span>
-  <span class="nt">host_memory_gb</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">40</span>
-  <span class="nt">need_internet_access</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">True</span>
-  <span class="nt">host_disk_space_gb</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">100</span>
+<span class="c1"># Platform description. This is where users can specify MLCube resource requirements, such as </span><span class="w"></span>
+<span class="c1"># number of accelerators, memory and disk requirements etc. The exact structure and intended </span><span class="w"></span>
+<span class="c1"># usage of information in this section is work in progress. This section is optional now.</span><span class="w"></span>
+<span class="nt">platform</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">accelerator_count</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0</span><span class="w"></span>
+<span class="w">  </span><span class="nt">accelerator_maker</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">NVIDIA</span><span class="w"></span>
+<span class="w">  </span><span class="nt">accelerator_model</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">A100-80GB</span><span class="w"></span>
+<span class="w">  </span><span class="nt">host_memory_gb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">40</span><span class="w"></span>
+<span class="w">  </span><span class="nt">need_internet_access</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">True</span><span class="w"></span>
+<span class="w">  </span><span class="nt">host_disk_space_gb</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span><span class="w"></span>
 
-<span class="c1"># Configuration for docker runner (additional options can be configured in system settings file).</span>
-<span class="nt">docker</span><span class="p">:</span>
-  <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcommons/mnist:0.0.1</span>
+<span class="c1"># Configuration for docker runner (additional options can be configured in system settings file).</span><span class="w"></span>
+<span class="nt">docker</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcommons/mnist:0.0.1</span><span class="w"></span>
 
-<span class="c1"># Configuration for singularity runner (additional options can be configured in system settings </span>
-<span class="c1"># file).</span>
-<span class="nt">singularity</span><span class="p">:</span>
-  <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mnist-0.0.1.simg</span>
+<span class="c1"># Configuration for singularity runner (additional options can be configured in system settings </span><span class="w"></span>
+<span class="c1"># file).</span><span class="w"></span>
+<span class="nt">singularity</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mnist-0.0.1.simg</span><span class="w"></span>
 
-<span class="c1"># Section where MLCube tasks are defined.</span>
-<span class="nt">tasks</span><span class="p">:</span>
-  <span class="c1"># `Download` task. It has one input and two output parameters.</span>
-  <span class="nt">download</span><span class="p">:</span>
-    <span class="nt">parameters</span><span class="p">:</span>
-      <span class="nt">inputs</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt">data_config</span><span class="p">:</span> <span class="nv">data.yaml</span><span class="p p-Indicator">}</span>
-      <span class="nt">outputs</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt">data_dir</span><span class="p">:</span> <span class="nv">data/</span><span class="p p-Indicator">,</span><span class="nt"> log_dir</span><span class="p">:</span> <span class="nv">logs/</span><span class="p p-Indicator">}</span>
-  <span class="c1"># `Train` task. It has two input and two output parameters.</span>
-  <span class="nt">train</span><span class="p">:</span>
-    <span class="nt">parameters</span><span class="p">:</span>
-      <span class="nt">inputs</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt">data_dir</span><span class="p">:</span> <span class="nv">data/</span><span class="p p-Indicator">,</span><span class="nt"> train_config</span><span class="p">:</span> <span class="nv">train.yaml</span><span class="p p-Indicator">}</span>
-      <span class="nt">outputs</span><span class="p">:</span> <span class="p p-Indicator">{</span><span class="nt">log_dir</span><span class="p">:</span> <span class="nv">logs/</span><span class="p p-Indicator">,</span><span class="nt"> model_dir</span><span class="p">:</span> <span class="nv">model/</span><span class="p p-Indicator">}</span>
+<span class="c1"># Section where MLCube tasks are defined.</span><span class="w"></span>
+<span class="nt">tasks</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># `Download` task. It has one input and two output parameters.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">download</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">data_config</span><span class="p">:</span><span class="w"> </span><span class="nv">data.yaml</span><span class="p p-Indicator">}</span><span class="w"></span>
+<span class="w">      </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">data_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">data/</span><span class="p p-Indicator">,</span><span class="nt"> log_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">logs/</span><span class="p p-Indicator">}</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># `Train` task. It has two input and two output parameters.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">train</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">parameters</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">inputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">data_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">data/</span><span class="p p-Indicator">,</span><span class="nt"> train_config</span><span class="p">:</span><span class="w"> </span><span class="nv">train.yaml</span><span class="p p-Indicator">}</span><span class="w"></span>
+<span class="w">      </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{</span><span class="nt">log_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">logs/</span><span class="p p-Indicator">,</span><span class="nt"> model_dir</span><span class="p">:</span><span class="w"> </span><span class="nv">model/</span><span class="p p-Indicator">}</span><span class="w"></span>
 </code></pre></div>
 At this point, the directory looks like:
 <div class="highlight"><pre><span></span><code>mnist/
@@ -823,37 +820,37 @@ sync results back to users' local machines.</p>
 <p>We need to be able to provide URI and hash of the MNIST dataset, collection of hyper-parameters and formally define a 
 directory to store logs, models and MNIST data set. To do so, we create the directory tree <code>workspace/</code>, and then create 
 two files with the following content (<code>data.yaml</code>):
-<div class="highlight"><pre><span></span><code><span class="nt">uri</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz</span>
-<span class="nt">hash</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">731c5ac602752760c8e48fbffcf8c3b850d9dc2a2aedcf2cc48468fc17b673d1</span>
+<div class="highlight"><pre><span></span><code><span class="nt">uri</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://storage.googleapis.com/tensorflow/tf-keras-datasets/mnist.npz</span><span class="w"></span>
+<span class="nt">hash</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">731c5ac602752760c8e48fbffcf8c3b850d9dc2a2aedcf2cc48468fc17b673d1</span><span class="w"></span>
 </code></pre></div>
 and <code>train.yaml</code>:
-<div class="highlight"><pre><span></span><code><span class="nt">optimizer</span><span class="p">:</span> <span class="s">&quot;adam&quot;</span>
-<span class="nt">train_epochs</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">5</span>
-<span class="nt">batch_size</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">32</span>
+<div class="highlight"><pre><span></span><code><span class="nt">optimizer</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;adam&quot;</span><span class="w"></span>
+<span class="nt">train_epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w"></span>
+<span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span><span class="w"></span>
 </code></pre></div>
 At this point, the cube directory looks like:
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span>
-  <span class="l l-Scalar l-Scalar-Plain">workspace/</span>
-    <span class="l l-Scalar l-Scalar-Plain">data.yaml</span>
-    <span class="l l-Scalar l-Scalar-Plain">train.yaml</span>
-  <span class="l l-Scalar l-Scalar-Plain">.dockerignore</span>
-  <span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
-  <span class="l l-Scalar l-Scalar-Plain">mlcube.yaml</span>
-  <span class="l l-Scalar l-Scalar-Plain">mnist.py</span>
-  <span class="l l-Scalar l-Scalar-Plain">requirements.txt</span>
-  <span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">workspace/</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">data.yaml</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">train.yaml</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">.dockerignore</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">mlcube.yaml</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">mnist.py</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">requirements.txt</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w"></span>
 </code></pre></div></p>
 <h2 id="mnist-mlcube-directory-structure-summary">MNIST MLCube directory structure summary<a class="headerlink" href="#mnist-mlcube-directory-structure-summary" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span>
-  <span class="l l-Scalar l-Scalar-Plain">workspace/</span>          <span class="c1"># Default location for data sets, logs, models, parameter files.</span>
-    <span class="l l-Scalar l-Scalar-Plain">data.yaml</span>         <span class="c1">#   URI and hash of MNIST dataset.</span>
-    <span class="l l-Scalar l-Scalar-Plain">train.yaml</span>        <span class="c1">#   Train hyper-parameters.</span>
-  <span class="l l-Scalar l-Scalar-Plain">.dockerignore</span>       <span class="c1"># Docker ignore file that prevents workspace directory to be sent to docker server.</span>
-  <span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>          <span class="c1"># Docker recipe.</span>
-  <span class="l l-Scalar l-Scalar-Plain">mlcube.yaml</span>         <span class="c1"># MLCube definition file.</span>
-  <span class="l l-Scalar l-Scalar-Plain">mnist.py</span>            <span class="c1"># Python source code training simple neural network using MNIST data set.</span>
-  <span class="l l-Scalar l-Scalar-Plain">requirements.txt</span>    <span class="c1"># Python project dependencies.</span>
-  <span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>  <span class="c1"># Singularity recipe.</span>
+<div class="highlight"><pre><span></span><code><span class="l l-Scalar l-Scalar-Plain">mnist/</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">workspace/</span><span class="w">          </span><span class="c1"># Default location for data sets, logs, models, parameter files.</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">data.yaml</span><span class="w">         </span><span class="c1">#   URI and hash of MNIST dataset.</span><span class="w"></span>
+<span class="w">    </span><span class="l l-Scalar l-Scalar-Plain">train.yaml</span><span class="w">        </span><span class="c1">#   Train hyper-parameters.</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">.dockerignore</span><span class="w">       </span><span class="c1"># Docker ignore file that prevents workspace directory to be sent to docker server.</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span><span class="w">          </span><span class="c1"># Docker recipe.</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">mlcube.yaml</span><span class="w">         </span><span class="c1"># MLCube definition file.</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">mnist.py</span><span class="w">            </span><span class="c1"># Python source code training simple neural network using MNIST data set.</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">requirements.txt</span><span class="w">    </span><span class="c1"># Python project dependencies.</span><span class="w"></span>
+<span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w">  </span><span class="c1"># Singularity recipe.</span><span class="w"></span>
 </code></pre></div>
 <h2 id="running-mnist-mlcube">Running MNIST MLCube<a class="headerlink" href="#running-mnist-mlcube" title="Permanent link">&para;</a></h2>
 <p>We need to set up the Python virtual environment. These are the steps outlined in the <code>Introduction</code> section except we 
@@ -885,11 +882,6 @@ mlcube run --mlcube=. --platform=docker --task=train
 <div class="highlight"><pre><span></span><code>mlcube run --mlcube=. --platform=singularity --task=download
 mlcube run --mlcube=. --platform=singularity --task=train
 </code></pre></div></p>
-                
-              
-              
-                
-
 
               
             </article>
@@ -898,8 +890,7 @@ mlcube run --mlcube=. --platform=singularity --task=train
         
       </main>
       
-        
-<footer class="md-footer">
+        <footer class="md-footer">
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
@@ -938,16 +929,15 @@ mlcube run --mlcube=. --platform=singularity --task=train
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-        
-          Made with
-          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-            Material for MkDocs
-          </a>
-        
-        
-      </div>
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
       
     </div>
   </div>
@@ -957,10 +947,10 @@ mlcube run --mlcube=. --platform=singularity --task=train
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../../assets/javascripts/workers/search.5e67fbfe.min.js"}</script>
     
     
-      <script src="../../assets/javascripts/bundle.1e84347e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.e87a5f81.min.js"></script>
       
     
   </body>

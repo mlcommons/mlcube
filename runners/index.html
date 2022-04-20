@@ -9,12 +9,11 @@
         <meta name="description" content="Documentation site for MLCube">
       
       
-      
         <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
       
       
       <link rel="icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-8.2.7">
     
     
       
@@ -22,29 +21,29 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.cdeb8541.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.9d5733d3.min.css">
       
         
-        <link rel="stylesheet" href="../assets/stylesheets/palette.3f5d1f46.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.e6a45f82.min.css">
         
       
     
     
     
       
+        
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
       
-    
     
     
       <link rel="stylesheet" href="../assets/stylesheets/circular.css">
     
+    <script>__md_scope=new URL("..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
-
 
     
     
@@ -59,7 +58,6 @@
     <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
   
     
-    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
@@ -75,6 +73,7 @@
     <div data-md-component="announce">
       
     </div>
+    
     
       
 
@@ -111,8 +110,7 @@
       <label class="md-header__button md-icon" for="__search">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
       </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
+      <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -373,7 +371,6 @@
       
         
 
-
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -540,7 +537,6 @@
                   <div class="md-sidebar__inner">
                     
 
-
 <nav class="md-nav md-nav--secondary" aria-label="Table of contents">
   
   
@@ -607,8 +603,9 @@
             <article class="md-content__inner md-typeset">
               
                 
-                
-                <h1 id="runners">Runners<a class="headerlink" href="#runners" title="Permanent link">&para;</a></h1>
+
+
+<h1 id="runners">Runners<a class="headerlink" href="#runners" title="Permanent link">&para;</a></h1>
 <p>MLCube runners run MLCube cubes on one or multiple platforms. Examples of platforms are Docker and Singularity 
 containers, Kubernetes, remote hosts, virtual machines in the cloud, etc. Every runner has a fixed set of configuration
 parameters that users can change to configure MLCubes and runners for their environments. Concretely, runners can take
@@ -686,104 +683,104 @@ mlcube run --mlcube<span class="o">=</span>examples/mnist --platform<span class=
 <p>Example of MLCube system settings file (<code>${HOME}/mlcube.yaml</code>) is the following. As it was mentioned above, it is
 created automatically by searching packages that start with <code>mlcube_</code>. Such packages must provide <code>get_runner_class</code>
 function that must return a runner class derived from <code>Runner</code>. 
-<div class="highlight"><pre><span></span><code><span class="c1"># This section maps a runner name to a runner package. This is one way how developers can plug in</span>
-<span class="c1"># their custom runners. Python package, or this type of association, could be one of many ways to</span>
-<span class="c1"># implement runners. </span>
-<span class="nt">runners</span><span class="p">:</span>
-  <span class="nt">docker</span><span class="p">:</span>                      <span class="c1"># MLCube Docker reference runner</span>
-    <span class="nt">pkg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span>
-  <span class="nt">gcp</span><span class="p">:</span>                         <span class="c1"># MLCube Google Cloud Platform reference runner</span>
-    <span class="nt">pkg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_gcp</span>
-  <span class="nt">k8s</span><span class="p">:</span>                         <span class="c1"># MLCube Kubernetes reference runner</span>
-    <span class="nt">pkg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_k8s</span>
-  <span class="nt">kubeflow</span><span class="p">:</span>                    <span class="c1"># MLCube KubeFlow reference runner</span>
-    <span class="nt">pkg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_kubeflow</span>
-  <span class="nt">singularity</span><span class="p">:</span>                 <span class="c1"># MLCube Singularity reference runner</span>
-    <span class="nt">pkg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_singularity</span>
-  <span class="nt">ssh</span><span class="p">:</span>                         <span class="c1"># MLCube SSH reference runner</span>
-    <span class="nt">pkg</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">mlcube_ssh</span>
-<span class="c1"># This section defines configurations for the above runners. It is a dictionary mapping platform</span>
-<span class="c1"># name to a runner configuration. These names could be any names. For instance, users can have </span>
-<span class="c1"># two platforms for an SSH runner pointing to two different remote hosts. The platform names are</span>
-<span class="c1"># those passed to mlcube tool using `--platform` command line argument.</span>
-<span class="nt">platforms</span><span class="p">:</span>
-  <span class="c1"># Docker runner configuration. The only parameter that is supposed to be present in MLCube</span>
-  <span class="c1"># configuration files is image name (`image`). For other parameters, see Docker Runner</span>
-  <span class="c1"># documentation page.</span>
-  <span class="nt">docker</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${docker.image}</span>
-    <span class="nt">docker</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">docker</span>
-    <span class="nt">env_args</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
-    <span class="nt">gpu_args</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">cpu_args</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">build_args</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
-    <span class="nt">build_context</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">.</span>
-    <span class="nt">build_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
-    <span class="nt">build_strategy</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">pull</span>
-  <span class="c1"># Google Cloud Platform runner. None of these configuration parameters are supposed to be </span>
-  <span class="c1"># present in MLCube configuration files.  For other parameters, see GCP Runner documentation </span>
-  <span class="c1"># page.</span>
-  <span class="nt">gcp</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">gcp</span>
-    <span class="nt">gcp</span><span class="p">:</span>
-      <span class="nt">project_id</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-      <span class="nt">zone</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-      <span class="nt">credentials</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">instance</span><span class="p">:</span>
-      <span class="nt">name</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-      <span class="nt">machine_type</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-      <span class="nt">disk_size_gb</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">platform</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-  <span class="c1"># Kubernetes runner. None of these configuration parameters are supposed to be present in </span>
-  <span class="c1"># MLCube configuration files.  For other parameters, see Kubernetes Runner documentation page.</span>
-  <span class="nt">k8s</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">k8s</span>
-    <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${name}</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${docker.image}</span>
-    <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
-  <span class="c1"># Kubeflow runner. None of these configuration parameters are supposed to be present in </span>
-  <span class="c1"># MLCube configuration files.  For other parameters, see Kubeflow Runner documentation page.</span>
-  <span class="nt">kubeflow</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">kubeflow</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${docker.image}</span>
-    <span class="nt">pvc</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">???</span>
-    <span class="nt">namespace</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">default</span>
-    <span class="nt">pipeline_host</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-  <span class="c1"># Singularity runner configuration. The only parameter that is supposed to be present in MLCube</span>
-  <span class="c1"># configuration files is image name (`image`). For other parameters, see Singularity Runner</span>
-  <span class="c1"># documentation page.</span>
-  <span class="nt">singularity</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">singularity</span>
-    <span class="nt">image</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span>
-    <span class="nt">image_dir</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span>
-    <span class="nt">singularity</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">singularity</span>
-    <span class="nt">build_args</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">--fakeroot</span>
-    <span class="nt">build_file</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>
-  <span class="c1"># SSH runner. None of these configuration parameters are supposed to be present in </span>
-  <span class="c1"># MLCube configuration files.  For other parameters, see SSH Runner documentation page.</span>
-  <span class="nt">ssh</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ssh</span>
-    <span class="nt">host</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">platform</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">remote_root</span><span class="p">:</span> <span class="s">&#39;&#39;</span>
-    <span class="nt">interpreter</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
-    <span class="nt">authentication</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
-<span class="c1"># Dedicated section to define future data `storage` layer. It&#39;s work in progress.</span>
-<span class="nt">storage</span><span class="p">:</span> <span class="p p-Indicator">{}</span>
+<div class="highlight"><pre><span></span><code><span class="c1"># This section maps a runner name to a runner package. This is one way how developers can plug in</span><span class="w"></span>
+<span class="c1"># their custom runners. Python package, or this type of association, could be one of many ways to</span><span class="w"></span>
+<span class="c1"># implement runners. </span><span class="w"></span>
+<span class="nt">runners</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">docker</span><span class="p">:</span><span class="w">                      </span><span class="c1"># MLCube Docker reference runner</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gcp</span><span class="p">:</span><span class="w">                         </span><span class="c1"># MLCube Google Cloud Platform reference runner</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_gcp</span><span class="w"></span>
+<span class="w">  </span><span class="nt">k8s</span><span class="p">:</span><span class="w">                         </span><span class="c1"># MLCube Kubernetes reference runner</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_k8s</span><span class="w"></span>
+<span class="w">  </span><span class="nt">kubeflow</span><span class="p">:</span><span class="w">                    </span><span class="c1"># MLCube KubeFlow reference runner</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_kubeflow</span><span class="w"></span>
+<span class="w">  </span><span class="nt">singularity</span><span class="p">:</span><span class="w">                 </span><span class="c1"># MLCube Singularity reference runner</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_singularity</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ssh</span><span class="p">:</span><span class="w">                         </span><span class="c1"># MLCube SSH reference runner</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_ssh</span><span class="w"></span>
+<span class="c1"># This section defines configurations for the above runners. It is a dictionary mapping platform</span><span class="w"></span>
+<span class="c1"># name to a runner configuration. These names could be any names. For instance, users can have </span><span class="w"></span>
+<span class="c1"># two platforms for an SSH runner pointing to two different remote hosts. The platform names are</span><span class="w"></span>
+<span class="c1"># those passed to mlcube tool using `--platform` command line argument.</span><span class="w"></span>
+<span class="nt">platforms</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Docker runner configuration. The only parameter that is supposed to be present in MLCube</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># configuration files is image name (`image`). For other parameters, see Docker Runner</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># documentation page.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">docker</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${docker.image}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">docker</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span><span class="w"></span>
+<span class="w">    </span><span class="nt">env_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">gpu_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">cpu_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build_context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build_strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pull</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Google Cloud Platform runner. None of these configuration parameters are supposed to be </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># present in MLCube configuration files.  For other parameters, see GCP Runner documentation </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># page.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">gcp</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gcp</span><span class="w"></span>
+<span class="w">    </span><span class="nt">gcp</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">project_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">zone</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">credentials</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">instance</span><span class="p">:</span><span class="w"></span>
+<span class="w">      </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">machine_type</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">      </span><span class="nt">disk_size_gb</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Kubernetes runner. None of these configuration parameters are supposed to be present in </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># MLCube configuration files.  For other parameters, see Kubernetes Runner documentation page.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">k8s</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">k8s</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pvc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${name}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${docker.image}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Kubeflow runner. None of these configuration parameters are supposed to be present in </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># MLCube configuration files.  For other parameters, see Kubeflow Runner documentation page.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">kubeflow</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">kubeflow</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${docker.image}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pvc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">???</span><span class="w"></span>
+<span class="w">    </span><span class="nt">namespace</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">default</span><span class="w"></span>
+<span class="w">    </span><span class="nt">pipeline_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># Singularity runner configuration. The only parameter that is supposed to be present in MLCube</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># configuration files is image name (`image`). For other parameters, see Singularity Runner</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># documentation page.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">singularity</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span><span class="w"></span>
+<span class="w">    </span><span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--fakeroot</span><span class="w"></span>
+<span class="w">    </span><span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w"></span>
+<span class="w">  </span><span class="c1"># SSH runner. None of these configuration parameters are supposed to be present in </span><span class="w"></span>
+<span class="w">  </span><span class="c1"># MLCube configuration files.  For other parameters, see SSH Runner documentation page.</span><span class="w"></span>
+<span class="w">  </span><span class="nt">ssh</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span><span class="w"></span>
+<span class="w">    </span><span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">remote_root</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="w">    </span><span class="nt">interpreter</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="w">    </span><span class="nt">authentication</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="c1"># Dedicated section to define future data `storage` layer. It&#39;s work in progress.</span><span class="w"></span>
+<span class="nt">storage</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
 </code></pre></div></p>
 <p>Users can and should update configuration parameters according to their environment. Also, please backup this file
 regularly. One possibility is to move this file to a location that is regularly snapshoted. When non-standard path is
 used, users must define a <code>MLCUBE_SYSTEM_SETTINGS</code> environment variable that points to this new location.</p>
 <p>Users can also duplicate runner sections assigning names accordingly, like it was mentioned above. For instance,
 users can have two ssh sections one for each different host:
-<div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span>
-  <span class="nt">my_dev_server_1</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ssh</span>
-    <span class="c1"># Other parameters ...</span>
-  <span class="nt">my_dev_server_2</span><span class="p">:</span>
-    <span class="nt">runner</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">ssh</span>
-    <span class="c1"># Other parameters ...</span>
+<div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span><span class="w"></span>
+<span class="w">  </span><span class="nt">my_dev_server_1</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Other parameters ...</span><span class="w"></span>
+<span class="w">  </span><span class="nt">my_dev_server_2</span><span class="p">:</span><span class="w"></span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ssh</span><span class="w"></span>
+<span class="w">    </span><span class="c1"># Other parameters ...</span><span class="w"></span>
 </code></pre></div>
 and then
 <div class="highlight"><pre><span></span><code>mlcube run --mlcube<span class="o">=</span>. --task<span class="o">=</span>MY_TASK --platform<span class="o">=</span>my_dev_server_2
@@ -819,11 +816,6 @@ mlcube config --remove-runner NAME
 <blockquote>
 <p>Removed standard runners (MLCube reference runners) will be recreated when mlcube runs next time.</p>
 </blockquote>
-                
-              
-              
-                
-
 
               
             </article>
@@ -832,8 +824,7 @@ mlcube config --remove-runner NAME
         
       </main>
       
-        
-<footer class="md-footer">
+        <footer class="md-footer">
   
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
@@ -872,16 +863,15 @@ mlcube config --remove-runner NAME
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-        
-          Made with
-          <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-            Material for MkDocs
-          </a>
-        
-        
-      </div>
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
       
     </div>
   </div>
@@ -891,10 +881,10 @@ mlcube config --remove-runner NAME
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.5e67fbfe.min.js"}</script>
     
     
-      <script src="../assets/javascripts/bundle.1e84347e.min.js"></script>
+      <script src="../assets/javascripts/bundle.e87a5f81.min.js"></script>
       
     
   </body>
