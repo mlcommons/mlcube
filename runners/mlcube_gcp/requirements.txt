@@ -1,5 +1,5 @@
 click==7.1.2
-mlcube==0.0.4
+mlcube==0.0.5
 google-api-python-client==1.12.5
 ssh-config==0.0.22
 omegaconf==2.1.0
