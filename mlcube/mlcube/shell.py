@@ -25,15 +25,38 @@ class Shell(object):
             cmd: Command to execute, e.g. Shell.run('ls', -lh'). This method will just join using whitespaces.
             die_on_error: If true and shell returns non-zero exit status, raise RuntimeError.
         Returns:
-            Exit code.
+            Exit status. On Windows, the exit status is the output of `os.system`. On Linux, the output is either
+                process exit status if that processes exited, or -1 in other cases (e.g., process was killed).
         """
         cmd: t.Text = ' '.join(cmd)
-        return_code: int = os.system(cmd)
-        if return_code != 0 and die_on_error:
-            logger.error("Command = '%s', return_code = %d, die_on_error = %r", cmd, return_code, die_on_error)
+
+        status: int = os.system(cmd)
+        # https://github.com/mlperf/training_results_v0.5/blob/7238ee7edc18f64f0869923a04de2a92418c6c28/v0.5.0/nvidia/
+        # submission/code/translation/pytorch/cutlass/tools/external/googletest/googletest/test/gtest_test_utils.py#L185
+        exit_status = -1
+        if os.name == 'nt':
+            exit_status = status
+        else:
+            if os.WIFEXITED(status):
+                exit_status = os.WEXITSTATUS(status)
+            else:
+                _signal = -1
+                _stopped: bool = os.WIFSTOPPED(status)
+                if _stopped:
+                    _signal = os.WSTOPSIG(status)
+                _signalled: bool = os.WIFSIGNALED(status)
+                if _signalled:
+                    _signal = os.WTERMSIG(status)
+                logger.warning(
+                    "Command did not exit properly: exited=False, stopped=%r, signalled=%r, signal=%d",
+                    _stopped, _signalled, _signal
+                )
+        msg = f"Command='{cmd}', status={status}, exit_status={exit_status}, die_on_error={die_on_error}"
+        if exit_status != 0 and die_on_error:
+            logger.error(msg)
             raise RuntimeError("Command failed: {}".format(cmd))
-        logger.info("Command = '%s', return_code = %d, die_on_error = %r", cmd, return_code, die_on_error)
-        return return_code
+        logger.info(msg)
+        return exit_status
 
     @staticmethod
     def docker_image_exists(docker: t.Optional[t.Text], image: t.Text) -> bool:
