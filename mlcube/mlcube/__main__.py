@@ -301,7 +301,7 @@ def create() -> None:
         from cookiecutter.main import cookiecutter
         proj_dir: t.Text = cookiecutter(mlcube_cookiecutter_url)
         if proj_dir and os.path.isfile(os.path.join(proj_dir, 'mlcube.yaml')):
-            Shell.run('mlcube', 'describe', '--mlcube', proj_dir)
+            Shell.run(['mlcube', 'describe', '--mlcube', proj_dir], on_error='die')
     except ImportError:
         print("Cookiecutter library not found.")
         print("\tInstall it: pip install cookiecutter")

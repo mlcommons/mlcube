@@ -2,6 +2,7 @@ import os
 import copy
 import shutil
 import logging
+import sys
 import typing as t
 from pathlib import Path
 from distutils import dir_util
@@ -19,16 +20,26 @@ class Shell(object):
     """ Helper functions to run commands. """
 
     @staticmethod
-    def run(*cmd, die_on_error: bool = True) -> int:
+    def run(cmd: t.Union[str, t.Iterable], on_error: t.Optional[str] = None) -> int:
         """Execute shell command.
         Args:
-            cmd: Command to execute, e.g. Shell.run('ls', -lh'). This method will just join using whitespaces.
-            die_on_error: If true and shell returns non-zero exit status, raise RuntimeError.
+            cmd: Command to execute, e.g. Shell.run(['ls', -lh']). If type is iterable, this method will join into
+                one string using whitespace as a separator.
+            on_error: Action to perform if `os.system` returns a non-zero status. Options - None (do nothing, return
+                exit code), 'raise' (raise a RuntimeError exception), 'die' (exit the process).
         Returns:
             Exit status. On Windows, the exit status is the output of `os.system`. On Linux, the output is either
                 process exit status if that processes exited, or -1 in other cases (e.g., process was killed).
         """
-        cmd: t.Text = ' '.join(cmd)
+        if isinstance(cmd, t.Iterable):
+            cmd = ' '.join(cmd)
+
+        if isinstance(on_error, str):
+            on_error = on_error.lower()
+            if on_error not in ('raise', 'die'):
+                raise ValueError(
+                    f"Unrecognized 'on_error' action ({on_error}). Valid options are ('raise', 'die', None)"
+                )
 
         status: int = os.system(cmd)
         # https://github.com/mlperf/training_results_v0.5/blob/7238ee7edc18f64f0869923a04de2a92418c6c28/v0.5.0/nvidia/
@@ -51,11 +62,15 @@ class Shell(object):
                     "Command did not exit properly: exited=False, stopped=%r, signalled=%r, signal=%d",
                     _stopped, _signalled, _signal
                 )
-        msg = f"Command='{cmd}', status={status}, exit_status={exit_status}, die_on_error={die_on_error}"
-        if exit_status != 0 and die_on_error:
+        msg = f"Command='{cmd}', status={status}, exit_status={exit_status}, on_error={on_error}"
+        if exit_status != 0:
             logger.error(msg)
-            raise RuntimeError("Command failed: {}".format(cmd))
-        logger.info(msg)
+            if on_error == 'die':
+                sys.exit(exit_status)
+            if on_error == 'raise':
+                raise RuntimeError(f"Command ({cmd}) failed with exit code {exit_status}.")
+        else:
+            logger.info(msg)
         return exit_status
 
     @staticmethod
@@ -68,16 +83,16 @@ class Shell(object):
             True if image exists, else false.
         """
         docker = docker or 'docker'
-        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1', die_on_error=False) == 0
+        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1') == 0
 
     @staticmethod
     def ssh(connection_str: t.Text, command: t.Optional[t.Text]) -> None:
         if command:
-            Shell.run('ssh', '-o', 'StrictHostKeyChecking=no', connection_str, f"'{command}'")
+            Shell.run(['ssh', '-o', 'StrictHostKeyChecking=no', connection_str, f"'{command}'"], on_error='raise')
 
     @staticmethod
     def rsync_dirs(source: t.Text, dest: t.Text) -> None:
-        Shell.run('rsync', '-e', "'ssh'", f"'{source}'", f"'{dest}'")
+        Shell.run(['rsync', '-e', "'ssh'", f"'{source}'", f"'{dest}'"], on_error='raise')
 
     @staticmethod
     def generate_mounts_and_args(mlcube: DictConfig, task: t.Text) -> t.Tuple[t.Dict, t.List]:

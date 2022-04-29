@@ -64,8 +64,8 @@ class SingularityRun(Runner):
         if not os.path.exists(recipe_file):
             raise IOError(f"Singularity recipe not found: {recipe_file}")
         Shell.run(
-            'cd', recipe_path, ';',
-            s_cfg.singularity, 'build', s_cfg.build_args, image_uri, s_cfg.build_file
+            ['cd', recipe_path, ';', s_cfg.singularity, 'build', s_cfg.build_args, image_uri, s_cfg.build_file],
+            on_error='raise'
         )
 
     def run(self) -> None:
@@ -82,4 +82,4 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--bind')
 
-        Shell.run(self.mlcube.runner.singularity, 'run', volumes, image_uri, ' '.join(task_args))
+        Shell.run([self.mlcube.runner.singularity, 'run', volumes, image_uri, ' '.join(task_args)], on_error='raise')
