@@ -73,9 +73,12 @@ class Config(RunnerConfig):
             except:
                 logger.warning("SingularityRun can't get singularity version (do you have singularity installed?).")
 
+            build_file = 'docker://' + d_cfg['image']
+            if 'tar_file' in d_cfg:
+                build_file = 'docker-archive://' + d_cfg['tar_file']
             s_cfg = OmegaConf.create(dict(
                 image=''.join(c for c in d_cfg['image'] if c.isalnum()) + '.sif',
-                build_file='docker://' + d_cfg['image'],
+                build_file=build_file,
                 build_args=build_args,
                 singularity='singularity'
             ))
@@ -133,7 +136,7 @@ class SingularityRun(Runner):
 
         build_path = Path(self.mlcube.runtime.root)     # Let's assume that build context is the root MLCube directory
         recipe: str = s_cfg.build_file                  # This is the recipe file, or docker image.
-        if recipe.startswith('docker://'):
+        if recipe.startswith('docker://') or recipe.startswith('docker-archive://'):
             # https://sylabs.io/guides/3.0/user-guide/build_a_container.html
             # URI beginning with docker:// to build from Docker Hub
             logger.info("SingularityRun building SIF from docker image (%s).", recipe)
