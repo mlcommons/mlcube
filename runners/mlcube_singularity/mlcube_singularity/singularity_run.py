@@ -75,7 +75,7 @@ class Config(RunnerConfig):
 
             build_file = 'docker://' + d_cfg['image']
             if 'tar_file' in d_cfg:
-                build_file = 'docker-archive://' + d_cfg['tar_file']
+                build_file = 'docker-archive:' + d_cfg['tar_file']
             s_cfg = OmegaConf.create(dict(
                 image=''.join(c for c in d_cfg['image'] if c.isalnum()) + '.sif',
                 build_file=build_file,
