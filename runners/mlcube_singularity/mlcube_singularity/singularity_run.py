@@ -136,7 +136,7 @@ class SingularityRun(Runner):
 
         build_path = Path(self.mlcube.runtime.root)     # Let's assume that build context is the root MLCube directory
         recipe: str = s_cfg.build_file                  # This is the recipe file, or docker image.
-        if recipe.startswith('docker://') or recipe.startswith('docker-archive://'):
+        if recipe.startswith('docker://') or recipe.startswith('docker-archive:'):
             # https://sylabs.io/guides/3.0/user-guide/build_a_container.html
             # URI beginning with docker:// to build from Docker Hub
             logger.info("SingularityRun building SIF from docker image (%s).", recipe)
