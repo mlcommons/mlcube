@@ -95,7 +95,7 @@ class DockerRun(Runner):
         if build_strategy == Config.BuildStrategy.PULL or not build_recipe_exists:
             logger.info("Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
                         image, build_strategy, build_recipe_exists)
-            Shell.run(docker, 'pull', image)
+            Shell.run([docker, 'pull', image], on_error='raise')
             if build_recipe_exists:
                 logger.warning("Docker recipe exists (%s), but your build strategy is '%s', and so the image has been "
                                "pulled, not built. Make sure your image is up-to-data with your source code.",
@@ -104,7 +104,7 @@ class DockerRun(Runner):
             logger.info("Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
                         image, build_strategy, build_recipe_exists)
             build_args: t.Text = self.mlcube.runner.build_args
-            Shell.run(docker, 'build', build_args, '-t', image, '-f', recipe, context)
+            Shell.run([docker, 'build', build_args, '-t', image, '-f', recipe, context], on_error='raise')
 
     def run(self) -> None:
         """ Run a cube. """
@@ -137,4 +137,4 @@ class DockerRun(Runner):
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
-        Shell.run(docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args))
+        Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)], on_error='raise')

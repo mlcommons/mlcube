@@ -146,9 +146,8 @@ class SingularityRun(Runner):
                 raise IOError(f"SIF recipe file does not exist (path={build_path}, file={recipe})")
             logger.info("Building SIF from recipe file (path=%s, file=%s).", build_path, recipe)
         Shell.run(
-            'cd', str(build_path), ';',
-            s_cfg.singularity, 'build', s_cfg.build_args, str(image_file), recipe,
-            die_on_error=True
+            ['cd', str(build_path), ';', s_cfg.singularity, 'build', s_cfg.build_args, str(image_file), recipe],
+            on_error='raise'
         )
 
     def run(self) -> None:
@@ -167,4 +166,7 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--bind')
 
-        Shell.run(self.mlcube.runner.singularity, 'run', volumes, str(image_file), ' '.join(task_args))
+        Shell.run(
+            [self.mlcube.runner.singularity, 'run', volumes, str(image_file), ' '.join(task_args)],
+            on_error='raise'
+        )

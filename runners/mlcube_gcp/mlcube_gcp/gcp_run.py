@@ -111,8 +111,12 @@ class GCPRun(Runner):
         print(instance)
 
         # Should be as simple as invoking SSH configure.
-        Shell.run('mlcube', 'configure', f'--mlcube={self.mlcube.root}', f'--platform={gcp.platform}')
+        Shell.run(['mlcube', 'configure', f'--mlcube={self.mlcube.root}', f'--platform={gcp.platform}'],
+                  on_error='raise')
 
     def run(self) -> None:
         gcp: DictConfig = self.mlcube.runner
-        Shell.run('mlcube', 'run', f'--mlcube={self.mlcube.root}', f'--platform={gcp.platform}', f'--task={self.task}')
+        Shell.run(
+            ['mlcube', 'run', f'--mlcube={self.mlcube.root}', f'--platform={gcp.platform}', f'--task={self.task}'],
+            on_error='raise'
+        )
