@@ -27,6 +27,7 @@ class Config(RunnerConfig):
         'singularity': 'singularity',                      # Executable file for singularity runtime.
 
         'build_args': '--fakeroot',                        # Image build arguments.
+        'run_args': '',                                    # Image build arguments.
         # Sergey: there seems to be a better name for this parameter. Originally, the only source was a singularity
         # recipe (build file). Later, MLCube started to support other sources, such as docker images.
         'build_file': 'Singularity.recipe'                 # Source for the image build process.
@@ -166,7 +167,9 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--bind')
 
+        run_args = self.mlcube.runner.run_args
+
         Shell.run(
-            [self.mlcube.runner.singularity, 'run', volumes, str(image_file), ' '.join(task_args)],
+            [self.mlcube.runner.singularity, 'run', run_args, volumes, str(image_file), ' '.join(task_args)],
             on_error='raise'
         )
