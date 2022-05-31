@@ -95,7 +95,7 @@ platform_option = click.option(
     help="Platform to run MLCube, default is 'docker' (that also supports podman)."
 )
 task_option = click.option(
-    '--task', required=False, type=str, default='main',
+    '--task', required=False, type=str, default=None,
     help="MLCube task name(s) to run, default is `main`. This parameter can take a list value, in which case task names"
          "are separated with ','."
 )
@@ -170,8 +170,26 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
     """
     runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, resolve=True)
-    tasks: t.List[str] = CliParser.parse_list_arg(task, default='main')
+    mlcube_tasks: t.List[str] = list((mlcube_config.get('tasks', None) or {}).keys())  # Tasks in this MLCube.
+    tasks: t.List[str] = CliParser.parse_list_arg(task, default=None)                  # Requested tasks.
+
+    if len(tasks) == 0:
+        logger.warning("Missing required task name (--task=COMMA_SEPARATED_LIST_OF_TASK_NAMES).")
+        if len(mlcube_tasks) != 1:
+            logger.error("Task name could not be automatically resolved (supported tasks = %s).", str(mlcube_tasks))
+            exit(1)
+        logger.info("Task name has been automatically resolved to %s (supported tasks = %s).",
+                    mlcube_tasks[0], str(mlcube_tasks))
+        tasks = mlcube_tasks
+
+    unknown_tasks: t.List[str] = [name for name in tasks if name not in mlcube_tasks]
+    if len(unknown_tasks) > 0:
+        logger.error("Unknown tasks have been requested: supported tasks = %s, requested tasks = %s, "
+                     "unknown tasks = %s.", str(mlcube_tasks), str(tasks), str(unknown_tasks))
+        exit(1)
+
     for task in tasks:
+        logger.info("Task = %s", task)
         docker_runner = runner_cls(mlcube_config, task=task)
         docker_runner.run()
 
@@ -283,7 +301,7 @@ def create() -> None:
         from cookiecutter.main import cookiecutter
         proj_dir: t.Text = cookiecutter(mlcube_cookiecutter_url)
         if proj_dir and os.path.isfile(os.path.join(proj_dir, 'mlcube.yaml')):
-            Shell.run('mlcube', 'describe', '--mlcube', proj_dir)
+            Shell.run(['mlcube', 'describe', '--mlcube', proj_dir], on_error='die')
     except ImportError:
         print("Cookiecutter library not found.")
         print("\tInstall it: pip install cookiecutter")
