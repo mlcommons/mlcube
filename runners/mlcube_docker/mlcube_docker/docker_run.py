@@ -6,6 +6,10 @@ from mlcube.shell import Shell
 from mlcube.runner import (Runner, RunnerConfig)
 from mlcube.errors import IllegalParameterValueError
 
+import base64
+import json
+import boto3
+import docker as docker_pkg
 
 __all__ = ['Config', 'DockerRun']
 
@@ -81,6 +85,108 @@ class DockerRun(Runner):
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
         super().__init__(mlcube, task)
+
+    @staticmethod
+    def read_aws_credentials(filename):
+        """Read AWS credentials from file.
+        
+        :param filename: Credentials filename
+        :param filename: str, optional
+        :return: Dictionary of AWS credentials.
+        :rtype: Dict[str, str]
+        """
+
+        try:
+            with open(filename) as json_data:
+                credentials = json.load(json_data)
+
+            for variable in ('access_key_id', 'secret_access_key', 'region'):
+                if variable not in credentials.keys():
+                    msg = '"{}" cannot be found in {}'.format(variable, filename)
+                    raise KeyError(msg)
+                                    
+        except FileNotFoundError:
+            try:
+                credentials = {
+                    'access_key_id': os.environ['AWS_ACCESS_KEY_ID'],
+                    'secret_access_key': os.environ['AWS_SECRET_ACCESS_KEY'],
+                    'region': os.environ['AWS_REGION']
+                }
+            except KeyError:
+                msg = 'no AWS credentials found in file or environment variables'
+                raise RuntimeError(msg)
+
+        return credentials
+
+
+    def upload(self) -> None:
+        # get AWS credentials
+        aws_credentials = self.read_aws_credentials(self.mlcube.aws)
+        access_key_id = aws_credentials['access_key_id']
+        secret_access_key = aws_credentials['secret_access_key']
+        aws_region = aws_credentials['region']
+
+        # build Docker image
+        docker_client = docker_pkg.from_env()
+        self.configure()
+
+        # get AWS ECR login token
+        ecr_client = boto3.client(
+            'ecr', aws_access_key_id=access_key_id, 
+            aws_secret_access_key=secret_access_key, region_name=aws_region)
+
+        ecr_credentials = (
+            ecr_client
+            .get_authorization_token()
+            ['authorizationData'][0])
+
+        ecr_username = 'AWS'
+
+        ecr_password = (
+            base64.b64decode(ecr_credentials['authorizationToken'])
+            .replace(b'AWS:', b'')
+            .decode('utf-8'))
+
+        ecr_url = ecr_credentials['proxyEndpoint']
+
+        print("docker logging....")
+        # get Docker to login/authenticate with ECR
+        response = docker_client.login(
+            username=ecr_username, password=ecr_password, registry=ecr_url)
+
+        print(response)
+
+        image_name = self.mlcube.docker.image.split(":")[0]
+        image_tag = self.mlcube.docker.image.split(":")[1]
+        # tag image for AWS ECR
+        ecr_repo_name = '{}/{}'.format(
+            ecr_url.replace('https://', ''), self.mlcube.docker.image)
+
+        print("tagging image...")
+        image = docker_client.images.get(self.mlcube.docker.image)
+        image.tag(ecr_repo_name, tag=image_tag)
+
+        # push image to AWS ECR
+        print("pushing image...")
+        print(self.mlcube.docker.image)
+        print(ecr_repo_name)
+        docker: t.Text = self.mlcube.runner.docker
+        Shell.run([
+            docker, 'login', ecr_url, '--username', ecr_username, '--password', ecr_password, '&&', docker, 'push', ecr_repo_name
+            ], on_error='raise')
+        #push_log = docker_client.images.push(ecr_repo_name, tag=image_tag)
+        #print("push_log")
+        #print(push_log)
+        """# force new deployment of ECS service
+        ecs_client = boto3.client(
+            'ecs', aws_access_key_id=access_key_id,
+            aws_secret_access_key=secret_access_key, region_name=aws_region)
+
+        ecs_client.update_service(
+            cluster=ECS_CLUSTER, service=ECS_SERVICE, forceNewDeployment=True)
+
+        return None"""
+        
 
     def configure(self) -> None:
         """Build Docker image on a current host."""
