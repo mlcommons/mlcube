@@ -2,6 +2,7 @@ import os
 import logging
 import typing as t
 from omegaconf import DictConfig, OmegaConf
+from mlcube.errors import ExecutionError
 from mlcube.runner import (RunnerConfig, Runner)
 from mlcube.shell import Shell
 from mlcube.validate import Validate
@@ -72,19 +73,47 @@ class SSHRun(Runner):
         remote_env: PythonInterpreter = PythonInterpreter.create(self.mlcube.runner.interpreter)
 
         # If required, create and configure python environment on remote host
-        Shell.ssh(conn, remote_env.create_cmd())
-        Shell.ssh(conn, remote_env.configure_cmd())
+        try:
+            Shell.ssh(conn, remote_env.create_cmd())
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_configure_error(
+                self.__class__.__name__,
+                f"Error occurred while creating remote python environment (env={remote_env}).",
+                **err.context
+            )
+        try:
+            Shell.ssh(conn, remote_env.configure_cmd())
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_configure_error(
+                self.__class__.__name__,
+                f"Error occurred while configuring remote python environment (env={remote_env}).",
+                **err.context
+            )
 
         # The 'local_path' and 'remote_path' must both be directories.
-        local_path: str = self.mlcube.runtime.root
-        remote_path: str = os.path.join(self.mlcube.runner.remote_root, os.path.basename(local_path))
-        Shell.ssh(conn, f'mkdir -p {remote_path}')
-        Shell.rsync_dirs(source=f'{local_path}/', dest=f'{conn}:{remote_path}/')
+        try:
+            local_path: str = self.mlcube.runtime.root
+            remote_path: str = os.path.join(self.mlcube.runner.remote_root, os.path.basename(local_path))
+            Shell.ssh(conn, f'mkdir -p {remote_path}')
+            Shell.rsync_dirs(source=f'{local_path}/', dest=f'{conn}:{remote_path}/')
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_configure_error(
+                self.__class__.__name__,
+                "Error occurred while syncing local and remote folders.",
+                **err.context
+            )
 
         # Configure remote MLCube runner. Idea is that we use chain of runners, for instance, SHH Runner -> Docker
         # runner. So, the runner to be used on a remote host must configure itself.
-        cmd = f"mlcube configure --mlcube=. --platform={self.mlcube.runner.platform}"
-        Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
+        try:
+            cmd = f"mlcube configure --mlcube=. --platform={self.mlcube.runner.platform}"
+            Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_configure_error(
+                self.__class__.__name__,
+                "Error occurred while configuring MLCube on a remote machine.",
+                **err.context
+            )
 
     def run(self) -> None:
         conn: t.Text = self.get_connection_string()
@@ -93,9 +122,23 @@ class SSHRun(Runner):
         # The 'remote_path' variable points to the MLCube root directory on remote host.
         remote_path: t.Text = os.path.join(self.mlcube.runner.remote_root, os.path.basename(self.mlcube.runtime.root))
 
-        cmd = f"mlcube run --mlcube=. --platform={self.mlcube.runner.platform} --task={self.task}"
-        Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
+        try:
+            cmd = f"mlcube run --mlcube=. --platform={self.mlcube.runner.platform} --task={self.task}"
+            Shell.ssh(conn, f'{remote_env.activate_cmd(noop=":")} && cd {remote_path} && {cmd}')
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                f"Error occurred while running MLCube task (name={self.task}).",
+                **err.context
+            )
 
         # Sync back results
-        # TODO: Only workspace/ directory is synced. Better solution?
-        Shell.rsync_dirs(source=f'{conn}:{remote_path}/workspace/', dest=f'{self.mlcube.runtime.root}/workspace/')
+        try:
+            # TODO: Only workspace/ directory is synced. Better solution?
+            Shell.rsync_dirs(source=f'{conn}:{remote_path}/workspace/', dest=f'{self.mlcube.runtime.root}/workspace/')
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                "Error occurred while syncing workspace.",
+                **err.context
+            )

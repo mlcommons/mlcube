@@ -1,11 +1,11 @@
 import logging
-import urllib3
 import typing as t
 import kfp
 import kfp.compiler as compiler
 import kfp.dsl as dsl
 from datetime import datetime
 from omegaconf import (DictConfig, OmegaConf)
+from mlcube.errors import ExecutionError
 from mlcube.runner import (RunnerConfig, Runner)
 from mlcube.validate import Validate
 
@@ -94,8 +94,9 @@ class KubeflowRun(Runner):
         try:
             logging.info("Configuring MLCube to run in Kubeflow Pipelines...")
             _ = self.create_kf_pipeline()
-        except urllib3.exceptions.HTTPError:
-            print(f"K8S runner failed to run MLCube. The actual error is printed below. "
-                  "Your MLCube kubeflow configuration was:")
-            print(OmegaConf.to_yaml(self.mlcube.runner, resolve=True))
-            raise
+        except Exception as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                "See context for more details.",
+                error=str(err)
+            )

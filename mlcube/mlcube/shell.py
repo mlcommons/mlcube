@@ -7,7 +7,7 @@ import typing as t
 from pathlib import Path
 from distutils import dir_util
 from omegaconf import DictConfig
-from mlcube.errors import ConfigurationError
+from mlcube.errors import (ConfigurationError, ExecutionError)
 from mlcube.config import (ParameterType, IOType)
 
 
@@ -18,60 +18,67 @@ logger = logging.getLogger(__name__)
 
 class Shell(object):
     """ Helper functions to run commands. """
+    @staticmethod
+    def parse_exec_status(status: int) -> t.Tuple[int, str]:
+        """ Parse execution status returned by `os.system` call.
+        Args:
+            status: return code.
+        Returns:
+            Tuple containing exit code and exit status.
+
+        https://github.com/mlperf/training_results_v0.5/blob/7238ee7edc18f64f0869923a04de2a92418c6c28/v0.5.0/nvidia/
+        submission/code/translation/pytorch/cutlass/tools/external/googletest/googletest/test/gtest_test_utils.py#L185
+        """
+        if os.name == 'nt':
+            exit_code, exit_status = (status, 'exited')
+        else:
+            if os.WIFEXITED(status):
+                exit_code, exit_status = (os.WEXITSTATUS(status), 'exited')
+            elif os.WIFSTOPPED(status):
+                exit_code, exit_status = (-os.WSTOPSIG(status), 'stopped')
+            elif os.WIFSIGNALED(status):
+                exit_code, exit_status = (-os.WTERMSIG(status), 'signalled')
+            else:
+                exit_code, exit_status = (status, 'na')
+        return exit_code, exit_status
 
     @staticmethod
-    def run(cmd: t.Union[str, t.Iterable], on_error: t.Optional[str] = None) -> int:
+    def run(cmd: t.Union[str, t.List], on_error: str = 'raise') -> int:
         """Execute shell command.
         Args:
             cmd: Command to execute, e.g. Shell.run(['ls', -lh']). If type is iterable, this method will join into
                 one string using whitespace as a separator.
-            on_error: Action to perform if `os.system` returns a non-zero status. Options - None (do nothing, return
+            on_error: Action to perform if `os.system` returns a non-zero status. Options - ignore (do nothing, return
                 exit code), 'raise' (raise a RuntimeError exception), 'die' (exit the process).
         Returns:
             Exit status. On Windows, the exit status is the output of `os.system`. On Linux, the output is either
                 process exit status if that processes exited, or -1 in other cases (e.g., process was killed).
         """
-        if isinstance(cmd, t.Iterable):
+        if isinstance(cmd, t.List):
             cmd = ' '.join(cmd)
 
-        if isinstance(on_error, str):
-            on_error = on_error.lower()
-            if on_error not in ('raise', 'die'):
-                raise ValueError(
-                    f"Unrecognized 'on_error' action ({on_error}). Valid options are ('raise', 'die', None)"
-                )
+        if on_error not in ('raise', 'die', 'ignore'):
+            raise ValueError(
+                f"Unrecognized 'on_error' action ({on_error}). Valid options are ('raise', 'die', 'ignore')."
+            )
 
         status: int = os.system(cmd)
-        # https://github.com/mlperf/training_results_v0.5/blob/7238ee7edc18f64f0869923a04de2a92418c6c28/v0.5.0/nvidia/
-        # submission/code/translation/pytorch/cutlass/tools/external/googletest/googletest/test/gtest_test_utils.py#L185
-        exit_status = -1
-        if os.name == 'nt':
-            exit_status = status
-        else:
-            if os.WIFEXITED(status):
-                exit_status = os.WEXITSTATUS(status)
-            else:
-                _signal = -1
-                _stopped: bool = os.WIFSTOPPED(status)
-                if _stopped:
-                    _signal = os.WSTOPSIG(status)
-                _signalled: bool = os.WIFSIGNALED(status)
-                if _signalled:
-                    _signal = os.WTERMSIG(status)
-                logger.warning(
-                    "Command did not exit properly: exited=False, stopped=%r, signalled=%r, signal=%d",
-                    _stopped, _signalled, _signal
-                )
-        msg = f"Command='{cmd}', status={status}, exit_status={exit_status}, on_error={on_error}"
-        if exit_status != 0:
+        exit_code, exit_status = Shell.parse_exec_status(status)
+        if exit_status == 'na':
+            logger.warning("Command (cmd=%s) did not exit properly (status=%d).", cmd, status)
+
+        msg = f"Command='{cmd}' status={status} exit_status={exit_status} exit_code={exit_code} on_error={on_error}"
+        if exit_code != 0:
             logger.error(msg)
             if on_error == 'die':
-                sys.exit(exit_status)
+                sys.exit(exit_code)
             if on_error == 'raise':
-                raise RuntimeError(f"Command ({cmd}) failed with exit code {exit_status}.")
+                raise ExecutionError(
+                    'Failed to execute shell command.', status=exit_status, code=exit_code, cmd=cmd
+                )
         else:
             logger.info(msg)
-        return exit_status
+        return exit_code
 
     @staticmethod
     def docker_image_exists(docker: t.Optional[t.Text], image: t.Text) -> bool:
@@ -83,16 +90,17 @@ class Shell(object):
             True if image exists, else false.
         """
         docker = docker or 'docker'
-        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1') == 0
+        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1', on_error='ignore') == 0
 
     @staticmethod
-    def ssh(connection_str: t.Text, command: t.Optional[t.Text]) -> None:
-        if command:
-            Shell.run(['ssh', '-o', 'StrictHostKeyChecking=no', connection_str, f"'{command}'"], on_error='raise')
+    def ssh(connection_str: str, command: t.Optional[str], on_error: str = 'raise') -> int:
+        if not command:
+            return 0
+        return Shell.run(f"ssh -o StrictHostKeyChecking=no {connection_str} '{command}'", on_error=on_error)
 
     @staticmethod
-    def rsync_dirs(source: t.Text, dest: t.Text) -> None:
-        Shell.run(['rsync', '-e', "'ssh'", f"'{source}'", f"'{dest}'"], on_error='raise')
+    def rsync_dirs(source: str, dest: str, on_error: str = 'raise') -> int:
+        return Shell.run(f"rsync -e 'ssh' '{source}' '{dest}'", on_error=on_error)
 
     @staticmethod
     def generate_mounts_and_args(mlcube: DictConfig, task: t.Text) -> t.Tuple[t.Dict, t.List]:
@@ -183,7 +191,7 @@ class Shell(object):
             """ Helper function to guard against unsupported storage. """
             _uri = _uri.strip()
             if _uri.startswith('storage:'):
-                raise NotImplementedError
+                raise NotImplementedError(f"Storage protocol (uri={_uri}) is not supported yet.")
             return _uri
 
         def _is_inside_workspace(_workspace: t.Text, _artifact: t.Text) -> bool:
