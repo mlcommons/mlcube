@@ -190,8 +190,7 @@ class SingularityRun(Runner):
             "build",
             s_cfg.build_args,
             str(image_file),
-            recipe,
-            die_on_error=True,
+            recipe
         )
 
     def run(self) -> None:
