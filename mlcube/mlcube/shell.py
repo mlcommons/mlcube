@@ -2,7 +2,9 @@ import os
 import copy
 import shutil
 import logging
+import sys
 import typing as t
+from pathlib import Path
 from distutils import dir_util
 from omegaconf import DictConfig
 from mlcube.errors import ConfigurationError
@@ -18,21 +20,58 @@ class Shell(object):
     """ Helper functions to run commands. """
 
     @staticmethod
-    def run(*cmd, die_on_error: bool = True) -> int:
+    def run(cmd: t.Union[str, t.Iterable], on_error: t.Optional[str] = None) -> int:
         """Execute shell command.
         Args:
-            cmd: Command to execute, e.g. Shell.run('ls', -lh'). This method will just join using whitespaces.
-            die_on_error: If true and shell returns non-zero exit status, raise RuntimeError.
+            cmd: Command to execute, e.g. Shell.run(['ls', -lh']). If type is iterable, this method will join into
+                one string using whitespace as a separator.
+            on_error: Action to perform if `os.system` returns a non-zero status. Options - None (do nothing, return
+                exit code), 'raise' (raise a RuntimeError exception), 'die' (exit the process).
         Returns:
-            Exit code.
+            Exit status. On Windows, the exit status is the output of `os.system`. On Linux, the output is either
+                process exit status if that processes exited, or -1 in other cases (e.g., process was killed).
         """
-        cmd: t.Text = ' '.join(cmd)
-        return_code: int = os.system(cmd)
-        if return_code != 0 and die_on_error:
-            logger.error("Command = '%s', return_code = %d, die_on_error = %r", cmd, return_code, die_on_error)
-            raise RuntimeError("Command failed: {}".format(cmd))
-        logger.info("Command = '%s', return_code = %d, die_on_error = %r", cmd, return_code, die_on_error)
-        return return_code
+        if isinstance(cmd, t.Iterable):
+            cmd = ' '.join(cmd)
+
+        if isinstance(on_error, str):
+            on_error = on_error.lower()
+            if on_error not in ('raise', 'die'):
+                raise ValueError(
+                    f"Unrecognized 'on_error' action ({on_error}). Valid options are ('raise', 'die', None)"
+                )
+
+        status: int = os.system(cmd)
+        # https://github.com/mlperf/training_results_v0.5/blob/7238ee7edc18f64f0869923a04de2a92418c6c28/v0.5.0/nvidia/
+        # submission/code/translation/pytorch/cutlass/tools/external/googletest/googletest/test/gtest_test_utils.py#L185
+        exit_status = -1
+        if os.name == 'nt':
+            exit_status = status
+        else:
+            if os.WIFEXITED(status):
+                exit_status = os.WEXITSTATUS(status)
+            else:
+                _signal = -1
+                _stopped: bool = os.WIFSTOPPED(status)
+                if _stopped:
+                    _signal = os.WSTOPSIG(status)
+                _signalled: bool = os.WIFSIGNALED(status)
+                if _signalled:
+                    _signal = os.WTERMSIG(status)
+                logger.warning(
+                    "Command did not exit properly: exited=False, stopped=%r, signalled=%r, signal=%d",
+                    _stopped, _signalled, _signal
+                )
+        msg = f"Command='{cmd}', status={status}, exit_status={exit_status}, on_error={on_error}"
+        if exit_status != 0:
+            logger.error(msg)
+            if on_error == 'die':
+                sys.exit(exit_status)
+            if on_error == 'raise':
+                raise RuntimeError(f"Command ({cmd}) failed with exit code {exit_status}.")
+        else:
+            logger.info(msg)
+        return exit_status
 
     @staticmethod
     def docker_image_exists(docker: t.Optional[t.Text], image: t.Text) -> bool:
@@ -44,16 +83,16 @@ class Shell(object):
             True if image exists, else false.
         """
         docker = docker or 'docker'
-        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1', die_on_error=False) == 0
+        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1') == 0
 
     @staticmethod
     def ssh(connection_str: t.Text, command: t.Optional[t.Text]) -> None:
         if command:
-            Shell.run('ssh', '-o', 'StrictHostKeyChecking=no', connection_str, f"'{command}'")
+            Shell.run(['ssh', '-o', 'StrictHostKeyChecking=no', connection_str, f"'{command}'"], on_error='raise')
 
     @staticmethod
     def rsync_dirs(source: t.Text, dest: t.Text) -> None:
-        Shell.run('rsync', '-e', "'ssh'", f"'{source}'", f"'{dest}'")
+        Shell.run(['rsync', '-e', "'ssh'", f"'{source}'", f"'{dest}'"], on_error='raise')
 
     @staticmethod
     def generate_mounts_and_args(mlcube: DictConfig, task: t.Text) -> t.Tuple[t.Dict, t.List]:
@@ -76,7 +115,7 @@ class Shell(object):
                 if not ParameterType.is_valid(_param_def.type):
                     raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
                                              f"type={_param_def.type}. Type is invalid.")
-                _host_path = os.path.join(mlcube.runtime.workspace, _param_def.default)
+                _host_path = Path(mlcube.runtime.workspace) / _param_def.default
 
                 if _param_def.type == ParameterType.UNKNOWN:
                     if _io == IOType.OUTPUT:
@@ -102,10 +141,16 @@ class Shell(object):
                 elif _param_def.type == ParameterType.FILE:
                     _host_path, _file_name = os.path.split(_host_path)
                     os.makedirs(_host_path, exist_ok=True)
-                    mounts[_host_path] = mounts.get(
+                    new_mount = mounts.get(
                         _host_path,
                         '/mlcube_io{}/{}'.format(len(mounts), _host_path)
                     )
+                    windows_match = ':\\'
+                    if windows_match in new_mount:
+                        index = new_mount.index(windows_match)
+                        substring = new_mount[index-1:index+2]
+                        new_mount = new_mount.replace(substring, '').replace('\\', '/')
+                    mounts[_host_path] = new_mount
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
         params = mlcube.tasks[task].parameters
@@ -165,9 +210,8 @@ class Shell(object):
             """ Check of this artifact is an output of some task. """
             for _task_name, _task_def in target_mlcube.tasks.items():
                 for _output_param_name, _output_param_def in _task_def.parameters.outputs.items():
-                    _target_output_artifact: t.Text = os.path.join(
-                        target_workspace, _storage_not_supported(_output_param_def.default)
-                    )
+                    _target_output_artifact: t.Text = Path(target_workspace) / _storage_not_supported(_output_param_def.default)
+
                     # Can't really use `os.path.samefile` here since files may not exist.
                     # if os.path.samefile(_target_artifact, _target_output_artifact):
                     if _target_artifact == _target_output_artifact:
@@ -180,7 +224,7 @@ class Shell(object):
         target_workspace = os.path.abspath(_storage_not_supported(target_mlcube.runtime.workspace))
         os.makedirs(target_workspace, exist_ok=True)
 
-        source_workspace = os.path.abspath(os.path.join(target_mlcube.runtime.root, 'workspace'))
+        source_workspace = os.path.abspath(Path(target_mlcube.runtime.root) / 'workspace')
         if not os.path.exists(source_workspace):
             logger.debug("[sync_workspace] source workspace (%s) does not exist, nothing to sync.", source_workspace)
             return
@@ -206,11 +250,12 @@ class Shell(object):
             #       means that the `storage` section defines some storage labelled as `home`, and MLCube needs to use
             #       ${name} path within that storage.
 
-            source_uri: t.Text = os.path.join(source_workspace, _storage_not_supported(input_def.default))
+            source_uri: t.Text = Path(source_workspace) / _storage_not_supported(input_def.default)
+
             if not _is_ok(input_name, 'source', source_workspace, source_uri, _must_exist=True):
                 continue
 
-            target_uri: t.Text = os.path.join(target_workspace, _storage_not_supported(input_def.default))
+            target_uri: t.Text = Path(target_workspace) / _storage_not_supported(input_def.default)
             if not _is_ok(input_name, 'target', target_workspace, target_uri, _must_exist=False):
                 continue
 
