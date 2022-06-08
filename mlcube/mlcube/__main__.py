@@ -49,7 +49,7 @@ class MultiValueOption(click.Option):
 
 
 def _parse_cli_args(ctx: t.Optional[click.core.Context], mlcube: t.Text, platform: t.Optional[t.Text],
-                    workspace: t.Optional[t.Text],
+                    workspace: t.Optional[t.Text], aws: t.Optional[t.Text], 
                     resolve: bool) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
     """
     Args:
@@ -74,7 +74,7 @@ def _parse_cli_args(ctx: t.Optional[click.core.Context], mlcube: t.Text, platfor
     else:
         runner_cls, runner_config = None, None
     mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, runner_config, workspace,
+        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, runner_config, workspace, aws,
         resolve=resolve, runner_cls=runner_cls
     )
     return runner_cls, mlcube_config
@@ -102,6 +102,10 @@ task_option = click.option(
 workspace_option = click.option(
     '--workspace', required=False, type=str, default=None,
     help="Workspace location that is used to store input/output artifacts of MLCube tasks."
+)
+aws_option = click.option(
+    '--aws', required=False, type=str, default=os.path.join(os.getcwd(), 'aws_credentials.json'),
+    help="Aws config file location that contains credentials."
 )
 
 
@@ -132,7 +136,7 @@ def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, works
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
         resolve: if True, compute values in MLCube configuration.
     """
-    _, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, resolve)
+    _, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, resolve, aws=None)
     print(OmegaConf.to_yaml(mlcube_config))
 
 
@@ -148,9 +152,27 @@ def configure(ctx: click.core.Context, mlcube: t.Text, platform: t.Text) -> None
         mlcube: Path to MLCube root directory or mlcube.yaml file.
         platform: Platform to use to configure this MLCube for (docker, singularity, gcp, k8s etc).
     """
-    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace=None, resolve=True)
+    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace=None, aws=None, resolve=True)
     docker_runner = runner_cls(mlcube_config, task=None)
     docker_runner.configure()
+
+
+@cli.command(name='upload', help='upload MLCube image.',
+             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+@mlcube_option
+@platform_option
+@aws_option
+@click.pass_context
+def upload(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, aws: t.Text) -> None:
+    """
+    Args:
+        ctx: Click context. We need this to get access to extra CLI arguments.
+        mlcube: Path to MLCube root directory or mlcube.yaml file.
+        platform: Platform to use to configure this MLCube for (docker, singularity, gcp, k8s etc).
+    """
+    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace=None, aws=aws, resolve=True)
+    docker_runner = runner_cls(mlcube_config, task=None)
+    docker_runner.upload()
 
 
 @cli.command(name='run', help='Run MLCube ML task.',
@@ -169,7 +191,7 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
         task: Comma separated list of tasks to run.
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
     """
-    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, resolve=True)
+    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace, aws=None, resolve=True)
     mlcube_tasks: t.List[str] = list((mlcube_config.get('tasks', None) or {}).keys())  # Tasks in this MLCube.
     tasks: t.List[str] = CliParser.parse_list_arg(task, default=None)                  # Requested tasks.
 
@@ -197,7 +219,7 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
 @cli.command(name='describe', help='Describe MLCube.')
 @mlcube_option
 def describe(mlcube: t.Text) -> None:
-    _, mlcube_config = _parse_cli_args(None, mlcube, None, None, resolve=True)
+    _, mlcube_config = _parse_cli_args(None, mlcube, None, None, None, resolve=True)
     print(f"MLCube")
     print(f"  path = {mlcube_config.runtime.root}")
     print(f"  name = {mlcube_config.name}:{mlcube_config.get('version', 'latest')}")

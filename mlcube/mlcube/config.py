@@ -48,7 +48,7 @@ class MLCubeConfig(object):
     @staticmethod
     def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig] = None,
                              task_cli_args: t.Optional[t.Dict] = None, runner_config: t.Optional[DictConfig] = None,
-                             workspace: t.Optional[t.Text] = None, resolve: bool = True,
+                             workspace: t.Optional[t.Text] = None, aws: t.Optional[t.Text] = None, resolve: bool = True,
                              runner_cls: t.Optional[t.Type[Runner]] = None) -> DictConfig:
         """ Create MLCube mlcube merging different configs - base, global, local and cli.
         Args:
@@ -91,6 +91,7 @@ class MLCubeConfig(object):
         # located inside workspace (internal or custom), users are encouraged not to use ${runtime.workspace} or
         # ${workspace} in their MLCube configuration files.
         mlcube_config['workspace'] = actual_workspace
+        mlcube_config['aws'] = aws
         # Merge, for instance, docker runner config from system settings with docker config from MLCube config.
         if runner_cls:
             runner_cls.CONFIG.merge(mlcube_config)
