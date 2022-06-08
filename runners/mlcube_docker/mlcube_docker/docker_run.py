@@ -1,9 +1,9 @@
 import os
 import logging
 import typing as t
-from omegaconf import (DictConfig, OmegaConf)
+from omegaconf import DictConfig, OmegaConf
 from mlcube.shell import Shell
-from mlcube.runner import (Runner, RunnerConfig)
+from mlcube.runner import Runner, RunnerConfig
 from mlcube.errors import IllegalParameterValueError
 
 import base64
@@ -11,7 +11,7 @@ import json
 import boto3
 import docker as docker_pkg
 
-__all__ = ['Config', 'DockerRun']
+__all__ = ["Config", "DockerRun"]
 
 from mlcube.validate import Validate
 
@@ -22,41 +22,43 @@ class Config(RunnerConfig):
     """ Helper class to manage `docker` environment configuration."""
 
     class BuildStrategy(object):
-        PULL = 'pull'
-        AUTO = 'auto'
-        ALWAYS = 'always'
+        PULL = "pull"
+        AUTO = "auto"
+        ALWAYS = "always"
 
         @staticmethod
         def validate(build_strategy: t.Text) -> None:
-            if build_strategy not in ('pull', 'auto', 'always'):
-                raise IllegalParameterValueError('build_strategy', build_strategy, "['pull', 'auto', 'always']")
+            if build_strategy not in ("pull", "auto", "always"):
+                raise IllegalParameterValueError(
+                    "build_strategy", build_strategy, "['pull', 'auto', 'always']"
+                )
 
-    DEFAULT = OmegaConf.create({
-        'runner': 'docker',
-
-        'image': '${docker.image}',   # Image name.
-        'docker': 'docker',           # Executable (docker, podman, sudo docker ...).
-
-        'env_args': {},               # Environmental variables for build and run actions.
-
-        'gpu_args': '',               # Docker run arguments when accelerator_count > 0.
-        'cpu_args': '',               # Docker run arguments when accelerator_count == 0.
-
-        'build_args': {},             # Docker build arguments
-        'build_context': '.',         # Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.
-        'build_file': 'Dockerfile',   # Docker file relative to $MLCUBE_ROOT, default is:
-                                      # `$MLCUBE_ROOT/Dockerfile`.
-        'build_strategy': 'pull',     # How to configure MLCube:
-                                      #   'pull': never try to build, always pull
-                                      #   'auto': build if image not found and dockerfile found
-                                      #   'always': build even if image found
-        # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
-        #       switch as build arg to force pulling the base image.
-    })
+    DEFAULT = OmegaConf.create(
+        {
+            "runner": "docker",
+            "image": "${docker.image}",  # Image name.
+            "docker": "docker",  # Executable (docker, podman, sudo docker ...).
+            "env_args": {},  # Environmental variables for build and run actions.
+            "gpu_args": "",  # Docker run arguments when accelerator_count > 0.
+            "cpu_args": "",  # Docker run arguments when accelerator_count == 0.
+            "build_args": {},  # Docker build arguments
+            "build_context": ".",  # Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.
+            "build_file": "Dockerfile",  # Docker file relative to $MLCUBE_ROOT, default is:
+            # `$MLCUBE_ROOT/Dockerfile`.
+            "build_strategy": "pull",  # How to configure MLCube:
+            #   'pull': never try to build, always pull
+            #   'auto': build if image not found and dockerfile found
+            #   'always': build even if image found
+            # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
+            #       switch as build arg to force pulling the base image.
+        }
+    )
 
     @staticmethod
     def merge(mlcube: DictConfig) -> None:
-        mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('docker', OmegaConf.create({})))
+        mlcube.runner = OmegaConf.merge(
+            mlcube.runner, mlcube.get("docker", OmegaConf.create({}))
+        )
 
     @staticmethod
     def validate(mlcube: DictConfig) -> None:
@@ -67,15 +69,20 @@ class Config(RunnerConfig):
             Initialized configuration.
         """
         # Make sure all parameters present with their default values.
-        validator = Validate(mlcube.runner, 'runner')
-        _ = validator.check_unknown_keys(Config.DEFAULT.keys())\
-                     .check_values(['image', 'docker', 'build_strategy'], str, blanks=False)
+        validator = Validate(mlcube.runner, "runner")
+        _ = validator.check_unknown_keys(Config.DEFAULT.keys()).check_values(
+            ["image", "docker", "build_strategy"], str, blanks=False
+        )
         Config.BuildStrategy.validate(mlcube.runner.build_strategy)
 
         if isinstance(mlcube.runner.build_args, DictConfig):
-            mlcube.runner.build_args = Shell.to_cli_args(mlcube.runner.build_args, parent_arg='--build-arg')
+            mlcube.runner.build_args = Shell.to_cli_args(
+                mlcube.runner.build_args, parent_arg="--build-arg"
+            )
         if isinstance(mlcube.runner.env_args, DictConfig):
-            mlcube.runner.env_args = Shell.to_cli_args(mlcube.runner.env_args, parent_arg='-e')
+            mlcube.runner.env_args = Shell.to_cli_args(
+                mlcube.runner.env_args, parent_arg="-e"
+            )
 
 
 class DockerRun(Runner):
@@ -85,6 +92,32 @@ class DockerRun(Runner):
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
         super().__init__(mlcube, task)
+
+        # get AWS credentials
+        aws_credentials = self.read_aws_credentials(self.mlcube.aws)
+        access_key_id = aws_credentials["access_key_id"]
+        secret_access_key = aws_credentials["secret_access_key"]
+        aws_region = aws_credentials["region"]
+
+        # get AWS ECR login token
+        self.ecr_client = boto3.client(
+            "ecr",
+            aws_access_key_id=access_key_id,
+            aws_secret_access_key=secret_access_key,
+            region_name=aws_region,
+        )
+
+    def list_aws_repositories(self):
+        """List existing repositories (images) on ECR"""
+        try:
+            response = self.ecr_client.describe_repositories(maxResults=1000)[
+                "repositories"
+            ]
+            list_repos = [x["repositoryName"] for x in response]
+            return list_repos
+        except:
+            msg = "ECR client failed, make sure you provided the correct credentials"
+            raise RuntimeError(msg)
 
     @staticmethod
     def read_aws_credentials(filename):
@@ -100,67 +133,68 @@ class DockerRun(Runner):
             with open(filename) as json_data:
                 credentials = json.load(json_data)
 
-            for variable in ('access_key_id', 'secret_access_key', 'region'):
+            for variable in ("access_key_id", "secret_access_key", "region"):
                 if variable not in credentials.keys():
                     msg = '"{}" cannot be found in {}'.format(variable, filename)
                     raise KeyError(msg)
-                                    
+
         except FileNotFoundError:
             try:
                 credentials = {
-                    'access_key_id': os.environ['AWS_ACCESS_KEY_ID'],
-                    'secret_access_key': os.environ['AWS_SECRET_ACCESS_KEY'],
-                    'region': os.environ['AWS_REGION']
+                    "access_key_id": os.environ["AWS_ACCESS_KEY_ID"],
+                    "secret_access_key": os.environ["AWS_SECRET_ACCESS_KEY"],
+                    "region": os.environ["AWS_REGION"],
                 }
             except KeyError:
-                msg = 'no AWS credentials found in file or environment variables'
+                msg = "no AWS credentials found in file or environment variables"
                 raise RuntimeError(msg)
 
         return credentials
 
-
     def upload(self) -> None:
-        # get AWS credentials
-        aws_credentials = self.read_aws_credentials(self.mlcube.aws)
-        access_key_id = aws_credentials['access_key_id']
-        secret_access_key = aws_credentials['secret_access_key']
-        aws_region = aws_credentials['region']
 
         # build Docker image
         docker_client = docker_pkg.from_env()
         self.configure()
 
-        # get AWS ECR login token
-        ecr_client = boto3.client(
-            'ecr', aws_access_key_id=access_key_id, 
-            aws_secret_access_key=secret_access_key, region_name=aws_region)
+        ecr_credentials = self.ecr_client.get_authorization_token()[
+            "authorizationData"
+        ][0]
 
-        ecr_credentials = (
-            ecr_client
-            .get_authorization_token()
-            ['authorizationData'][0])
-
-        ecr_username = 'AWS'
+        ecr_username = "AWS"
 
         ecr_password = (
-            base64.b64decode(ecr_credentials['authorizationToken'])
-            .replace(b'AWS:', b'')
-            .decode('utf-8'))
+            base64.b64decode(ecr_credentials["authorizationToken"])
+            .replace(b"AWS:", b"")
+            .decode("utf-8")
+        )
 
-        ecr_url = ecr_credentials['proxyEndpoint']
+        ecr_url = ecr_credentials["proxyEndpoint"]
 
         print("docker logging....")
         # get Docker to login/authenticate with ECR
         response = docker_client.login(
-            username=ecr_username, password=ecr_password, registry=ecr_url)
+            username=ecr_username, password=ecr_password, registry=ecr_url
+        )
 
-        print(response)
+        print(response["Status"])
 
         image_name = self.mlcube.docker.image.split(":")[0]
         image_tag = self.mlcube.docker.image.split(":")[1]
         # tag image for AWS ECR
-        ecr_repo_name = '{}/{}'.format(
-            ecr_url.replace('https://', ''), self.mlcube.docker.image)
+        ecr_repo_name = "{}/{}".format(
+            ecr_url.replace("https://", ""), self.mlcube.docker.image
+        )
+
+        list_repos = self.list_aws_repositories()
+        if image_name not in list_repos:
+            print("Creating repository...")
+            response = self.ecr_client.create_repository(repositoryName=image_name)
+            if response["ResponseMetadata"]["HTTPStatusCode"] == 200:
+                print("Repository created with URI:")
+                print(response["repository"]["repositoryUri"])
+            else:
+                print("ERROR while creating repository")
 
         print("tagging image...")
         image = docker_client.images.get(self.mlcube.docker.image)
@@ -171,27 +205,31 @@ class DockerRun(Runner):
         print(self.mlcube.docker.image)
         print(ecr_repo_name)
         docker: t.Text = self.mlcube.runner.docker
-        Shell.run([
-            docker, 'login', ecr_url, '--username', ecr_username, '--password', ecr_password, '&&', docker, 'push', ecr_repo_name
-            ], on_error='raise')
-        #push_log = docker_client.images.push(ecr_repo_name, tag=image_tag)
-        #print("push_log")
-        #print(push_log)
-        """# force new deployment of ECS service
-        ecs_client = boto3.client(
-            'ecs', aws_access_key_id=access_key_id,
-            aws_secret_access_key=secret_access_key, region_name=aws_region)
-
-        ecs_client.update_service(
-            cluster=ECS_CLUSTER, service=ECS_SERVICE, forceNewDeployment=True)
-
-        return None"""
-        
+        Shell.run(
+            [
+                "echo",
+                ecr_password,
+                "|",
+                docker,
+                "login",
+                ecr_url,
+                "--username",
+                ecr_username,
+                "--password-stdin",
+                "&&",
+                docker,
+                "push",
+                ecr_repo_name,
+            ],
+            on_error="raise",
+        )
 
     def configure(self) -> None:
         """Build Docker image on a current host."""
         image: t.Text = self.mlcube.runner.image
-        context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
+        context: t.Text = os.path.join(
+            self.mlcube.runtime.root, self.mlcube.runner.build_context
+        )
         recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
         docker: t.Text = self.mlcube.runner.docker
 
@@ -199,18 +237,32 @@ class DockerRun(Runner):
         build_strategy: t.Text = self.mlcube.runner.build_strategy
         build_recipe_exists: bool = os.path.exists(recipe)
         if build_strategy == Config.BuildStrategy.PULL or not build_recipe_exists:
-            logger.info("Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
-                        image, build_strategy, build_recipe_exists)
-            Shell.run([docker, 'pull', image], on_error='raise')
+            logger.info(
+                "Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
+                image,
+                build_strategy,
+                build_recipe_exists,
+            )
+            Shell.run([docker, "pull", image], on_error="raise")
             if build_recipe_exists:
-                logger.warning("Docker recipe exists (%s), but your build strategy is '%s', and so the image has been "
-                               "pulled, not built. Make sure your image is up-to-data with your source code.",
-                               recipe, build_strategy)
+                logger.warning(
+                    "Docker recipe exists (%s), but your build strategy is '%s', and so the image has been "
+                    "pulled, not built. Make sure your image is up-to-data with your source code.",
+                    recipe,
+                    build_strategy,
+                )
         else:
-            logger.info("Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
-                        image, build_strategy, build_recipe_exists)
+            logger.info(
+                "Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
+                image,
+                build_strategy,
+                build_recipe_exists,
+            )
             build_args: t.Text = self.mlcube.runner.build_args
-            Shell.run([docker, 'build', build_args, '-t', image, '-f', recipe, context], on_error='raise')
+            Shell.run(
+                [docker, "build", build_args, "-t", image, "-f", recipe, context],
+                on_error="raise",
+            )
 
     def run(self) -> None:
         """ Run a cube. """
@@ -218,18 +270,30 @@ class DockerRun(Runner):
         image: t.Text = self.mlcube.runner.image
 
         build_strategy: t.Text = self.mlcube.runner.build_strategy
-        if build_strategy == Config.BuildStrategy.ALWAYS or not Shell.docker_image_exists(docker, image):
-            logger.warning("Docker image (%s) does not exist or build strategy is 'always'. "
-                           "Will run 'configure' phase.", image)
+        if (
+            build_strategy == Config.BuildStrategy.ALWAYS
+            or not Shell.docker_image_exists(docker, image)
+        ):
+            logger.warning(
+                "Docker image (%s) does not exist or build strategy is 'always'. "
+                "Will run 'configure' phase.",
+                image,
+            )
             try:
                 self.configure()
             except RuntimeError:
-                context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
+                context: t.Text = os.path.join(
+                    self.mlcube.runtime.root, self.mlcube.runner.build_context
+                )
                 recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
-                if build_strategy == Config.BuildStrategy.PULL and os.path.exists(recipe):
-                    logger.warning("MLCube configuration failed. Docker recipe (%s) exists, but your build strategy is "
-                                   "set to pull. Rerun with: -Prunner.build_strategy=auto to build image locally.",
-                                   recipe)
+                if build_strategy == Config.BuildStrategy.PULL and os.path.exists(
+                    recipe
+                ):
+                    logger.warning(
+                        "MLCube configuration failed. Docker recipe (%s) exists, but your build strategy is "
+                        "set to pull. Rerun with: -Prunner.build_strategy=auto to build image locally.",
+                        recipe,
+                    )
                 raise
         # Deal with user-provided workspace
         Shell.sync_workspace(self.mlcube, self.task)
@@ -238,9 +302,13 @@ class DockerRun(Runner):
         mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
-        volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--volume')
+        volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--volume")
         env_args = self.mlcube.runner.env_args
-        num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
+        num_gpus: int = self.mlcube.platform.get("accelerator_count", None) or 0
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
-        Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)], on_error='raise')
+        Shell.run(
+            [docker, "run", run_args, env_args, volumes, image, " ".join(task_args)],
+            on_error="raise",
+        )
+
