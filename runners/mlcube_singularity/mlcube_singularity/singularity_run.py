@@ -182,7 +182,7 @@ class SingularityRun(Runner):
             logger.info(
                 "Building SIF from recipe file (path=%s, file=%s).", build_path, recipe
             )
-        Shell.run(
+        Shell.run([
             "cd",
             str(build_path),
             ";",
@@ -191,7 +191,7 @@ class SingularityRun(Runner):
             s_cfg.build_args,
             str(image_file),
             recipe
-        )
+        ], on_error='raise')
 
     def run(self) -> None:
         """ """
@@ -209,11 +209,11 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
 
-        Shell.run(
+        Shell.run([
             self.mlcube.runner.singularity,
             "run",
             self.mlcube.runner.run_args,
             volumes,
             str(image_file),
             " ".join(task_args),
-        )
+        ], on_error='raise')
