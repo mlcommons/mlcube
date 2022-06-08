@@ -9,7 +9,7 @@ import coloredlogs
 import typing as t
 from omegaconf import (OmegaConf, DictConfig)
 from mlcube.config import MLCubeConfig
-from mlcube.errors import (IllegalParameterValueError, MLCubeError)
+from mlcube.errors import (IllegalParameterValueError, MLCubeError, ExecutionError)
 from mlcube.parser import (CliParser, MLCubeDirectory)
 from mlcube.platform import Platform
 from mlcube.runner import Runner
@@ -148,9 +148,18 @@ def configure(ctx: click.core.Context, mlcube: t.Text, platform: t.Text) -> None
         mlcube: Path to MLCube root directory or mlcube.yaml file.
         platform: Platform to use to configure this MLCube for (docker, singularity, gcp, k8s etc).
     """
-    runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace=None, resolve=True)
-    docker_runner = runner_cls(mlcube_config, task=None)
-    docker_runner.configure()
+    logger.info("Configuring MLCube (`%s`) for `%s` platform.", os.path.abspath(mlcube), platform)
+    try:
+        runner_cls, mlcube_config = _parse_cli_args(ctx, mlcube, platform, workspace=None, resolve=True)
+        runner = runner_cls(mlcube_config, task=None)
+        runner.configure()
+    except MLCubeError as err:
+        exit_code = err.context.get('code', 1) if isinstance(err, ExecutionError) else 1
+        logger.exception(f"Failed to configure MLCube with error code {exit_code}.")
+        if isinstance(err, ExecutionError):
+            print(err.describe())
+        sys.exit(exit_code)
+    logger.info("MLCube (%s) has been successfully configured for `%s` platform.", os.path.abspath(mlcube), platform)
 
 
 @cli.command(name='run', help='Run MLCube ML task.',
@@ -188,10 +197,18 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
                      "unknown tasks = %s.", str(mlcube_tasks), str(tasks), str(unknown_tasks))
         exit(1)
 
-    for task in tasks:
-        logger.info("Task = %s", task)
-        docker_runner = runner_cls(mlcube_config, task=task)
-        docker_runner.run()
+    try:
+        # TODO: Sergey - Can we have one instance for all tasks?
+        for task in tasks:
+            logger.info("Task = %s", task)
+            runner = runner_cls(mlcube_config, task=task)
+            runner.run()
+    except MLCubeError as err:
+        exit_code = err.context.get('code', 1) if isinstance(err, ExecutionError) else 1
+        logger.exception(f"Failed to run MLCube with error code {exit_code}.")
+        if isinstance(err, ExecutionError):
+            print(err.describe())
+        sys.exit(exit_code)
 
 
 @cli.command(name='describe', help='Describe MLCube.')
