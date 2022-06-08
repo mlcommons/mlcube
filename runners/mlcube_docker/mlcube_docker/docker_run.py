@@ -4,7 +4,7 @@ import typing as t
 from omegaconf import (DictConfig, OmegaConf)
 from mlcube.shell import Shell
 from mlcube.runner import (Runner, RunnerConfig)
-from mlcube.errors import IllegalParameterValueError
+from mlcube.errors import (IllegalParameterValueError, ExecutionError, ConfigurationError)
 
 
 __all__ = ['Config', 'DockerRun']
@@ -85,8 +85,8 @@ class DockerRun(Runner):
     def configure(self) -> None:
         """Build Docker image on a current host."""
         image: t.Text = self.mlcube.runner.image
-        context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
-        recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
+        context: t.Text = os.path.abspath(os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context))
+        recipe: t.Text = os.path.abspath(os.path.join(context, self.mlcube.runner.build_file))
         docker: t.Text = self.mlcube.runner.docker
 
         # Build strategies: `pull`, `auto` and `always`.
@@ -95,16 +95,36 @@ class DockerRun(Runner):
         if build_strategy == Config.BuildStrategy.PULL or not build_recipe_exists:
             logger.info("Will pull image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
                         image, build_strategy, build_recipe_exists)
-            Shell.run([docker, 'pull', image], on_error='raise')
             if build_recipe_exists:
-                logger.warning("Docker recipe exists (%s), but your build strategy is '%s', and so the image has been "
-                               "pulled, not built. Make sure your image is up-to-data with your source code.",
-                               recipe, build_strategy)
+                logger.warning(
+                    "Docker recipe exists (%s), but your build strategy is `%s`, and so the image will be pulled, not "
+                    "built. Make sure your image is up-to-date with your source code. If you want to rebuilt MLCube "
+                    "docker image locally, rerun with `-Prunner.build_strategy=always`.",
+                    recipe, build_strategy
+                )
+            try:
+                Shell.run([docker, 'pull', image])
+            except ExecutionError as err:
+                description = f"Error occurred while pulling docker image (docker={docker}, image={image})."
+                if build_recipe_exists:
+                    description += \
+                        f" By the way, docker recipe ({recipe}) exists, but your build strategy is set to "\
+                        "pull. Consider rerunning with: `-Prunner.build_strategy=auto` to build image locally."
+                raise ExecutionError.mlcube_configure_error(self.__class__.__name__, description, **err.context)
+
         else:
             logger.info("Will build image (%s) because (build_strategy=%s, build_recipe_exists=%r)",
                         image, build_strategy, build_recipe_exists)
             build_args: t.Text = self.mlcube.runner.build_args
-            Shell.run([docker, 'build', build_args, '-t', image, '-f', recipe, context], on_error='raise')
+            try:
+                Shell.run([docker, 'build', build_args, '-t', image, '-f', recipe, context])
+            except ExecutionError as err:
+                raise ExecutionError.mlcube_configure_error(
+                    self.__class__.__name__,
+                    f"Error occurred while building docker image (docker={docker}, build_args={build_args}, "
+                    f"image={image}, recipe={recipe}, context={context}).",
+                    **err.context
+                )
 
     def run(self) -> None:
         """ Run a cube. """
@@ -115,26 +135,40 @@ class DockerRun(Runner):
         if build_strategy == Config.BuildStrategy.ALWAYS or not Shell.docker_image_exists(docker, image):
             logger.warning("Docker image (%s) does not exist or build strategy is 'always'. "
                            "Will run 'configure' phase.", image)
-            try:
-                self.configure()
-            except RuntimeError:
-                context: t.Text = os.path.join(self.mlcube.runtime.root, self.mlcube.runner.build_context)
-                recipe: t.Text = os.path.join(context, self.mlcube.runner.build_file)
-                if build_strategy == Config.BuildStrategy.PULL and os.path.exists(recipe):
-                    logger.warning("MLCube configuration failed. Docker recipe (%s) exists, but your build strategy is "
-                                   "set to pull. Rerun with: -Prunner.build_strategy=auto to build image locally.",
-                                   recipe)
-                raise
+            self.configure()
         # Deal with user-provided workspace
-        Shell.sync_workspace(self.mlcube, self.task)
+        try:
+            Shell.sync_workspace(self.mlcube, self.task)
+        except Exception as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                f"Error occurred while syncing MLCube workspace (task={self.task}). Actual error is {type(err)} - see "
+                "context for details.",
+                error=str(err)
+            )
 
         # The 'mounts' dictionary maps host paths to container paths
-        mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+        try:
+            mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+        except ConfigurationError as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                f"Error occurred while generating mount points for docker run command (task={self.task}). See context "
+                "for details and check your MLCube configuration file.",
+                error=str(err)
+            )
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--volume')
         env_args = self.mlcube.runner.env_args
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
-
-        Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)], on_error='raise')
+        try:
+            Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                f"Error occurred while running MLCube task (docker={docker}, run_args={run_args}, env_args={env_args}, "
+                f"volumes={volumes}, image={image}, task_args={task_args}).",
+                **err.context
+            )

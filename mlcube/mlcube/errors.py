@@ -1,7 +1,12 @@
+import copy
 import typing as t
 
 
-__all__ = ['MLCubeError', 'ConfigurationError', 'IllegalParameterValueError', 'IllegalParameterTypeError']
+__all__ = [
+    'MLCubeError',
+    'ConfigurationError', 'IllegalParameterValueError', 'IllegalParameterTypeError',
+    'ExecutionError'
+]
 
 
 class MLCubeError(Exception):
@@ -37,3 +42,29 @@ class IllegalParameterTypeError(IllegalParameterError):
 
         super().__init__(f"name={self.name}, actual_value={self.value}, actual_value_type={type(self.value)}, "
                          f"expected_value_type={self.expected_type}")
+
+
+class ExecutionError(MLCubeError):
+    def __init__(self, message: str, description: t.Optional[str] = None, **kwargs) -> None:
+        super().__init__(f"{message} {description}" if description else message)
+        self.message = message
+        self.description = description
+        self.context = copy.deepcopy(kwargs)
+
+    def describe(self, frmt: str = 'text') -> str:
+        if frmt != 'text':
+            raise ValueError(f"Unsupported error description format ('{frmt}').")
+        msg = f"ERROR:\n\tmessage: {self.message}"
+        if self.description:
+            msg += f"\n\tdescription: {self.description}"
+        if self.context:
+            msg += f"\n\tcontext: {self.context}"
+        return msg
+
+    @classmethod
+    def mlcube_configure_error(cls, runner: str, description: t.Optional[str] = None, **kwargs):
+        return cls(f"{runner} runner failed to configure MLCube.", description, **kwargs)
+
+    @classmethod
+    def mlcube_run_error(cls, runner: str, description: t.Optional[str] = None, **kwargs):
+        return cls(f"{runner} runner failed to run MLCube.", description, **kwargs)

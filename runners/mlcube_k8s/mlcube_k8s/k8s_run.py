@@ -4,6 +4,7 @@ import kubernetes
 import time
 import typing as t
 from omegaconf import (DictConfig, OmegaConf)
+from mlcube.errors import ExecutionError
 from mlcube.runner import (RunnerConfig, Runner)
 from mlcube.validate import Validate
 
@@ -126,7 +127,6 @@ class KubernetesRun(Runner):
                 break
             time.sleep(10)
 
-
     def configure(self) -> None:
         ...
 
@@ -139,8 +139,9 @@ class KubernetesRun(Runner):
             mlcube_job_manifest = self.create_job_manifest()
             job = self.create_job(mlcube_job_manifest)
             self.wait_for_completion(job)
-        except urllib3.exceptions.HTTPError:
-            print(f"K8S runner failed to run MLCube. The actual error is printed below. "
-                  "Your MLCube k8s configuration was:")
-            print(OmegaConf.to_yaml(self.mlcube.runner, resolve=True))
-            raise
+        except Exception as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                "See context for more details.",
+                error=str(err)
+            )
