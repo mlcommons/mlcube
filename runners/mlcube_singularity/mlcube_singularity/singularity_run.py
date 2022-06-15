@@ -7,6 +7,7 @@ from spython.utils.terminal import (
     get_singularity_version_info,
     check_install as check_singularity_installed,
 )
+from mlcube.errors import (ConfigurationError, ExecutionError)
 from mlcube.shell import Shell
 from mlcube.runner import Runner, RunnerConfig
 
@@ -121,13 +122,12 @@ class SingularityRun(Runner):
     @staticmethod
     def check_install(singularity_exec: str = "singularity") -> None:
         if not check_singularity_installed(software=singularity_exec):
-            msg = (
+            raise ExecutionError(
+                f"{SingularityRun.__name__} runner failed to configure or to run MLCube.",
                 "SingularityRun check_install returned false ('singularity --version' failed to run). MLCube cannot "
                 "run singularity images unless this check passes. Singularity runner uses `check_install` function "
-                "from singularity-cli python library (https://github.com/singularityhub/singularity-cli)"
+                "from singularity-cli python library (https://github.com/singularityhub/singularity-cli)."
             )
-            logger.error(msg)
-            raise RuntimeError(msg)
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: str) -> None:
         super().__init__(mlcube, task)
@@ -176,25 +176,18 @@ class SingularityRun(Runner):
         else:
             # This must be a recipe file. Make sure it exists.
             if not Path(build_path, recipe).exists():
-                raise IOError(
-                    f"SIF recipe file does not exist (path={build_path}, file={recipe})"
-                )
-            logger.info(
-                "Building SIF from recipe file (path=%s, file=%s).", build_path, recipe
+                raise IOError(f"SIF recipe file does not exist (path={build_path}, file={recipe})")
+            logger.info("Building SIF from recipe file (path=%s, file=%s).", build_path, recipe)
+        try:
+            Shell.run([
+                'cd', str(build_path), ';', s_cfg.singularity, 'build', s_cfg.build_args, str(image_file), recipe
+            ])
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_configure_error(
+                self.__class__.__name__,
+                "Error occurred while building SIF image. See context for more details.",
+                **err.context
             )
-        Shell.run(
-            [
-                "cd",
-                str(build_path),
-                ";",
-                s_cfg.singularity,
-                "build",
-                s_cfg.build_args,
-                str(image_file),
-                recipe,
-            ],
-            on_error="raise",
-        )
 
     def run(self) -> None:
         """ """
@@ -205,21 +198,32 @@ class SingularityRun(Runner):
             SingularityRun.check_install()
 
         # Deal with user-provided workspace
-        Shell.sync_workspace(self.mlcube, self.task)
+        try:
+            Shell.sync_workspace(self.mlcube, self.task)
+        except Exception as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                "Error occurred while syncing MLCube workspace. See context for more details.",
+                error=str(err)
+            )
 
-        mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
-        logger.info(f"mounts={mounts}, task_args={task_args}")
+        try:
+            mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            logger.info(f"mounts={mounts}, task_args={task_args}")
+        except ConfigurationError as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                "Error occurred while generating mount points for singularity run command. See context for more "
+                "details and check your MLCube configuration file.",
+                error=str(err)
+            )
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
-
-        Shell.run(
-            [
-                self.mlcube.runner.singularity,
-                "run",
-                self.mlcube.runner.run_args,
-                volumes,
-                str(image_file),
-                " ".join(task_args),
-            ],
-            on_error="raise",
-        )
+        try:
+            Shell.run([self.mlcube.runner.singularity, 'run', volumes, str(image_file), ' '.join(task_args)])
+        except ExecutionError as err:
+            raise ExecutionError.mlcube_run_error(
+                self.__class__.__name__,
+                f"Error occurred while running MLCube task (task={self.task}). See context for more details.",
+                **err.context
+            )
