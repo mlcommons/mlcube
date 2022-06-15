@@ -419,20 +419,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -537,20 +523,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -571,24 +543,22 @@
 configuration file, system setting file, and override parameters on a command line.</p>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
 <p>MLCube reference singularity runner supports the following configuration parameters (with default values):
-<div class="highlight"><pre><span></span><code><span class="c1"># Name of a singularity image, for instance &quot;mnist-0.0.1.simg&quot;.</span><span class="w"></span>
-<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span><span class="w"></span>
-<span class="c1"># Path where to build the image. By default, it is `.image` inside workspace directory.</span><span class="w"></span>
-<span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span><span class="w"></span>
-
-<span class="c1"># Singularity executable</span><span class="w"></span>
-<span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
-
-<span class="c1"># Build arguments</span><span class="w"></span>
-<span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--fakeroot</span><span class="w"></span>
-<span class="c1"># Singularity recipe file relative to workspace.</span><span class="w"></span>
-<span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w"></span>
-</code></pre></div></p>
+```yaml</p>
+<h1 id="name-of-a-singularity-image-for-instance-mnist-001simg">Name of a singularity image, for instance "mnist-0.0.1.simg".<a class="headerlink" href="#name-of-a-singularity-image-for-instance-mnist-001simg" title="Permanent link">&para;</a></h1>
+<p>image: ${singularity.image}</p>
+<h1 id="path-where-to-build-the-image-by-default-it-is-image-inside-workspace-directory">Path where to build the image. By default, it is <code>.image</code> inside workspace directory.<a class="headerlink" href="#path-where-to-build-the-image-by-default-it-is-image-inside-workspace-directory" title="Permanent link">&para;</a></h1>
+<p>image_dir: ${runtime.workspace}/.image</p>
+<h1 id="singularity-executable">Singularity executable<a class="headerlink" href="#singularity-executable" title="Permanent link">&para;</a></h1>
+<p>singularity: singularity</p>
+<h1 id="build-arguments">Build arguments<a class="headerlink" href="#build-arguments" title="Permanent link">&para;</a></h1>
+<p>build_args: --fakeroot</p>
+<h1 id="singularity-recipe-file-relative-to-workspace">Singularity recipe file relative to workspace.<a class="headerlink" href="#singularity-recipe-file-relative-to-workspace" title="Permanent link">&para;</a></h1>
+<p>build_file: Singularity.recipe
+```</p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
 <p>Users do not need to run the <code>configure</code> command manually, singularity docker runs this whenever image is not found. 
 Singularity runner under the hood runs the following command line:<br />
-<div class="highlight"><pre><span></span><code>cd {recipe_path} &amp;&amp; ${singularity} build ${build_args} {image_uri} ${build_file}
-</code></pre></div>
+<code>cd {recipe_path} &amp;&amp; ${singularity} build ${build_args} {image_uri} ${build_file}</code><br />
 where:  </p>
 <ul>
 <li><code>{recipe_path}</code> is the MLCube root directory.</li>
@@ -599,8 +569,7 @@ where:  </p>
 </ul>
 <h2 id="running-mlcubes">Running MLCubes<a class="headerlink" href="#running-mlcubes" title="Permanent link">&para;</a></h2>
 <p>Singularity runner runs the following command:  <br />
-<div class="highlight"><pre><span></span><code>${singularity} run {volumes} {image_path} {task_args}
-</code></pre></div>
+<code>${singularity} run {volumes} {image_path} {task_args}</code><br />
 where:   </p>
 <ul>
 <li><code>${singularity}</code> is the singularity executable.</li>

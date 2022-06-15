@@ -433,20 +433,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -537,20 +523,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -573,31 +545,32 @@ can configure SSH runner in system setting file, and override parameters on a co
 <p>Work in progress. Some functionality described below may not be available.</p>
 </blockquote>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Remote host name or IP address</span><span class="w"></span>
-<span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Platform (runner) to use on remote host</span><span class="w"></span>
-<span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Root path for MLCubes on remote host</span><span class="w"></span>
-<span class="nt">remote_root</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Remote python interpreter. It&#39;s a dictionary. </span><span class="w"></span>
-<span class="c1"># - Must contain:</span><span class="w"></span>
-<span class="c1">#   - `type`: interpreter type (system, virtualenv)</span><span class="w"></span>
-<span class="c1"># - When type is system (system-wide interpreter), additional parameters must be:</span><span class="w"></span>
-<span class="c1">#   - `python`: python executable, maybe full path or just `python`.</span><span class="w"></span>
-<span class="c1">#   - `requirements`: is a whitespace-separated list of python dependencies.</span><span class="w"></span>
-<span class="c1"># - When type is virtualenv (python environment created with virtualenv tool), </span><span class="w"></span>
-<span class="c1">#   additional parameters must be:</span><span class="w"></span>
-<span class="c1">#   - `python`: python executable</span><span class="w"></span>
-<span class="c1">#   - `requirements`: is a whitespace-separated list of python dependencies.</span><span class="w"></span>
-<span class="c1">#   - `location`: path where virtual environment must be created.</span><span class="w"></span>
-<span class="c1">#   - `name`: name of the virtual environment.</span><span class="w"></span>
-<span class="nt">interpreter</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w">          </span>
-<span class="c1"># Authentication on remote host. It&#39;s a dictionary that contain the following fields:</span><span class="w"></span>
-<span class="c1">#   - `identify_file`: if present, will be used as part of the connection </span><span class="w"></span>
-<span class="c1">#     string (&#39;-i {identity_file}&#39;)</span><span class="w"></span>
-<span class="c1">#   - `user`: username for the remote host, will be used as &#39;{user}@{host}&#39;</span><span class="w"></span>
-<span class="nt">authentication</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
-</code></pre></div>
+<p>```yaml</p>
+<h1 id="remote-host-name-or-ip-address">Remote host name or IP address<a class="headerlink" href="#remote-host-name-or-ip-address" title="Permanent link">&para;</a></h1>
+<p>host: ''</p>
+<h1 id="platform-runner-to-use-on-remote-host">Platform (runner) to use on remote host<a class="headerlink" href="#platform-runner-to-use-on-remote-host" title="Permanent link">&para;</a></h1>
+<p>platform: ''</p>
+<h1 id="root-path-for-mlcubes-on-remote-host">Root path for MLCubes on remote host<a class="headerlink" href="#root-path-for-mlcubes-on-remote-host" title="Permanent link">&para;</a></h1>
+<p>remote_root: ''</p>
+<h1 id="remote-python-interpreter-its-a-dictionary">Remote python interpreter. It's a dictionary.<a class="headerlink" href="#remote-python-interpreter-its-a-dictionary" title="Permanent link">&para;</a></h1>
+<h1 id="-must-contain">- Must contain:<a class="headerlink" href="#-must-contain" title="Permanent link">&para;</a></h1>
+<h1 id="-type-interpreter-type-system-virtualenv">- <code>type</code>: interpreter type (system, virtualenv)<a class="headerlink" href="#-type-interpreter-type-system-virtualenv" title="Permanent link">&para;</a></h1>
+<h1 id="-when-type-is-system-system-wide-interpreter-additional-parameters-must-be">- When type is system (system-wide interpreter), additional parameters must be:<a class="headerlink" href="#-when-type-is-system-system-wide-interpreter-additional-parameters-must-be" title="Permanent link">&para;</a></h1>
+<h1 id="-python-python-executable-maybe-full-path-or-just-python">- <code>python</code>: python executable, maybe full path or just <code>python</code>.<a class="headerlink" href="#-python-python-executable-maybe-full-path-or-just-python" title="Permanent link">&para;</a></h1>
+<h1 id="-requirements-is-a-whitespace-separated-list-of-python-dependencies">- <code>requirements</code>: is a whitespace-separated list of python dependencies.<a class="headerlink" href="#-requirements-is-a-whitespace-separated-list-of-python-dependencies" title="Permanent link">&para;</a></h1>
+<h1 id="-when-type-is-virtualenv-python-environment-created-with-virtualenv-tool">- When type is virtualenv (python environment created with virtualenv tool),<a class="headerlink" href="#-when-type-is-virtualenv-python-environment-created-with-virtualenv-tool" title="Permanent link">&para;</a></h1>
+<h1 id="additional-parameters-must-be">additional parameters must be:<a class="headerlink" href="#additional-parameters-must-be" title="Permanent link">&para;</a></h1>
+<h1 id="-python-python-executable">- <code>python</code>: python executable<a class="headerlink" href="#-python-python-executable" title="Permanent link">&para;</a></h1>
+<h1 id="-requirements-is-a-whitespace-separated-list-of-python-dependencies_1">- <code>requirements</code>: is a whitespace-separated list of python dependencies.<a class="headerlink" href="#-requirements-is-a-whitespace-separated-list-of-python-dependencies_1" title="Permanent link">&para;</a></h1>
+<h1 id="-location-path-where-virtual-environment-must-be-created">- <code>location</code>: path where virtual environment must be created.<a class="headerlink" href="#-location-path-where-virtual-environment-must-be-created" title="Permanent link">&para;</a></h1>
+<h1 id="-name-name-of-the-virtual-environment">- <code>name</code>: name of the virtual environment.<a class="headerlink" href="#-name-name-of-the-virtual-environment" title="Permanent link">&para;</a></h1>
+<p>interpreter: {}          </p>
+<h1 id="authentication-on-remote-host-its-a-dictionary-that-contain-the-following-fields">Authentication on remote host. It's a dictionary that contain the following fields:<a class="headerlink" href="#authentication-on-remote-host-its-a-dictionary-that-contain-the-following-fields" title="Permanent link">&para;</a></h1>
+<h1 id="-identify_file-if-present-will-be-used-as-part-of-the-connection">- <code>identify_file</code>: if present, will be used as part of the connection<a class="headerlink" href="#-identify_file-if-present-will-be-used-as-part-of-the-connection" title="Permanent link">&para;</a></h1>
+<h1 id="string-i-identity_file">string ('-i {identity_file}')<a class="headerlink" href="#string-i-identity_file" title="Permanent link">&para;</a></h1>
+<h1 id="-user-username-for-the-remote-host-will-be-used-as-userhost">- <code>user</code>: username for the remote host, will be used as '{user}@{host}'<a class="headerlink" href="#-user-username-for-the-remote-host-will-be-used-as-userhost" title="Permanent link">&para;</a></h1>
+<p>authentication: {}
+```</p>
 <p>SSH runner uses IP or name of a remote host (<code>host</code>) and ssh tool to log in and execute shell commands on remote hosts. 
 If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  </p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>

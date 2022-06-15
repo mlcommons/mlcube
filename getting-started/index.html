@@ -267,20 +267,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#install-mlcube-runners" class="md-nav__link">
-    Install MLCube Runners
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#explore-with-examples" class="md-nav__link">
-    Explore with examples
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -537,20 +523,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#install-mlcube-runners" class="md-nav__link">
-    Install MLCube Runners
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#explore-with-examples" class="md-nav__link">
-    Explore with examples
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -568,46 +540,42 @@
 <h1 id="installation">Installation<a class="headerlink" href="#installation" title="Permanent link">&para;</a></h1>
 <p>Here is the step-by-step guide to install MLCube library and run simple MLCube cubes.</p>
 <h2 id="create-a-python-environment">Create a python environment<a class="headerlink" href="#create-a-python-environment" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code># Option 1: use python virtual environment `virtualenv`.
-virtualenv -p python3.6 ./env_mlcube &amp;&amp; source ./env_mlcube/bin/activate
-
-# Option 2: use conda.
-conda create -n mlcube python=3.6 &amp;&amp; conda activate mlcube
-</code></pre></div>
+<p>```</p>
+<h1 id="option-1-use-python-virtual-environment-virtualenv">Option 1: use python virtual environment <code>virtualenv</code>.<a class="headerlink" href="#option-1-use-python-virtual-environment-virtualenv" title="Permanent link">&para;</a></h1>
+<p>virtualenv -p python3.6 ./env_mlcube &amp;&amp; source ./env_mlcube/bin/activate</p>
+<h1 id="option-2-use-conda">Option 2: use conda.<a class="headerlink" href="#option-2-use-conda" title="Permanent link">&para;</a></h1>
+<p>conda create -n mlcube python=3.6 &amp;&amp; conda activate mlcube
+```</p>
 <h2 id="install-mlcube-runners">Install MLCube Runners<a class="headerlink" href="#install-mlcube-runners" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code># Install MLCube Docker runner.
-pip install mlcube-docker
-
-# Optionally, install other runners.
-# pip install mlcube-gcp
-# pip install mlcube-k8s
-# pip install mlcube-kubeflow
-# pip install mlcube-singularity
-# pip install mlcube-ssh
-
-# Check that the docker runner has been installed.
-mlcube config --get runners
-
-# Show MLCube system settings.
-mlcube config --list
-
-# This system settings file (~/mlcube.yaml) configures local MLCube runners. Documentation
-# for MLCube runners describes each of these parameters in details. A typical first step for
-# enterprise environments that are usually behind a firewall is to configure proxy servers.
-#  platforms:
-#    docker:
-#      env_args:
-#        http_proxy: http://ADDRESS:PORT
-#        https_proxy: https://ADDRESS:PORT
-#      build_args:
-#        http_proxy: http://ADDRESS:PORT
-#        https_proxy: https://ADDRESS:PORT
-</code></pre></div>
+<p>```</p>
+<h1 id="install-mlcube-docker-runner">Install MLCube Docker runner.<a class="headerlink" href="#install-mlcube-docker-runner" title="Permanent link">&para;</a></h1>
+<p>pip install mlcube-docker</p>
+<h1 id="optionally-install-other-runners">Optionally, install other runners.<a class="headerlink" href="#optionally-install-other-runners" title="Permanent link">&para;</a></h1>
+<h1 id="pip-install-mlcube-gcp">pip install mlcube-gcp<a class="headerlink" href="#pip-install-mlcube-gcp" title="Permanent link">&para;</a></h1>
+<h1 id="pip-install-mlcube-k8s">pip install mlcube-k8s<a class="headerlink" href="#pip-install-mlcube-k8s" title="Permanent link">&para;</a></h1>
+<h1 id="pip-install-mlcube-kubeflow">pip install mlcube-kubeflow<a class="headerlink" href="#pip-install-mlcube-kubeflow" title="Permanent link">&para;</a></h1>
+<h1 id="pip-install-mlcube-singularity">pip install mlcube-singularity<a class="headerlink" href="#pip-install-mlcube-singularity" title="Permanent link">&para;</a></h1>
+<h1 id="pip-install-mlcube-ssh">pip install mlcube-ssh<a class="headerlink" href="#pip-install-mlcube-ssh" title="Permanent link">&para;</a></h1>
+<h1 id="check-that-the-docker-runner-has-been-installed">Check that the docker runner has been installed.<a class="headerlink" href="#check-that-the-docker-runner-has-been-installed" title="Permanent link">&para;</a></h1>
+<p>mlcube config --get runners</p>
+<h1 id="show-mlcube-system-settings">Show MLCube system settings.<a class="headerlink" href="#show-mlcube-system-settings" title="Permanent link">&para;</a></h1>
+<p>mlcube config --list</p>
+<h1 id="this-system-settings-file-mlcubeyaml-configures-local-mlcube-runners-documentation">This system settings file (~/mlcube.yaml) configures local MLCube runners. Documentation<a class="headerlink" href="#this-system-settings-file-mlcubeyaml-configures-local-mlcube-runners-documentation" title="Permanent link">&para;</a></h1>
+<h1 id="for-mlcube-runners-describes-each-of-these-parameters-in-details-a-typical-first-step-for">for MLCube runners describes each of these parameters in details. A typical first step for<a class="headerlink" href="#for-mlcube-runners-describes-each-of-these-parameters-in-details-a-typical-first-step-for" title="Permanent link">&para;</a></h1>
+<h1 id="enterprise-environments-that-are-usually-behind-a-firewall-is-to-configure-proxy-servers">enterprise environments that are usually behind a firewall is to configure proxy servers.<a class="headerlink" href="#enterprise-environments-that-are-usually-behind-a-firewall-is-to-configure-proxy-servers" title="Permanent link">&para;</a></h1>
+<h1 id="platforms">platforms:<a class="headerlink" href="#platforms" title="Permanent link">&para;</a></h1>
+<h1 id="docker">docker:<a class="headerlink" href="#docker" title="Permanent link">&para;</a></h1>
+<h1 id="env_args">env_args:<a class="headerlink" href="#env_args" title="Permanent link">&para;</a></h1>
+<h1 id="http_proxy-httpaddressport">http_proxy: http://ADDRESS:PORT<a class="headerlink" href="#http_proxy-httpaddressport" title="Permanent link">&para;</a></h1>
+<h1 id="https_proxy-httpsaddressport">https_proxy: https://ADDRESS:PORT<a class="headerlink" href="#https_proxy-httpsaddressport" title="Permanent link">&para;</a></h1>
+<h1 id="build_args">build_args:<a class="headerlink" href="#build_args" title="Permanent link">&para;</a></h1>
+<h1 id="http_proxy-httpaddressport_1">http_proxy: http://ADDRESS:PORT<a class="headerlink" href="#http_proxy-httpaddressport_1" title="Permanent link">&para;</a></h1>
+<h1 id="https_proxy-httpsaddressport_1">https_proxy: https://ADDRESS:PORT<a class="headerlink" href="#https_proxy-httpsaddressport_1" title="Permanent link">&para;</a></h1>
+<p>```</p>
 <h2 id="explore-with-examples">Explore with examples<a class="headerlink" href="#explore-with-examples" title="Permanent link">&para;</a></h2>
 <p>A great way to learn about MLCube is try out the example MLCube cubes located <a href="https://github.com/mlcommons/mlcube_examples">here</a>.
-<div class="highlight"><pre><span></span><code>git clone https://github.com/mlcommons/mlcube_examples.git &amp;&amp; cd ./mlcube_examples
-mlcube describe --mlcube ./mnist
-</code></pre></div></p>
+<code>git clone https://github.com/mlcommons/mlcube_examples.git &amp;&amp; cd ./mlcube_examples
+mlcube describe --mlcube ./mnist</code></p>
 
               
             </article>

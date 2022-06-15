@@ -489,27 +489,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#recommendations" class="md-nav__link">
-    Recommendations
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -572,27 +551,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#recommendations" class="md-nav__link">
-    Recommendations
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -643,31 +601,32 @@ advance:
    supported. Basically, users can only specify <code>machine type</code> and <code>disk size</code>. Ubuntu 18.04 OS will be used as a base
    image.</p>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="nt">gcp</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># These are your project ID and zone names. </span><span class="w"></span>
-<span class="w">  </span><span class="nt">project_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">zone</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># As described above, ensure you have service account activated and download your JSON key file.</span><span class="w"></span>
-<span class="w">  </span><span class="nt">credentials</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;${HOME}/.gcp/service_account_key_file.json&#39;</span><span class="w"></span>
-<span class="w">    </span><span class="nt">scopes</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;https://www.googleapis.com/auth/cloud-platform&#39;</span><span class="p p-Indicator">]</span><span class="w"></span>
-<span class="c1"># Instance parameters.</span><span class="w"></span>
-<span class="c1">#    If existing remote instance is used, only `name` field is used. Other fields are not taken </span><span class="w"></span>
-<span class="c1">#    into account. If users want GCP runners to automatically create remote instances, all three </span><span class="w"></span>
-<span class="c1">#    fields must present. Instance name is arbitrary name for this instance. Machine type must be</span><span class="w"></span>
-<span class="c1">#    the valid GCP machine type. Ubuntu 18.04 is used as a base OS. </span><span class="w"></span>
-<span class="nt">instance</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">machine_type</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="w">  </span><span class="nt">disk_size_gb</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># As described above, primary role of GCP runners is to ensure a remote instance exists before </span><span class="w"></span>
-<span class="c1"># delegating the actual `MLCube run` functionality to other runners. Currently, the only available </span><span class="w"></span>
-<span class="c1"># option is an SSH runner (that assumes remote instances are available vis SSH i.e. they have </span><span class="w"></span>
-<span class="c1"># public IPs). The `platform` field below specifies what runner the GCP runner should be using</span><span class="w"></span>
-<span class="c1"># once GCP virtual instance has been created. An SSH runner needs to be configured separately </span><span class="w"></span>
-<span class="c1"># (see sections below for some recommendations and best practices). </span><span class="w"></span>
-<span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-</code></pre></div>
+<p>```yaml
+gcp:
+  # These are your project ID and zone names. 
+  project_id: ''
+  zone: ''
+  # As described above, ensure you have service account activated and download your JSON key file.
+  credentials:
+    file: '${HOME}/.gcp/service_account_key_file.json'
+    scopes: ['https://www.googleapis.com/auth/cloud-platform']</p>
+<h1 id="instance-parameters">Instance parameters.<a class="headerlink" href="#instance-parameters" title="Permanent link">&para;</a></h1>
+<h1 id="if-existing-remote-instance-is-used-only-name-field-is-used-other-fields-are-not-taken">If existing remote instance is used, only <code>name</code> field is used. Other fields are not taken<a class="headerlink" href="#if-existing-remote-instance-is-used-only-name-field-is-used-other-fields-are-not-taken" title="Permanent link">&para;</a></h1>
+<h1 id="into-account-if-users-want-gcp-runners-to-automatically-create-remote-instances-all-three">into account. If users want GCP runners to automatically create remote instances, all three<a class="headerlink" href="#into-account-if-users-want-gcp-runners-to-automatically-create-remote-instances-all-three" title="Permanent link">&para;</a></h1>
+<h1 id="fields-must-present-instance-name-is-arbitrary-name-for-this-instance-machine-type-must-be">fields must present. Instance name is arbitrary name for this instance. Machine type must be<a class="headerlink" href="#fields-must-present-instance-name-is-arbitrary-name-for-this-instance-machine-type-must-be" title="Permanent link">&para;</a></h1>
+<h1 id="the-valid-gcp-machine-type-ubuntu-1804-is-used-as-a-base-os">the valid GCP machine type. Ubuntu 18.04 is used as a base OS.<a class="headerlink" href="#the-valid-gcp-machine-type-ubuntu-1804-is-used-as-a-base-os" title="Permanent link">&para;</a></h1>
+<p>instance:
+  name: ''
+  machine_type: ''
+  disk_size_gb: ''</p>
+<h1 id="as-described-above-primary-role-of-gcp-runners-is-to-ensure-a-remote-instance-exists-before">As described above, primary role of GCP runners is to ensure a remote instance exists before<a class="headerlink" href="#as-described-above-primary-role-of-gcp-runners-is-to-ensure-a-remote-instance-exists-before" title="Permanent link">&para;</a></h1>
+<h1 id="delegating-the-actual-mlcube-run-functionality-to-other-runners-currently-the-only-available">delegating the actual <code>MLCube run</code> functionality to other runners. Currently, the only available<a class="headerlink" href="#delegating-the-actual-mlcube-run-functionality-to-other-runners-currently-the-only-available" title="Permanent link">&para;</a></h1>
+<h1 id="option-is-an-ssh-runner-that-assumes-remote-instances-are-available-vis-ssh-ie-they-have">option is an SSH runner (that assumes remote instances are available vis SSH i.e. they have<a class="headerlink" href="#option-is-an-ssh-runner-that-assumes-remote-instances-are-available-vis-ssh-ie-they-have" title="Permanent link">&para;</a></h1>
+<h1 id="public-ips-the-platform-field-below-specifies-what-runner-the-gcp-runner-should-be-using">public IPs). The <code>platform</code> field below specifies what runner the GCP runner should be using<a class="headerlink" href="#public-ips-the-platform-field-below-specifies-what-runner-the-gcp-runner-should-be-using" title="Permanent link">&para;</a></h1>
+<h1 id="once-gcp-virtual-instance-has-been-created-an-ssh-runner-needs-to-be-configured-separately">once GCP virtual instance has been created. An SSH runner needs to be configured separately<a class="headerlink" href="#once-gcp-virtual-instance-has-been-created-an-ssh-runner-needs-to-be-configured-separately" title="Permanent link">&para;</a></h1>
+<h1 id="see-sections-below-for-some-recommendations-and-best-practices">(see sections below for some recommendations and best practices).<a class="headerlink" href="#see-sections-below-for-some-recommendations-and-best-practices" title="Permanent link">&para;</a></h1>
+<p>platform: ''
+```</p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
 <p>GCP runners execute the following steps during the configuration phase:
 1.  Check that SSH access has been configured. A runner loads users <code>${HOME}/.ssh/config</code> file and verifies it 
@@ -689,11 +648,10 @@ advance:
    instance, <code>gcp_free_micro_instance</code>, <code>gcp_4_cpu_instance</code>, <code>gcp_1_gpu_instance</code>, <code>gcp_8_gpu_instance</code> etc.</li>
 <li>Following the above guidelines, these instances must be configured with key-based SSH access (GCP and SSH runners
    depend on this). Each remote instance must have a section in the <code>{HOME}/.ssh/config</code> that should look like:
-   <div class="highlight"><pre><span></span><code>Host mlcube-gcp-instance-n1s4
-    HostName {{PUBLIC_IP_ADDRESS}}
-    IdentityFile ~/.ssh/gcp_rsa
-    User {{GCP_USER_LOGIN_NAME}}
-</code></pre></div>
+   <code>Host mlcube-gcp-instance-n1s4
+       HostName {{PUBLIC_IP_ADDRESS}}
+       IdentityFile ~/.ssh/gcp_rsa
+       User {{GCP_USER_LOGIN_NAME}}</code>
    GCP runner will update the <code>HostName</code> value if actual IP address differs from existing one. Other fields are never
    updated by GCP runners. Section like this one is sufficient to partially configure GCP and fully configure SSH
    runners.</li>

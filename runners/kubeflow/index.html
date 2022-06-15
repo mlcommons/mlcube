@@ -461,20 +461,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -537,20 +523,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#configuring-mlcubes" class="md-nav__link">
-    Configuring MLCubes
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#running-mlcubes" class="md-nav__link">
-    Running MLCubes
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -572,13 +544,14 @@
 <p>The <code>configure</code> command is not required, and does nothing when invoked.</p>
 </blockquote>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Use image name from docker configuration section</span><span class="w"></span>
-<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${docker.image}</span><span class="w"></span>
-<span class="c1"># PVC must point to the active MLCube workspace now.</span><span class="w"></span>
-<span class="nt">pvc</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;???&#39;</span><span class="w"></span>
-<span class="c1"># eg: set http://127.0.0.1:8000/pipeline when port forwarded svc/ml-pipeline-ui to port 8000</span><span class="w"></span>
-<span class="nt">pipeline_host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-</code></pre></div>
+<p>```yaml</p>
+<h1 id="use-image-name-from-docker-configuration-section">Use image name from docker configuration section<a class="headerlink" href="#use-image-name-from-docker-configuration-section" title="Permanent link">&para;</a></h1>
+<p>image: ${docker.image}</p>
+<h1 id="pvc-must-point-to-the-active-mlcube-workspace-now">PVC must point to the active MLCube workspace now.<a class="headerlink" href="#pvc-must-point-to-the-active-mlcube-workspace-now" title="Permanent link">&para;</a></h1>
+<p>pvc: '???'</p>
+<h1 id="eg-set-http1270018000pipeline-when-port-forwarded-svcml-pipeline-ui-to-port-8000">eg: set http://127.0.0.1:8000/pipeline when port forwarded svc/ml-pipeline-ui to port 8000<a class="headerlink" href="#eg-set-http1270018000pipeline-when-port-forwarded-svcml-pipeline-ui-to-port-8000" title="Permanent link">&para;</a></h1>
+<p>pipeline_host: ''
+```</p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
 <p>This runner does not need configure step.</p>
 <h2 id="running-mlcubes">Running MLCubes<a class="headerlink" href="#running-mlcubes" title="Permanent link">&para;</a></h2>

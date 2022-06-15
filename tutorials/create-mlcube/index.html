@@ -343,27 +343,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#step-2-configure-mlcube-using-the-mlcube_cookiecutter" class="md-nav__link">
-    Step 2: Configure MLCube using the mlcube_cookiecutter
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-3-build-docker-container-image" class="md-nav__link">
-    Step 3: Build Docker container Image
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-4-test-your-mlcube" class="md-nav__link">
-    Step 4: Test your MLCube
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -544,27 +523,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#step-2-configure-mlcube-using-the-mlcube_cookiecutter" class="md-nav__link">
-    Step 2: Configure MLCube using the mlcube_cookiecutter
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-3-build-docker-container-image" class="md-nav__link">
-    Step 3: Build Docker container Image
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#step-4-test-your-mlcube" class="md-nav__link">
-    Step 4: Test your MLCube
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -583,44 +541,40 @@
 <p>Interested in getting started with MLCube? Follow the instructions in this tutorial.    </p>
 <h2 id="step-1-setup">Step 1: Setup<a class="headerlink" href="#step-1-setup" title="Permanent link">&para;</a></h2>
 <p>Get MLCube, MLCube examples and MLCube Templates, and CREATE a Python environment.
-<div class="highlight"><pre><span></span><code><span class="c1"># You can clone the mlcube examples and templates from GtiHub</span>
-git clone https://github.com/mlcommons/mlcube_examples
-
-<span class="c1"># Create a python environment</span>
-virtualenv -p python3 ./env <span class="o">&amp;&amp;</span> <span class="nb">source</span> ./env/bin/activate
-
-<span class="c1"># Install mlcube, mlcube-docker and cookiecutter </span>
-pip install mlcube mlcube-docker cookiecutter 
-</code></pre></div></p>
+```shell</p>
+<h1 id="you-can-clone-the-mlcube-examples-and-templates-from-gtihub">You can clone the mlcube examples and templates from GtiHub<a class="headerlink" href="#you-can-clone-the-mlcube-examples-and-templates-from-gtihub" title="Permanent link">&para;</a></h1>
+<p>git clone https://github.com/mlcommons/mlcube_examples</p>
+<h1 id="create-a-python-environment">Create a python environment<a class="headerlink" href="#create-a-python-environment" title="Permanent link">&para;</a></h1>
+<p>virtualenv -p python3 ./env &amp;&amp; source ./env/bin/activate</p>
+<h1 id="install-mlcube-mlcube-docker-and-cookiecutter">Install mlcube, mlcube-docker and cookiecutter<a class="headerlink" href="#install-mlcube-mlcube-docker-and-cookiecutter" title="Permanent link">&para;</a></h1>
+<p>pip install mlcube mlcube-docker cookiecutter 
+```</p>
 <h2 id="step-2-configure-mlcube-using-the-mlcube_cookiecutter">Step 2: Configure MLCube using the mlcube_cookiecutter<a class="headerlink" href="#step-2-configure-mlcube-using-the-mlcube_cookiecutter" title="Permanent link">&para;</a></h2>
 <p>Let's use the <code>matmul</code> example, that we downloaded in the previous step, to illustrate how to make an MLCube. Matmul 
 is a simple matrix multiply example written in Python with TensorFlow. When you create an MLCube for your own model 
 you will use your own code, data and dockerfile.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> mlcube_examples
-<span class="c1"># rename matmul reference implementation from matmul to matmul_reference</span>
-
-mv ./matmul ./matmul_reference
-
-<span class="c1"># create a mlcube directory using mlcube template(note: do not use quotes in your input to </span>
-<span class="c1"># cookiecutter): </span>
-<span class="c1">#    mlcube_name = matmul</span>
-<span class="c1">#    mlcube_description = Matrix multiplication example</span>
-<span class="c1">#    author_name = MLPerf Best Practices Working Group</span>
-<span class="c1">#    author_email =  first.second@corp.com</span>
-<span class="c1">#    author_org = corp</span>
-cookiecutter https://github.com/mlcommons/mlcube_cookiecutter.git
-
-<span class="c1"># copy the matmul.py,Dockerfile and requirements.txt to your mlcube_matmul/build directory</span>
-cp matmul_reference/matmul.py matmul/
+<p>```shell
+cd mlcube_examples</p>
+<h1 id="rename-matmul-reference-implementation-from-matmul-to-matmul_reference">rename matmul reference implementation from matmul to matmul_reference<a class="headerlink" href="#rename-matmul-reference-implementation-from-matmul-to-matmul_reference" title="Permanent link">&para;</a></h1>
+<p>mv ./matmul ./matmul_reference</p>
+<h1 id="create-a-mlcube-directory-using-mlcube-templatenote-do-not-use-quotes-in-your-input-to">create a mlcube directory using mlcube template(note: do not use quotes in your input to<a class="headerlink" href="#create-a-mlcube-directory-using-mlcube-templatenote-do-not-use-quotes-in-your-input-to" title="Permanent link">&para;</a></h1>
+<h1 id="cookiecutter">cookiecutter):<a class="headerlink" href="#cookiecutter" title="Permanent link">&para;</a></h1>
+<h1 id="mlcube_name-matmul">mlcube_name = matmul<a class="headerlink" href="#mlcube_name-matmul" title="Permanent link">&para;</a></h1>
+<h1 id="mlcube_description-matrix-multiplication-example">mlcube_description = Matrix multiplication example<a class="headerlink" href="#mlcube_description-matrix-multiplication-example" title="Permanent link">&para;</a></h1>
+<h1 id="author_name-mlperf-best-practices-working-group">author_name = MLPerf Best Practices Working Group<a class="headerlink" href="#author_name-mlperf-best-practices-working-group" title="Permanent link">&para;</a></h1>
+<h1 id="author_email-firstsecondcorpcom">author_email =  first.second@corp.com<a class="headerlink" href="#author_email-firstsecondcorpcom" title="Permanent link">&para;</a></h1>
+<h1 id="author_org-corp">author_org = corp<a class="headerlink" href="#author_org-corp" title="Permanent link">&para;</a></h1>
+<p>cookiecutter https://github.com/mlcommons/mlcube_cookiecutter.git</p>
+<h1 id="copy-the-matmulpydockerfile-and-requirementstxt-to-your-mlcube_matmulbuild-directory">copy the matmul.py,Dockerfile and requirements.txt to your mlcube_matmul/build directory<a class="headerlink" href="#copy-the-matmulpydockerfile-and-requirementstxt-to-your-mlcube_matmulbuild-directory" title="Permanent link">&para;</a></h1>
+<p>cp matmul_reference/matmul.py matmul/
 cp matmul_reference/Dockerfile matmul/
-cp matmul_reference/requirements.txt matmul/
-
-<span class="c1"># copy input file for matmul to workspace directory</span>
-cp -R  matmul_reference/workspace matmul
-</code></pre></div>
+cp matmul_reference/requirements.txt matmul/</p>
+<h1 id="copy-input-file-for-matmul-to-workspace-directory">copy input file for matmul to workspace directory<a class="headerlink" href="#copy-input-file-for-matmul-to-workspace-directory" title="Permanent link">&para;</a></h1>
+<p>cp -R  matmul_reference/workspace matmul
+```</p>
 <p>Edit the template files Start by looking at the mlcube.yaml file that has been generated by cookiecutter. 
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span> ./matmul
-</code></pre></div></p>
+<code>shell
+cd ./matmul</code></p>
 <p>Cookiecutter has modified the lines shown in <strong>bold</strong> in the mlcube.yaml file shown here:</p>
 <pre><code> 
 # This YAML file marks a directory to be an MLCube directory. When running MLCubes with runners, 
@@ -663,8 +617,7 @@ tasks:
 
 <p>Our input file shapes.yaml that we have copied previously into the mlcube workspace contains input parameters to 
 set matrix dimensions. We need to remove the automatically generated parameters file.
-<div class="highlight"><pre><span></span><code>rm workspace/parameters_file.yaml
-</code></pre></div></p>
+<code>rm workspace/parameters_file.yaml</code></p>
 <p>Now we will edit file mlcube.yaml. The lines you need to edit are shown in <strong>bold</strong> shown here:  </p>
 <pre><code>
 # This YAML file marks a directory to be an MLCube directory. When running MLCubes with runners, 
@@ -706,13 +659,13 @@ tasks:
 </code></pre>
 
 <h2 id="step-3-build-docker-container-image">Step 3: Build Docker container Image<a class="headerlink" href="#step-3-build-docker-container-image" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>mlcube configure --mlcube<span class="o">=</span>. --platform<span class="o">=</span>docker -Prunner.build_strategy<span class="o">=</span>auto
-</code></pre></div>
+<p><code>shell
+mlcube configure --mlcube=. --platform=docker -Prunner.build_strategy=auto</code></p>
 <h2 id="step-4-test-your-mlcube">Step 4: Test your MLCube<a class="headerlink" href="#step-4-test-your-mlcube" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>mlcube run --mlcube<span class="o">=</span>. --platform<span class="o">=</span>docker --task<span class="o">=</span>matmul
+<p><code>shell
+mlcube run --mlcube=. --platform=docker --task=matmul
 ls ./workspace
-cat ./workspace/matmul_output.txt
-</code></pre></div>
+cat ./workspace/matmul_output.txt</code></p>
 
               
             </article>
