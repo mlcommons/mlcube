@@ -220,7 +220,7 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
         try:
-            Shell.run([self.mlcube.runner.singularity, 'run', volumes, str(image_file), ' '.join(task_args)])
+            Shell.run([self.mlcube.runner.singularity, 'run', self.mlcube.runner.run_args, volumes, str(image_file), ' '.join(task_args)])
         except ExecutionError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
