@@ -160,7 +160,9 @@ class DockerRun(Runner):
         logger.info(f"mounts={mounts}, task_args={task_args}")
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--volume')
-        env_args = self.mlcube.runner.env_args
+        env_args: str = self.mlcube.runner.env_args + f" -e MLCUBE_TASK_NAME={self.task}"
+        if self.mlcube.get('name', None):
+            env_args += f" -e MLCUBE_NAME={self.mlcube['name']}"
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
         try:
