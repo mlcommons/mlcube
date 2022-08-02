@@ -1,6 +1,8 @@
 from unittest import TestCase
-from omegaconf import (DictConfig, OmegaConf)
+
 from mlcube.parser import CliParser
+
+from omegaconf import (DictConfig, OmegaConf)
 
 
 class TestParser(TestCase):

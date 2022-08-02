@@ -1,7 +1,10 @@
 from unittest import TestCase
-from unittest.mock import patch, mock_open
-from omegaconf import (OmegaConf, DictConfig, ListConfig)
+from unittest.mock import (mock_open, patch)
+
 from mlcube.config import (IOType, MLCubeConfig, ParameterType)
+
+from omegaconf import (DictConfig, ListConfig, OmegaConf)
+
 
 _MLCUBE_MNIST_CONFIG = """
 name: mnist

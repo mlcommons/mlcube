@@ -1,5 +1,7 @@
-from setuptools import find_packages, setup, Command
 import os
+
+from setuptools import (Command, find_packages, setup)
+
 
 # get the dependencies and installs
 with open("requirements.txt", "r", encoding="utf-8") as f:
@@ -12,6 +14,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
 
 class Clean(Command):
     """Custom clean command."""
+
     user_options = []
 
     def initialize_options(self):

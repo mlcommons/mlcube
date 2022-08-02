@@ -1,0 +1,20 @@
+[flake8]
+
+max-line-length = 120
+
+exclude =
+    ./.git,
+    ./.github,
+    ./docs,
+    __pycache__,
+    .pytest_cache,
+
+# D100 Missing docstring in public module (disabled temporarily)
+ignore = D100
+
+# D101 Missing docstring in public class
+# D102 Missing docstring in public method
+# D103 Missing docstring in public function
+# D104 Missing docstring in public package
+per-file-ignores =
+     */tests/*: D101,D102,D103,D104
