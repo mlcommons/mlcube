@@ -26,6 +26,16 @@ class Shell(object):
     """Helper functions to run commands."""
 
     @staticmethod
+    def null() -> str:
+        """Return /dev/null for Linux/Windows.
+
+        TODO: In powershell, $null works. Is below the correct implementation?
+        """
+        if os.name == 'nt':
+            return 'NUL'
+        return '/dev/null'
+
+    @staticmethod
     def parse_exec_status(status: int) -> t.Tuple[int, str]:
         """Parse execution status returned by `os.system` call.
 
@@ -100,7 +110,8 @@ class Shell(object):
             True if image exists, else false.
         """
         docker = docker or 'docker'
-        return Shell.run(f'{docker} inspect --type=image {image} > /dev/null 2>&1', on_error='ignore') == 0
+        cmd = f'{docker} inspect --type=image {image} > {Shell.null()}'
+        return Shell.run(cmd, on_error='ignore') == 0
 
     @staticmethod
     def ssh(connection_str: str, command: t.Optional[str], on_error: str = 'raise') -> int:
