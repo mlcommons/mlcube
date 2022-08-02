@@ -134,6 +134,12 @@ class MLCubeConfig(object):
 
         for task_name in mlcube_config.tasks.keys():
             [task] = MLCubeConfig.ensure_values_exist(mlcube_config.tasks, task_name, dict)
+            if 'entrypoint' in task and task['entrypoint'] is None:
+                logger.warning(
+                    "MLCube task (%s) specifies an entrypoint that is None: removing it (a default "
+                    "entrypoint will be used).", task_name
+                )
+                task.pop('entrypoint')
             [parameters] = MLCubeConfig.ensure_values_exist(task, 'parameters', dict)
             [inputs, outputs] = MLCubeConfig.ensure_values_exist(parameters, ['inputs', 'outputs'], dict)
 
@@ -175,6 +181,8 @@ class MLCubeConfig(object):
             # Check again parameter type. Users in certain number of cases will not be providing final slash on a
             # command line for directories, so we tried to infer types above using default values. Just in case, see
             # if we can do the same with user-provided values.
+            # TODO: what if a parameter in mlcube.yaml is declared to be a file, but users provided something with
+            #       slash at the end.
             if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
                 param_def.type = ParameterType.DIRECTORY
 

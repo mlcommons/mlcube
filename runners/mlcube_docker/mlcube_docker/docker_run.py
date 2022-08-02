@@ -163,6 +163,12 @@ class DockerRun(Runner):
         env_args = self.mlcube.runner.env_args
         num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
+        if 'entrypoint' in self.mlcube.tasks[self.task]:
+            logger.info(
+                "Using custom task entrypoint: task=%s, entrypoint='%s'",
+                self.task, self.mlcube.tasks[self.task].entrypoint
+            )
+            run_args += f" --entrypoint='{self.mlcube.tasks[self.task].entrypoint}'"
         try:
             Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
         except ExecutionError as err:
