@@ -52,6 +52,8 @@ class Config(RunnerConfig):
 
     @staticmethod
     def merge(mlcube: DictConfig) -> None:
+        if 'runner' not in mlcube:
+            mlcube['runner'] = {}
         mlcube.runner = OmegaConf.merge(mlcube.runner, mlcube.get('docker', OmegaConf.create({})))
 
     @staticmethod
@@ -79,7 +81,7 @@ class DockerRun(Runner):
 
     CONFIG = Config
 
-    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Text) -> None:
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[t.Text]) -> None:
         super().__init__(mlcube, task)
 
     def configure(self) -> None:
@@ -144,7 +146,10 @@ class DockerRun(Runner):
                 self.__class__.__name__,
                 f"Error occurred while syncing MLCube workspace (task={self.task}). Actual error is {type(err)} - see "
                 "context for details.",
-                error=str(err)
+                error=str(err),
+                worspace=self.mlcube.runtime.workspace,
+                mlcube=OmegaConf.to_container(self.mlcube),
+                task=self.task
             )
 
         # The 'mounts' dictionary maps host paths to container paths
@@ -161,7 +166,8 @@ class DockerRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=':', parent_arg='--volume')
         env_args = self.mlcube.runner.env_args
-        num_gpus: int = self.mlcube.platform.get('accelerator_count', None) or 0
+        num_gpus: int = self.mlcube.get('platform', {}).get('accelerator_count', None) or 0
+
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
         try:
             Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
