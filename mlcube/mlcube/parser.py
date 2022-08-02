@@ -1,13 +1,22 @@
-import os
+"""Collection of classes to parse instantiate MLCube configuration from various sources.
+
+- `MLCubeInstance`: Base class for various MLCube flavours (directory, archive ...).
+- `MLCubeDirectory`: Class to work with directory-based MLCubes.
+- `CliParser`: Helper utilities to parse command linea arguments.
+"""
 import abc
+import os
 import typing as t
-from omegaconf import (OmegaConf, DictConfig)
+
+from omegaconf import (DictConfig, OmegaConf)
 
 
 class MLCubeInstance(abc.ABC):
-    """ Base class for different instantiations of MLCube (local, remote, directory, archive, container ...). """
+    """Base class for different instantiations of MLCube (local, remote, directory, archive, container ...)."""
+
     @abc.abstractmethod
-    def uri(self) -> t.Text:
+    def uri(self) -> str:
+        """Return uniform resource identifier of this MLCube."""
         raise NotImplementedError
 
 
@@ -15,8 +24,14 @@ MLCubeInstanceType = t.TypeVar('MLCubeInstanceType', bound=MLCubeInstance)
 
 
 class MLCubeDirectory(MLCubeInstance):
-    """ An MLCube instantiation as a local directory. """
-    def __init__(self, path: t.Optional[t.Text] = None) -> None:
+    """An MLCube instantiation as a local directory."""
+
+    def __init__(self, path: t.Optional[str] = None) -> None:
+        """Instantiate MLCube from mlcube.yaml file.
+
+        Args:
+            path: MLCube directory or path to mlcube.yaml. If None, current directory is used.
+        """
         if path is None:
             path = os.getcwd()
         path = os.path.abspath(path)
@@ -25,14 +40,17 @@ class MLCubeDirectory(MLCubeInstance):
         else:
             self.path, self.file = os.path.abspath(path), 'mlcube.yaml'
 
-    def uri(self) -> t.Text:
+    def uri(self) -> str:
         return os.path.join(self.path, self.file)
 
 
 class CliParser(object):
+    """Helper utilities to parse command linea arguments."""
+
     @staticmethod
-    def parse_mlcube_arg(mlcube: t.Optional[t.Text]) -> MLCubeInstanceType:
-        """ Parse value of the `--mlcube` command line argument.
+    def parse_mlcube_arg(mlcube: t.Optional[str]) -> MLCubeInstanceType:
+        """Parse value of the `--mlcube` command line argument.
+
         Args:
             mlcube: Path to a MLCube directory or `mlcube.yaml` file. If it's a directory, standard name
                 `mlcube.yaml` is assumed for MLCube definition file.
@@ -42,8 +60,9 @@ class CliParser(object):
         return MLCubeDirectory(mlcube)
 
     @staticmethod
-    def parse_list_arg(arg: t.Optional[t.Text], default: t.Optional[t.Text] = None) -> t.List[t.Text]:
-        """ Parse a string into list of strings using `,` as a separator.
+    def parse_list_arg(arg: t.Optional[str], default: t.Optional[str] = None) -> t.List[str]:
+        """Parse a string into list of strings using `,` as a separator.
+
         Args:
             arg: String if elements separated with `,`.
             default: Default value for `arg` if `arg` is None or empty.
@@ -56,8 +75,9 @@ class CliParser(object):
         return arg.split(',')
 
     @staticmethod
-    def parse_extra_arg(*args: t.Text) -> t.Tuple[DictConfig, t.Dict]:
-        """ Parse extra arguments on a command line.
+    def parse_extra_arg(*args: str) -> t.Tuple[DictConfig, t.Dict]:
+        """Parse extra arguments on a command line.
+
         These arguments correspond to:
             - MLCube runtime arguments. These start with `-P` prefix and are translated to a nested dictionaries
                 structure using `.` as a separator. For instance, `-Pdocker.image=mlcommons/mnist:0.0.1` translates to

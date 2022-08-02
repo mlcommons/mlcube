@@ -1,21 +1,23 @@
-"""
-This requires the MLCube 2.0 that's located somewhere in one of dev branches.
-"""
+"""This requires the MLCube 2.0 that's located somewhere in one of dev branches."""
+import logging
 import os
 import sys
-import click
-import logging
-import coloredlogs
 import typing as t
-from omegaconf import (OmegaConf, DictConfig)
+
+import click
+
+import coloredlogs
+
 from mlcube.config import MLCubeConfig
-from mlcube.errors import (IllegalParameterValueError, MLCubeError, ExecutionError)
+from mlcube.errors import (ExecutionError, IllegalParameterValueError, MLCubeError)
 from mlcube.parser import (CliParser, MLCubeDirectory)
 from mlcube.platform import Platform
 from mlcube.runner import Runner
 from mlcube.shell import Shell
 from mlcube.system_settings import SystemSettings
 from mlcube.validate import Validate
+
+from omegaconf import (DictConfig, OmegaConf)
 
 logger = logging.getLogger(__name__)
 
@@ -28,9 +30,9 @@ class MultiValueOption(click.Option):
 
     def add_to_parser(self, parser: click.parser.OptionParser, ctx: click.core.Context):
 
-        def parser_process(value: t.Text, state: click.parser.ParsingState):
-            values: t.List[t.Text] = [value]
-            prefixes: t.Tuple[t.Text] = tuple(self._eat_all_parser.prefixes)
+        def parser_process(value: str, state: click.parser.ParsingState):
+            values: t.List[str] = [value]
+            prefixes: t.Tuple[str] = tuple(self._eat_all_parser.prefixes)
             while state.rargs:
                 if state.rargs[0].startswith(prefixes):
                     break
@@ -39,8 +41,8 @@ class MultiValueOption(click.Option):
 
         super(MultiValueOption, self).add_to_parser(parser, ctx)
         for opt_name in self.opts:
-            our_parser: t.Optional[click.parser.Option] = parser._long_opt.get(opt_name) or\
-                                                          parser._short_opt.get(opt_name)
+            our_parser: t.Optional[click.parser.Option] = \
+                parser._long_opt.get(opt_name) or parser._short_opt.get(opt_name)
             if our_parser:
                 self._eat_all_parser = our_parser
                 self._previous_parser_process = our_parser.process
@@ -48,10 +50,11 @@ class MultiValueOption(click.Option):
                 break
 
 
-def _parse_cli_args(ctx: t.Optional[click.core.Context], mlcube: t.Text, platform: t.Optional[t.Text],
-                    workspace: t.Optional[t.Text],
+def _parse_cli_args(ctx: t.Optional[click.core.Context], mlcube: str, platform: t.Optional[str],
+                    workspace: t.Optional[str],
                     resolve: bool) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
-    """
+    """Parse command line arguments.
+
     Args:
         ctx: Click context. We need this to get access to extra CLI arguments.
         mlcube: Path to MLCube root directory or mlcube.yaml file.
@@ -107,7 +110,7 @@ workspace_option = click.option(
 
 @click.group(name='mlcube', help="MLCube 📦 is a packaging tool for ML models")
 @log_level_option
-def cli(log_level: t.Text):
+def cli(log_level: str):
     if log_level:
         log_level = log_level.upper()
         logging.basicConfig(level=log_level)
@@ -117,14 +120,15 @@ def cli(log_level: t.Text):
 
 
 @cli.command(name='show_config', help='Show MLCube configuration.',
-             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+             context_settings={'ignore_unknown_options': True, 'allow_extra_args': True})
 @mlcube_option
 @platform_option
 @workspace_option
 @click.option('--resolve', is_flag=True, help="Resolve MLCube parameters.")
 @click.pass_context
-def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, workspace: t.Text, resolve: bool) -> None:
-    """
+def show_config(ctx: click.core.Context, mlcube: str, platform: str, workspace: str, resolve: bool) -> None:
+    """Show MLCube configuration.
+
     Args:
         ctx: Click context. We need this to get access to extra CLI arguments.
         mlcube: Path to MLCube root directory or mlcube.yaml file.
@@ -137,12 +141,13 @@ def show_config(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, works
 
 
 @cli.command(name='configure', help='Configure MLCube.',
-             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+             context_settings={'ignore_unknown_options': True, 'allow_extra_args': True})
 @mlcube_option
 @platform_option
 @click.pass_context
-def configure(ctx: click.core.Context, mlcube: t.Text, platform: t.Text) -> None:
-    """
+def configure(ctx: click.core.Context, mlcube: str, platform: str) -> None:
+    """Configure MLCube.
+
     Args:
         ctx: Click context. We need this to get access to extra CLI arguments.
         mlcube: Path to MLCube root directory or mlcube.yaml file.
@@ -163,14 +168,15 @@ def configure(ctx: click.core.Context, mlcube: t.Text, platform: t.Text) -> None
 
 
 @cli.command(name='run', help='Run MLCube ML task.',
-             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+             context_settings={'ignore_unknown_options': True, 'allow_extra_args': True})
 @mlcube_option
 @platform_option
 @task_option
 @workspace_option
 @click.pass_context
-def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text, workspace: t.Text) -> None:
-    """
+def run(ctx: click.core.Context, mlcube: str, platform: str, task: str, workspace: str) -> None:
+    """Run MLCube task(s).
+
     Args:
         ctx: Click context. We need this to get access to extra CLI arguments.
         mlcube: Path to MLCube root directory or mlcube.yaml file.
@@ -213,16 +219,21 @@ def run(ctx: click.core.Context, mlcube: t.Text, platform: t.Text, task: t.Text,
 
 @cli.command(name='describe', help='Describe MLCube.')
 @mlcube_option
-def describe(mlcube: t.Text) -> None:
+def describe(mlcube: str) -> None:
+    """Describe this MLCube.
+
+    Args:
+        mlcube: Path to MLCube root directory or mlcube.yaml file.
+    """
     _, mlcube_config = _parse_cli_args(None, mlcube, None, None, resolve=True)
-    print(f"MLCube")
+    print("MLCube")
     print(f"  path = {mlcube_config.runtime.root}")
     print(f"  name = {mlcube_config.name}:{mlcube_config.get('version', 'latest')}")
     print()
     print(f"  workspace = {mlcube_config.runtime.workspace}")
     print(f"  system settings = {SystemSettings.system_settings_file()}")
     print()
-    print(f"  Tasks:")
+    print("  Tasks:")
     for task_name, task_def in mlcube_config.tasks.items():
         description = f"name = {task_name}"
         if len(task_def.parameters.inputs) > 0:
@@ -231,7 +242,7 @@ def describe(mlcube: t.Text) -> None:
             description = f"{description}, outputs = {list(task_def.parameters.outputs.keys())}"
         print(f"    {description}")
     print()
-    print(f"Run this MLCube:")
+    print("Run this MLCube:")
     print("  Configure MLCube:")
     print(f"    mlcube configure --mlcube={mlcube_config.runtime.root} --platform=docker")
     print("  Run MLCube tasks:")
@@ -241,7 +252,7 @@ def describe(mlcube: t.Text) -> None:
 
 
 @cli.command(name='config', help='Perform various operations with system settings file.',
-             context_settings=dict(ignore_unknown_options=True, allow_extra_args=True))
+             context_settings={'ignore_unknown_options': True, 'allow_extra_args': True})
 @click.option('--list', 'list_all', is_flag=True, help="List configuration in MLCube system settings file.")
 @click.option('--get', required=False, type=str, default=None,
               help="Return value of the key (use OmegaConf notation, e.g. --get runners.docker).")
@@ -263,19 +274,19 @@ def describe(mlcube: t.Text) -> None:
 @click.pass_context
 def config(ctx: click.core.Context,
            list_all: bool,                          # mlcube config --list
-           get: t.Optional[t.Text],                 # mlcube config --get KEY
+           get: t.Optional[str],                    # mlcube config --get KEY
            create_platform: t.Optional[t.Tuple],    # mlcube config --create-platform RUNNER PLATFORM
-           remove_platform: t.Optional[t.Text],     # mlcube config --remove-platform NAME
+           remove_platform: t.Optional[str],        # mlcube config --remove-platform NAME
            rename_platform: t.Optional[t.Tuple],    # mlcube config --rename-platform OLD_NAME NEW_NAME
            copy_platform: t.Optional[t.Tuple],      # mlcube config --copy-platform EXISTING_PLATFORM NEW_PLATFORM
            rename_runner: t.Optional[t.Tuple],      # mlcube config --rename-runner OLD_NAME NEW_NAME
-           remove_runner: t.Optional[t.Text]        # mlcube config --remove-runner NAME
+           remove_runner: t.Optional[str]           # mlcube config --remove-runner NAME
            ) -> None:
-    """ Work with MLCube system settings (similar to `git config`). """
+    """Work with MLCube system settings (similar to `git config`)."""
     print(f"System settings file path = {SystemSettings.system_settings_file()}")
     settings = SystemSettings()
 
-    def _check_tuple(_tuple: t.Tuple, _name: t.Text, _expected_size: int, _expected_value: t.Text) -> None:
+    def _check_tuple(_tuple: t.Tuple, _name: str, _expected_size: int, _expected_value: str) -> None:
         if len(_tuple) != _expected_size:
             raise IllegalParameterValueError(f'--{_name}', ' '.join(_tuple), f"\"{_expected_value}\"")
 
@@ -309,14 +320,15 @@ def config(ctx: click.core.Context,
 @cli.command(name='create',
              help='Create a new MLCube using cookiecutter.')
 def create() -> None:
-    """ Create a new MLCube using cookiecutter template.
-      - MLCube cookiecutter: https://github.com/mlcommons/mlcube_cookiecutter
-      - Example: https://mlcommons.github.io/mlcube/tutorials/create-mlcube/
+    """Create a new MLCube using cookiecutter template.
+
+    - MLCube cookiecutter: https://github.com/mlcommons/mlcube_cookiecutter
+    - Example: https://mlcommons.github.io/mlcube/tutorials/create-mlcube/
     """
     mlcube_cookiecutter_url = 'https://github.com/mlcommons/mlcube_cookiecutter'
     try:
         from cookiecutter.main import cookiecutter
-        proj_dir: t.Text = cookiecutter(mlcube_cookiecutter_url)
+        proj_dir: str = cookiecutter(mlcube_cookiecutter_url)
         if proj_dir and os.path.isfile(os.path.join(proj_dir, 'mlcube.yaml')):
             Shell.run(['mlcube', 'describe', '--mlcube', proj_dir], on_error='die')
     except ImportError:

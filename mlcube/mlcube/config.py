@@ -1,8 +1,17 @@
-import os
+"""Utilities to assemble effective with MLCube configuration.
+
+- `IOType`: Input/output type of MLCube task parameter.
+- `ParameterType`: Type of MLCube task parameter.
+- `MLCubeConfig`: Utilities to assemble effective MLCube configuration.
+"""
 import logging
+import os
 import typing as t
-from omegaconf import (OmegaConf, DictConfig)
+
 from mlcube.runner import Runner
+
+from omegaconf import (DictConfig, OmegaConf)
+
 
 logger = logging.getLogger(__name__)
 
@@ -10,28 +19,50 @@ __all__ = ['IOType', 'ParameterType', 'MLCubeConfig']
 
 
 class IOType(object):
+    """Input/output type of MLCube task parameter."""
+
     INPUT = 'input'
+    """This parameter is input parameter (e.g., path to data)."""
+
     OUTPUT = 'output'
+    """This parameter is output parameter (e.g., path to trained model)."""
 
     @staticmethod
-    def is_valid(io: t.Text) -> bool:
+    def is_valid(io: str) -> bool:
+        """Return true if string `io` contain valid IO type."""
         return io in (IOType.INPUT, IOType.OUTPUT)
 
 
 class ParameterType(object):
+    """Type of MLCube task parameter."""
+
     FILE = 'file'
+    """This parameter is a file."""
+
     DIRECTORY = 'directory'
+    """This parameter is a directory."""
+
     UNKNOWN = 'unknown'
+    """Type is unknown (only used internally)."""
 
     @staticmethod
-    def is_valid(io: t.Text) -> bool:
+    def is_valid(io: str) -> bool:
+        """Return true if string `io` contain valid parameter type."""
         return io in (ParameterType.FILE, ParameterType.DIRECTORY, ParameterType.UNKNOWN)
 
 
 class MLCubeConfig(object):
+    """Utilities to assemble effective MLCube configuration."""
 
     @staticmethod
-    def ensure_values_exist(config: DictConfig, keys: t.Union[t.Text, t.List], constructor: t.Callable) -> t.List:
+    def ensure_values_exist(config: DictConfig, keys: t.Union[str, t.List], constructor: t.Callable) -> t.List:
+        """Make sure the `config` dictionary contains specified keys.
+
+        Args:
+            config: Dictionary.
+            keys: Keys that must exist in this dictionary.
+            constructor: Factory function to create values for keys in `keys` that are not in `config`.
+        """
         if isinstance(keys, str):
             keys = [keys]
         for key in keys:
@@ -40,20 +71,22 @@ class MLCubeConfig(object):
         return [config[key] for key in keys]
 
     @staticmethod
-    def get_uri(value: t.Text) -> t.Text:
+    def get_uri(value: str) -> str:
+        """Validate `value` is a valid URI."""
         if value.startswith('storage:'):
-            raise ValueError(f"Storage schema is not yet supported")
+            raise ValueError("Storage schema is not yet supported")
         return os.path.abspath(os.path.expanduser(value))
 
     @staticmethod
-    def create_mlcube_config(mlcube_config_file: t.Text, mlcube_cli_args: t.Optional[DictConfig] = None,
+    def create_mlcube_config(mlcube_config_file: str, mlcube_cli_args: t.Optional[DictConfig] = None,
                              task_cli_args: t.Optional[t.Dict] = None, runner_config: t.Optional[DictConfig] = None,
-                             workspace: t.Optional[t.Text] = None, resolve: bool = True,
+                             workspace: t.Optional[str] = None, resolve: bool = True,
                              runner_cls: t.Optional[t.Type[Runner]] = None) -> DictConfig:
-        """ Create MLCube mlcube merging different configs - base, global, local and cli.
+        """Create MLCube configuration merging different configs - base, global, local and cli.
+
         Args:
             mlcube_config_file: Path to mlcube.yaml file.
-            mlcube_cli_args: MLCube mlcube from command line.
+            mlcube_cli_args: MLCube parameters from command line.
             task_cli_args: Task parameters from command line.
             runner_config: MLCube runner configuration, usually comes from system settings file.
             workspace: Workspace path to use in this MLCube run.
@@ -113,7 +146,8 @@ class MLCubeConfig(object):
 
     @staticmethod
     def check_parameters(parameters: DictConfig, task_cli_args: t.Dict) -> None:
-        """ Check that task parameters are defined according to MLCube schema.
+        """Check that task parameters are defined according to MLCube schema.
+
         Args:
             parameters: Task parameters (`inputs` or `outputs`).
             task_cli_args: Task parameters from command line.
