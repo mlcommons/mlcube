@@ -2,12 +2,12 @@ import unittest
 from unittest import TestCase
 from unittest.mock import (mock_open, patch)
 
-from omegaconf import DictConfig, OmegaConf
-
 from mlcube.config import MLCubeConfig
 from mlcube.shell import Shell
 
 from mlcube_docker.docker_run import (Config, DockerRun)
+
+from omegaconf import DictConfig, OmegaConf
 
 _HAVE_DOCKER: bool = Shell.run(['docker', '--version'], on_error='ignore') == 0
 

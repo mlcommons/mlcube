@@ -1,7 +1,9 @@
 from unittest import TestCase
 
-from mlcube_docker.docker_run import Config
 from mlcube.errors import IllegalParameterValueError
+
+from mlcube_docker.docker_run import Config
+
 
 from omegaconf import OmegaConf
 

@@ -17,4 +17,4 @@ ignore = D100
 # D103 Missing docstring in public function
 # D104 Missing docstring in public package
 per-file-ignores =
-     */tests/*: D101,D102,D103,D104
+     test_*.py: D101,D102,D103,D104

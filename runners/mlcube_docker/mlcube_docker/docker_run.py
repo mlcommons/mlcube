@@ -18,9 +18,38 @@ class Config(RunnerConfig):
     """ Helper class to manage `docker` environment configuration."""
 
     class BuildStrategy(object):
+        """MLCube docker runner configuration strategy.
+
+        The build strategy describes process of build/pulling docker images for MLCubes:
+            - `run`: Call 'configure' when build strategy is `always`, or docker image does not exist.
+            - `configure`: Pull image if build strategy is pull or docker recipe (Dockerfile) exists. Else, build image.
+        """
+
         PULL = 'pull'
+        """Pull images from remote docker hubs.
+        
+        Docker images are never built locally even if Dockerfiles exist (MLCube runner will log the warning message
+        when this case is detected). This is the default value for the build strategy. This results in some 
+        consequences: when users clone an MLCube source from GitHub, mlcube will pull the image defined in mlcube.yaml,
+        and will not build it locally from sources. This is OK as long as source files have not changed since the docker
+        image has been built for this MLCube and pushed to docker hub. If files have changed, and version of the docker 
+        image in mlcube.yaml has not been updated, and this image exists on docker hub, the MLCube implementation that
+        MLCube will run will not be consistent with source files.
+        """
+
         AUTO = 'auto'
+        """Automatically identify if docker images can be built locally, if not, pull them from docker hub."""
+
         ALWAYS = 'always'
+        """Build docker images before execution of each task.
+        
+        Technically this means call `configure` command each time a task is executed. Currently, MLCube docker runner 
+        just runs the `docker build ...` command without instructing docker to rebuild the whole image. This means that 
+        docker may decided that it does not need to rebuild the respective image. This behavior can be overridden by 
+        providing custom build_args flags (`build_args: "--no-cache"` or `build_args: "--no-cache --pull"` to force 
+        re-download the base image layers. 
+        ).
+        """
 
         @staticmethod
         def validate(build_strategy: t.Text) -> None:
