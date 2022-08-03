@@ -48,6 +48,9 @@ class Config(RunnerConfig):
         Idea is that if mlcube contains `singularity` section, then it means that we use it as is. Else, we can try
         to run this MLCube using information from `docker` section if it exists.
         """
+        if 'runner' not in mlcube:
+            mlcube['runner'] = {}
+
         s_cfg: t.Optional[DictConfig] = mlcube.get("singularity", None)
         if not s_cfg:
             # Singularity runner will try to use docker section. At this point, it will work as long as we assume we
@@ -129,7 +132,7 @@ class SingularityRun(Runner):
                 "from singularity-cli python library (https://github.com/singularityhub/singularity-cli)."
             )
 
-    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: str) -> None:
+    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]) -> None:
         super().__init__(mlcube, task)
         try:
             # Check version and log a warning message if fakeroot is used with singularity version < 3.5
