@@ -154,6 +154,7 @@ class DockerRun(Runner):
 
         # The 'mounts' dictionary maps host paths to container paths
         try:
+            # The `task_args` list will always contain task name as its first element.
             mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
@@ -174,7 +175,11 @@ class DockerRun(Runner):
                 "Using custom task entrypoint: task=%s, entrypoint='%s'",
                 self.task, self.mlcube.tasks[self.task].entrypoint
             )
-            run_args += f" --entrypoint='{self.mlcube.tasks[self.task].entrypoint}'"
+            # TODO: What if entrypoints contain whitespaces?
+            run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
+            # Remove task name. According to MLCube rules, custom entry points do not require task name as their
+            # first positional arguments.
+            _ = task_args.pop(0)
         try:
             Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
         except ExecutionError as err:
