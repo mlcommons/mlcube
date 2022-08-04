@@ -1,3 +1,4 @@
+import os
 from pathlib import Path
 import shutil
 import tempfile
@@ -12,11 +13,20 @@ from mlcube_singularity.singularity_run import Config, SingularityRun
 from omegaconf import DictConfig, OmegaConf
 
 from spython.utils.terminal import (
-     check_install as check_singularity_installed,
+    get_singularity_version_info,
+    check_install as check_singularity_installed,
 )
 
-
 _HAVE_SINGULARITY: bool = check_singularity_installed(software='singularity')
+if _HAVE_SINGULARITY and 'SPYTHON_SINGULARITY_VERSION' not in os.environ:
+    # Problem: get_singularity_version_info  function uses `subprocesss` to run `singularity --version` command, capture
+    #          its output in order to determine singularity version. Pytest seems to be altering standard input/output
+    #          so that the output is empty.
+    # This is temporary solution until we determine the actual problem and find the right way to capture outputs of
+    # commands running using `subprocess` module in different environments. This seems to be applicable not only to
+    # pytest environment.
+    os.environ['SPYTHON_SINGULARITY_VERSION'] = str(get_singularity_version_info())
+
 _IMAGE_DIRECTORY: Path = Path(tempfile.mkdtemp())
 
 _MLCUBE_DEFAULT_ENTRY_POINT = """
