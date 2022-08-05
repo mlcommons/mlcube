@@ -27,8 +27,8 @@ from omegaconf import DictConfig, OmegaConf
 
 from spython.utils.terminal import check_install as check_singularity_installed
 
-
 _HAVE_SINGULARITY: bool = check_singularity_installed(software='singularity')
+
 _IMAGE_DIRECTORY: Path = Path(tempfile.mkdtemp())
 
 _MLCUBE_DEFAULT_ENTRY_POINT = """
@@ -85,11 +85,11 @@ class TestSingularityRunner(TestCase):
             shutil.rmtree(_IMAGE_DIRECTORY.as_posix())
 
     @unittest.skipUnless(_HAVE_SINGULARITY, reason="No singularity available.")
-    @patch("io.open", mock_open(read_data=_MLCUBE_DEFAULT_ENTRY_POINT))
     def test_mlcube_default_entrypoints(self):
-        mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-            "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=SingularityRun
-        )
+        with patch("io.open", mock_open(read_data=_MLCUBE_DEFAULT_ENTRY_POINT)):
+            mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
+                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=SingularityRun
+            )
         self.assertEqual(mlcube.runner.image, 'ubuntu-18.04.sif')
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
@@ -103,11 +103,11 @@ class TestSingularityRunner(TestCase):
         SingularityRun(mlcube, task='pwd').run()
 
     @unittest.skipUnless(_HAVE_SINGULARITY, reason="No singularity available.")
-    @patch("io.open", mock_open(read_data=_MLCUBE_CUSTOM_ENTRY_POINTS))
     def test_mlcube_custom_entrypoints(self):
-        mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-            "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=SingularityRun
-        )
+        with patch("io.open", mock_open(read_data=_MLCUBE_CUSTOM_ENTRY_POINTS)):
+            mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
+                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=SingularityRun
+            )
         self.assertEqual(mlcube.runner.image, 'ubuntu-18.04.sif')
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),

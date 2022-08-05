@@ -85,9 +85,10 @@ class Config(RunnerConfig):
                     logger.warning(
                         "SingularityRun will not use --fakeroot CLI switch (version < 3.5)"
                     )
-            except:
+            except Exception as err:
                 logger.warning(
-                    "SingularityRun can't get singularity version (do you have singularity installed?)."
+                    "SingularityRun can't get singularity version (do you have singularity installed?). "
+                    "Source=Config.merge. Exception=%s", str(err), exc_info=True
                 )
 
             build_file = "docker://" + d_cfg["image"]
@@ -129,7 +130,9 @@ class SingularityRun(Runner):
                 f"{SingularityRun.__name__} runner failed to configure or to run MLCube.",
                 "SingularityRun check_install returned false ('singularity --version' failed to run). MLCube cannot "
                 "run singularity images unless this check passes. Singularity runner uses `check_install` function "
-                "from singularity-cli python library (https://github.com/singularityhub/singularity-cli)."
+                "from singularity-cli python library (https://github.com/singularityhub/singularity-cli).",
+                function='check_singularity_installed',
+                args={'software': singularity_exec}
             )
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]) -> None:
@@ -145,9 +148,10 @@ class SingularityRun(Runner):
                     "SingularityRun singularity version < 3.5, and it probably does not support --fakeroot "
                     "parameter that is present in MLCube configuration."
                 )
-        except:
+        except Exception as err:
             logger.warning(
-                "SingularityRun can't get singularity version (do you have singularity installed?)."
+                "SingularityRun can't get singularity version (do you have singularity installed?). "
+                "Source=SingularityRun.__init__. Exception=%s.", str(err), exc_info=True
             )
 
     def configure(self) -> None:
