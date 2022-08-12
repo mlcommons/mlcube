@@ -51,6 +51,24 @@ class ParameterType(object):
         return io in (ParameterType.FILE, ParameterType.DIRECTORY, ParameterType.UNKNOWN)
 
 
+class MountOption(object):
+    """Read-Write (rw) or Read-Only type of MLCube mount parameter."""
+
+    RW = 'rw'
+    """This parameter is reads-write parameter (e.g., path to data)."""
+
+    RO = 'ro'
+    """This parameter is read-only parameter"""
+
+    UNKNOWN = 'unknown'
+    """Type is unknown (only used internally)."""
+
+    @staticmethod
+    def is_valid(io: str) -> bool:
+        """Return true if string `opts` contain valid MountOption type."""
+        return io in (MountOption.RW, MountOption.RO)
+
+
 class MLCubeConfig(object):
     """Utilities to assemble effective MLCube configuration."""
 

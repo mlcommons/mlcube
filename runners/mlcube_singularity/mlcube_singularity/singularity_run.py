@@ -215,7 +215,10 @@ class SingularityRun(Runner):
             )
 
         try:
-            mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            if mounts_opts:
+                for key, value in mounts_opts.items():
+                    mounts[key]+=f':{value}'
             logger.info(f"mounts={mounts}, task_args={task_args}")
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
