@@ -215,6 +215,7 @@ class SingularityRun(Runner):
             )
 
         try:
+            # The `task_args` list of strings contains task name at the first position.
             mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
             logger.info(f"mounts={mounts}, task_args={task_args}")
         except ConfigurationError as err:
@@ -227,7 +228,19 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
         try:
-            Shell.run([self.mlcube.runner.singularity, 'run', self.mlcube.runner.run_args, volumes, str(image_file), ' '.join(task_args)])
+            entrypoint: t.Optional[str] = self.mlcube.tasks[self.task].get('entrypoint', None)
+            if entrypoint:
+                logger.info(
+                    "Using custom task entrypoint: task=%s, entrypoint='%s'",
+                    self.task, self.mlcube.tasks[self.task].entrypoint
+                )
+                Shell.run([self.mlcube.runner.singularity, 'exec', self.mlcube.runner.run_args, volumes,
+                           str(image_file), entrypoint, ' '.join(task_args[1:])])
+            else:
+                Shell.run([
+                    self.mlcube.runner.singularity, 'run', self.mlcube.runner.run_args, volumes,
+                    str(image_file), ' '.join(task_args)
+                ])
         except ExecutionError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,

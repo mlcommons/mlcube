@@ -18,9 +18,38 @@ class Config(RunnerConfig):
     """ Helper class to manage `docker` environment configuration."""
 
     class BuildStrategy(object):
+        """MLCube docker runner configuration strategy.
+
+        The build strategy describes process of build/pulling docker images for MLCubes:
+            - `run`: Call 'configure' when build strategy is `always`, or docker image does not exist.
+            - `configure`: Pull image if build strategy is pull or docker recipe (Dockerfile) exists. Else, build image.
+        """
+
         PULL = 'pull'
+        """Pull images from remote docker hubs.
+        
+        Docker images are never built locally even if Dockerfiles exist (MLCube runner will log the warning message
+        when this case is detected). This is the default value for the build strategy. This results in some 
+        consequences: when users clone an MLCube source from GitHub, mlcube will pull the image defined in mlcube.yaml,
+        and will not build it locally from sources. This is OK as long as source files have not changed since the docker
+        image has been built for this MLCube and pushed to docker hub. If files have changed, and version of the docker 
+        image in mlcube.yaml has not been updated, and this image exists on docker hub, the MLCube implementation that
+        MLCube will run will not be consistent with source files.
+        """
+
         AUTO = 'auto'
+        """Automatically identify if docker images can be built locally, if not, pull them from docker hub."""
+
         ALWAYS = 'always'
+        """Build docker images before execution of each task.
+        
+        Technically this means call `configure` command each time a task is executed. Currently, MLCube docker runner 
+        just runs the `docker build ...` command without instructing docker to rebuild the whole image. This means that 
+        docker may decided that it does not need to rebuild the respective image. This behavior can be overridden by 
+        providing custom build_args flags (`build_args: "--no-cache"` or `build_args: "--no-cache --pull"` to force 
+        re-download the base image layers. 
+        ).
+        """
 
         @staticmethod
         def validate(build_strategy: t.Text) -> None:
@@ -154,6 +183,7 @@ class DockerRun(Runner):
 
         # The 'mounts' dictionary maps host paths to container paths
         try:
+            # The `task_args` list will always contain task name as its first element.
             mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
@@ -169,6 +199,16 @@ class DockerRun(Runner):
         num_gpus: int = self.mlcube.get('platform', {}).get('accelerator_count', None) or 0
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
+        if 'entrypoint' in self.mlcube.tasks[self.task]:
+            logger.info(
+                "Using custom task entrypoint: task=%s, entrypoint='%s'",
+                self.task, self.mlcube.tasks[self.task].entrypoint
+            )
+            # TODO: What if entrypoints contain whitespaces?
+            run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
+            # Remove task name. According to MLCube rules, custom entry points do not require task name as their
+            # first positional arguments.
+            _ = task_args.pop(0)
         try:
             Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
         except ExecutionError as err:

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from omegaconf import OmegaConf
-
 from mlcube_singularity.singularity_run import Config
+
+from omegaconf import OmegaConf
 
 
 class TestConfig(TestCase):
