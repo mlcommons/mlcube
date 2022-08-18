@@ -6,7 +6,7 @@ from mlcube.config import (IOType, MLCubeConfig, ParameterType, MountType)
 from omegaconf import (DictConfig, ListConfig, OmegaConf)
 
 
-_MLCUBE_MNIST_CONFIG = """
+_MLCUBE_MNIST_CONFIG_TEMPLATE = """
 name: mnist
 description: MLCommons MNIST MLCube example
 authors:
@@ -28,6 +28,7 @@ singularity:
 
 tasks:
   download:
+    {DOWNLOAD_ENTRY_POINT}
     parameters:
       inputs:
         data_config: {type: file, default: data.yaml}
@@ -44,10 +45,22 @@ tasks:
         model_dir: {type: directory, default: model}
 """
 
+_DOWNLOAD_TASK_ENTRY_POINT = '/workspace/mnist/download.py'
+
+_MLCUBE_MNIST_CONFIG = _MLCUBE_MNIST_CONFIG_TEMPLATE.replace(
+    '{DOWNLOAD_ENTRY_POINT}',
+    ''
+)
+
+_MLCUBE_MNIST_CONFIG_ENTRYPOINT = _MLCUBE_MNIST_CONFIG_TEMPLATE.replace(
+    '{DOWNLOAD_ENTRY_POINT}',
+    f'entrypoint: {_DOWNLOAD_TASK_ENTRY_POINT}'
+)
+
 
 class TestConfig(TestCase):
 
-    def _check_standard_config(self, mlcube: DictConfig) -> None:
+    def _check_standard_config(self, mlcube: DictConfig, entry_points: bool = False) -> None:
         self.assertIsInstance(mlcube, DictConfig)
 
         for key in ('name', 'description', 'authors',
@@ -84,34 +97,34 @@ class TestConfig(TestCase):
         self.assertDictEqual(OmegaConf.to_container(mlcube.singularity), {'image': 'mnist-0.0.1.sif'})
 
         self.assertIsInstance(mlcube.tasks, DictConfig)
-        self.assertDictEqual(
-            OmegaConf.to_container(mlcube.tasks),
-            {
-                'download': {
-                    'parameters': {
-                        'inputs': {
-                            'data_config': {'type': 'file', 'default': 'data.yaml'}
-                        },
-                        'outputs': {
-                            'data_dir': {'type': 'directory', 'default': 'data'},
-                            'log_dir': {'type': 'directory', 'default': 'logs'}
-                        }
+        expected_task_specs = {
+            'download': {
+                'parameters': {
+                    'inputs': {
+                        'data_config': {'type': 'file', 'default': 'data.yaml'}
                     },
+                    'outputs': {
+                        'data_dir': {'type': 'directory', 'default': 'data'},
+                        'log_dir': {'type': 'directory', 'default': 'logs'}
+                    }
                 },
-                'train': {
-                    'parameters': {
-                        'inputs': {
-                            'data_dir': {'type': 'directory', 'default': 'data'},
-                            'train_config': {'type': 'file', 'default': 'train.yaml'}
-                        },
-                        'outputs': {
-                            'log_dir': {'type': 'directory', 'default': 'logs'},
-                            'model_dir': {'type': 'directory', 'default': 'model'}
-                        }
+            },
+            'train': {
+                'parameters': {
+                    'inputs': {
+                        'data_dir': {'type': 'directory', 'default': 'data'},
+                        'train_config': {'type': 'file', 'default': 'train.yaml'}
+                    },
+                    'outputs': {
+                        'log_dir': {'type': 'directory', 'default': 'logs'},
+                        'model_dir': {'type': 'directory', 'default': 'model'}
                     }
                 }
             }
-        )
+        }
+        if entry_points:
+            expected_task_specs['download']['entrypoint'] = _DOWNLOAD_TASK_ENTRY_POINT
+        self.assertDictEqual(OmegaConf.to_container(mlcube.tasks), expected_task_specs)
 
         self.assertIsInstance(mlcube.runtime, DictConfig)
         self.assertDictEqual(
@@ -141,6 +154,11 @@ class TestConfig(TestCase):
 
         mlcube.docker.image = 'mlcommons/mnist:0.0.1'
         self._check_standard_config(mlcube)
+
+    @patch("io.open", mock_open(read_data=_MLCUBE_MNIST_CONFIG_ENTRYPOINT))
+    def test_create_mlcube_config_entrypoints(self) -> None:
+        mlcube: DictConfig = MLCubeConfig.create_mlcube_config("/some/path/to/mlcube.yaml")
+        self._check_standard_config(mlcube, entry_points=True)
 
     def test_io_type(self) -> None:
         self.assertEqual(IOType.INPUT, 'input')
