@@ -154,7 +154,10 @@ class DockerRun(Runner):
 
         # The 'mounts' dictionary maps host paths to container paths
         try:
-            mounts, task_args, _ = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            if mounts_opts:
+                for key, value in mounts_opts.items():
+                    mounts[key]+=f':{value}'
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
