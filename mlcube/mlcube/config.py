@@ -51,7 +51,7 @@ class ParameterType(object):
         return io in (ParameterType.FILE, ParameterType.DIRECTORY, ParameterType.UNKNOWN)
 
 
-class MountOption(object):
+class MountType(object):
     """Read-Write (rw) or Read-Only type of MLCube mount parameter."""
 
     RW = 'rw'
@@ -60,13 +60,10 @@ class MountOption(object):
     RO = 'ro'
     """This parameter is read-only parameter"""
 
-    UNKNOWN = 'unknown'
-    """Type is unknown (only used internally)."""
-
     @staticmethod
     def is_valid(io: str) -> bool:
-        """Return true if string `opts` contain valid MountOption type."""
-        return io in (MountOption.RW, MountOption.RO)
+        """Return true if string `opts` contain valid MountType type."""
+        return io in (MountType.RW, MountType.RO)
 
 
 class MLCubeConfig(object):
@@ -152,6 +149,12 @@ class MLCubeConfig(object):
 
         for task_name in mlcube_config.tasks.keys():
             [task] = MLCubeConfig.ensure_values_exist(mlcube_config.tasks, task_name, dict)
+            if 'entrypoint' in task and task['entrypoint'] is None:
+                logger.warning(
+                    "MLCube task (%s) specifies an entrypoint that is None: removing it (a default "
+                    "entrypoint will be used).", task_name
+                )
+                task.pop('entrypoint')
             [parameters] = MLCubeConfig.ensure_values_exist(task, 'parameters', dict)
             [inputs, outputs] = MLCubeConfig.ensure_values_exist(parameters, ['inputs', 'outputs'], dict)
 
@@ -193,6 +196,8 @@ class MLCubeConfig(object):
             # Check again parameter type. Users in certain number of cases will not be providing final slash on a
             # command line for directories, so we tried to infer types above using default values. Just in case, see
             # if we can do the same with user-provided values.
+            # TODO: what if a parameter in mlcube.yaml is declared to be a file, but users provided something with
+            #       slash at the end.
             if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
                 param_def.type = ParameterType.DIRECTORY
 
