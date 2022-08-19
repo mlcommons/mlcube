@@ -1,6 +1,7 @@
 import os
 import logging
 import typing as t
+from pathlib import Path
 from omegaconf import (DictConfig, OmegaConf)
 from mlcube.shell import Shell
 from mlcube.runner import (Runner, RunnerConfig)
@@ -200,17 +201,32 @@ class DockerRun(Runner):
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
         if 'entrypoint' in self.mlcube.tasks[self.task]:
+            entry_point_list = []
             logger.info(
                 "Using custom task entrypoint: task=%s, entrypoint='%s'",
                 self.task, self.mlcube.tasks[self.task].entrypoint
             )
             # TODO: What if entrypoints contain whitespaces?
-            run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
+            if " " in  self.mlcube.tasks[self.task].entrypoint:
+               entry_point_list = self.mlcube.tasks[self.task].entrypoint.split() 
+               run_args += f" --entrypoint={entry_point_list[0]}" 
+               
+            else:
+               run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
+            # check whether the task name passed from mlcube cli with --task is the same as the stem of the entry point python of shell code to run
             # Remove task name. According to MLCube rules, custom entry points do not require task name as their
             # first positional arguments.
-            _ = task_args.pop(0)
+            if task_args[0] == Path(entry_point_list[1]).stem : 
+                _ = task_args.pop(0)
+            else:
+                print("the mlcube --task does not match the stem of the .py or .sh file specified in --entrypoint")
+            
         try:
-            Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
+            if 'entrypoint' in self.mlcube.tasks[self.task]: 
+              Shell.run([docker, 'run', run_args, env_args, volumes, image, entry_point_list[1],' '.join(task_args)])
+            else:
+              Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
+
         except ExecutionError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
