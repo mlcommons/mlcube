@@ -67,7 +67,7 @@ class TestDockerRunner(TestCase):
 
         DockerRun(mlcube, task=None).configure()
         DockerRun(mlcube, task='ls').run()
-        DockerRun(mlcube, task='pwd').run()
+        #DockerRun(mlcube, task='pwd').run()
 
     @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
     def test_mlcube_custom_entrypoints(self):
@@ -86,4 +86,4 @@ class TestDockerRunner(TestCase):
 
         DockerRun(mlcube, task=None).configure()
         DockerRun(mlcube, task='ls').run()
-        DockerRun(mlcube, task='free').run()
+        #DockerRun(mlcube, task='pwd').run()

@@ -1,4 +1,5 @@
 import os
+import shlex
 import logging
 import typing as t
 from pathlib import Path
@@ -200,30 +201,31 @@ class DockerRun(Runner):
         num_gpus: int = self.mlcube.get('platform', {}).get('accelerator_count', None) or 0
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
-        if 'entrypoint' in self.mlcube.tasks[self.task]:
-            entry_point_list = []
+        if 'entrypoint' in self.mlcube.tasks[self.task] and (not self.mlcube.tasks[self.task].entrypoint.isspace()):
             logger.info(
                 "Using custom task entrypoint: task=%s, entrypoint='%s'",
                 self.task, self.mlcube.tasks[self.task].entrypoint
             )
             # TODO: What if entrypoints contain whitespaces?
             if " " in  self.mlcube.tasks[self.task].entrypoint:
-               entry_point_list = self.mlcube.tasks[self.task].entrypoint.split() 
-               run_args += f" --entrypoint={entry_point_list[0]}" 
+               # use first item in entry point list as the executable to specify in docker run --entrypoint
+               run_args += f" --entrypoint={shlex.split(self.mlcube.tasks[self.task].entrypoint)[0]}" 
                
             else:
                run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
-            # check whether the task name passed from mlcube cli with --task is the same as the stem of the entry point python of shell code to run
             # Remove task name. According to MLCube rules, custom entry points do not require task name as their
             # first positional arguments.
-            if task_args[0] == Path(entry_point_list[1]).stem : 
-                _ = task_args.pop(0)
+            # Check whether the mlcube --task matches the stem of the .py or .sh file specified in --entrypoint
+            if task_args[0] == Path(shlex.split(self.mlcube.tasks[self.task].entrypoint)[1]).stem : 
+              _ = task_args.pop(0)
             else:
-                print("the mlcube --task does not match the stem of the .py or .sh file specified in --entrypoint")
+                # the mlcube --task does not match the stem of the .py or .sh file specified in --entrypoint 
+                logger.info("the mlcube --task does not match the stem of the entry point %s specified in mlcube.yaml",
+                             Path(shlex.split(self.mlcube.tasks[self.task].entrypoint)[1]).stem)
             
         try:
-            if 'entrypoint' in self.mlcube.tasks[self.task]: 
-              Shell.run([docker, 'run', run_args, env_args, volumes, image, entry_point_list[1],' '.join(task_args)])
+            if 'entrypoint' in self.mlcube.tasks[self.task] and (not self.mlcube.tasks[self.task].entrypoint.isspace()): 
+              Shell.run([docker, 'run', run_args, env_args, volumes, image, shlex.split(self.mlcube.tasks[self.task].entrypoint)[1],' '.join(task_args)])
             else:
               Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
 
