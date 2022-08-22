@@ -51,11 +51,11 @@ class TestDockerRunner(TestCase):
         Shell.sync_workspace = self.sync_workspace
 
     @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
+    @patch("io.open", mock_open(read_data=_MLCUBE_DEFAULT_ENTRY_POINT))
     def test_mlcube_default_entrypoints(self):
-        with patch("io.open", mock_open(read_data=_MLCUBE_DEFAULT_ENTRY_POINT)):
-            mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=DockerRun
-            )
+        mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
+            "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=DockerRun
+        )
         self.assertEqual(mlcube.runner.image, 'ubuntu:18.04')
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
@@ -67,14 +67,14 @@ class TestDockerRunner(TestCase):
 
         DockerRun(mlcube, task=None).configure()
         DockerRun(mlcube, task='ls').run()
-        #DockerRun(mlcube, task='pwd').run()
+        DockerRun(mlcube, task='pwd').run()
 
     @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
+    @patch("io.open", mock_open(read_data=_MLCUBE_CUSTOM_ENTRY_POINTS))
     def test_mlcube_custom_entrypoints(self):
-        with patch("io.open", mock_open(read_data=_MLCUBE_CUSTOM_ENTRY_POINTS)):
-            mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=DockerRun
-            )
+        mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
+            "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=DockerRun
+        )
         self.assertEqual(mlcube.runner.image, 'ubuntu:18.04')
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
@@ -86,4 +86,4 @@ class TestDockerRunner(TestCase):
 
         DockerRun(mlcube, task=None).configure()
         DockerRun(mlcube, task='ls').run()
-        #DockerRun(mlcube, task='pwd').run()
+        DockerRun(mlcube, task='free').run()
