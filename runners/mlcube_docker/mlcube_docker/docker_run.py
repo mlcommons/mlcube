@@ -201,42 +201,45 @@ class DockerRun(Runner):
         num_gpus: int = self.mlcube.get('platform', {}).get('accelerator_count', None) or 0
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
-        multi_args =False
-        if 'entrypoint' in self.mlcube.tasks[self.task] and (not self.mlcube.tasks[self.task].entrypoint.isspace()):
+
+        if 'entrypoint' in self.mlcube.tasks[self.task]:
             logger.info(
                 "Using custom task entrypoint: task=%s, entrypoint='%s'",
                 self.task, self.mlcube.tasks[self.task].entrypoint
             )
-            # What if entrypoints contain whitespaces e.g. "python /workspace/download.py" ?
-            if " " in  self.mlcube.tasks[self.task].entrypoint:
-               # use first item in entry point list as the executable to specify in docker run --entrypoint
-               # use second item in entrypont list as the argument to the executable in docker run --entrypoint 
-               # aruguments to executable must appear after the image name.  "docker run --entrypoint executable imagename args-for-executable"
+            # If entrypoints contain whitespaces e.g. "python /workspace/download.py" 
+            # pass only the first token (e.g. python) to --entrypoint 
+            # the remaining aruguments are specified after the container_image_name, as shown here: 
+            # "docker run --entrypoint [new_command] [container_image_name] [optional_arguments_for_entrypoint]" 
+
+            if len(shlex.split(self.mlcube.tasks[self.task].entrypoint)) > 1 :
                # Check whether the mlcube --task matches the stem of the .py or .sh file specified in --entrypoint
-               multi_args = True
-               if task_args[0] == Path(shlex.split(self.mlcube.tasks[self.task].entrypoint)[1]).stem :
-                 # the mlcube --task does not match the stem of the .py or .sh file specified in --entrypoint
+               if task_args[0] != Path(shlex.split(self.mlcube.tasks[self.task].entrypoint)[1]).stem :
                  logger.info("the mlcube --task does not match the stem of the entry point %s specified in mlcube.yaml",
                               Path(shlex.split(self.mlcube.tasks[self.task].entrypoint)[1]).stem)
+
+               # use first item in entry point list as the executable to specify in docker run --entrypoint
+               # specify the arguments to the new entrypoint executable immediatly after the container_image_name in the docker run command 
                run_args += f" --entrypoint={shlex.split(self.mlcube.tasks[self.task].entrypoint)[0]}" 
                
             else:
                run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
+        
+
         # Remove task name. According to MLCube rules, custom entry points do not require task name as their
         # first positional arguments.
         _ = task_args.pop(0)
             
         try:
-            if 'entrypoint' in self.mlcube.tasks[self.task] and multi_args : 
-              # entrypoint of form "python something.py" or "sh something.sh"
-              Shell.run([docker, 'run', run_args, env_args, volumes, image, shlex.split(self.mlcube.tasks[self.task].entrypoint)[1],' '.join(task_args)])
-            elif 'entrypoint' in self.mlcube.tasks[self.task] and  (not self.mlcube.tasks[self.task].entrypoint.isspace()): 
-              Shell.run([docker, 'run', run_args, env_args, volumes, image])
-            elif  'entrypoint' in self.mlcube.tasks[self.task] and  (self.mlcube.tasks[self.task].entrypoint.isspace()): 
-              #  'entrypoint' but no entrypont value given 
-              Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])
+            if (('entrypoint' in self.mlcube.tasks[self.task]) and (len(shlex.split(self.mlcube.tasks[self.task].entrypoint)) > 1)) : 
+              # entrypoint with multiple arguments e.g. "python something.py" or "sh something.sh"
+              args_for_new_entrypoint = ' '.join(shlex.split(self.mlcube.tasks[self.task].entrypoint)[1:])
+              Shell.run([docker, 'run', run_args, env_args, volumes, image, args_for_new_entrypoint, ' '.join(task_args)])
+            elif (('entrypoint' in self.mlcube.tasks[self.task]) and (len(shlex.split(self.mlcube.tasks[self.task].entrypoint)) == 1)):
+              #  new entrypoint executable specified with no optional parameters (e.g. entrypoint: "/bin/bash")
+              Shell.run([docker, 'run', run_args, env_args, volumes, image])   
             else:
-              #  no entrypoint specified, take default entrypoint
+              #  no new entrypoints specified, "entrypoint: " blank 
               Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])   
 
         except ExecutionError as err:

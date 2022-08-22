@@ -25,6 +25,7 @@ docker:
 tasks:
   ls: {parameters: {inputs: {}, outputs: {}}}
   free: {entrypoint: '/usr/bin/free', parameters: {inputs: {}, outputs: {}}}
+  bash: {entrypoint: '/bin/bash', parameters: {inputs: {}, outputs: {}}}
 """
 
 
@@ -80,10 +81,12 @@ class TestDockerRunner(TestCase):
             OmegaConf.to_container(mlcube.tasks),
             {
                 'ls': {'parameters': {'inputs': {}, 'outputs': {}}},
-                'free': {'entrypoint': '/usr/bin/free', 'parameters': {'inputs': {}, 'outputs': {}}}
+                'free': {'entrypoint': '/usr/bin/free', 'parameters': {'inputs': {}, 'outputs': {}}},
+                'bash': {'entrypoint': '/bin/bash', 'parameters': {'inputs': {}, 'outputs': {}}},
             }
         )
 
         DockerRun(mlcube, task=None).configure()
         DockerRun(mlcube, task='ls').run()
         DockerRun(mlcube, task='free').run()
+        DockerRun(mlcube, task='bash').run()
