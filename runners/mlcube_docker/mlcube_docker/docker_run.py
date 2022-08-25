@@ -226,9 +226,9 @@ class DockerRun(Runner):
                run_args += f" --entrypoint={self.mlcube.tasks[self.task].entrypoint}"
         
 
-        # Remove task name. According to MLCube rules, custom entry points do not require task name as their
-        # first positional arguments.
-        _ = task_args.pop(0)
+            # Remove task name. According to MLCube rules, custom entry points do not require task name as their
+            # first positional arguments.
+            _ = task_args.pop(0)
             
         try:
             if (('entrypoint' in self.mlcube.tasks[self.task]) and (len(shlex.split(self.mlcube.tasks[self.task].entrypoint)) > 1)) : 
