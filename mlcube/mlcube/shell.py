@@ -11,7 +11,7 @@ import typing as t
 from distutils import dir_util
 from pathlib import Path
 
-from mlcube.config import (IOType, ParameterType)
+from mlcube.config import (IOType, ParameterType, MountType)
 from mlcube.errors import (ConfigurationError, ExecutionError)
 
 from omegaconf import DictConfig
@@ -147,7 +147,7 @@ class Shell(object):
                 -  A list of task arguments.
         """
         # First task argument is always the task name.
-        mounts, args = {}, [task]
+        mounts, args, mounts_opts = {}, [task], {}
 
         def _generate(_params: DictConfig, _io: str) -> None:
             """_params here is a dictionary containing input or output parameters.
@@ -198,11 +198,20 @@ class Shell(object):
                     mounts[_host_path] = new_mount
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
+                if "opts" in _param_def:
+                    if MountType.is_valid(_param_def.opts):
+                        mounts_opts[_host_path] = _param_def.opts
+                    else:
+                        raise ConfigurationError(f"Invalid mount options: mount={task}, param={_param_name}, "
+                                                     f"opts={_param_def.opts}. Option is unknown and unable to identify")
+                else:
+                    mounts_opts[_host_path] = MountType.RW
+
         params = mlcube.tasks[task].parameters
         _generate(params.inputs, IOType.INPUT)
         _generate(params.outputs, IOType.OUTPUT)
 
-        return mounts, args
+        return mounts, args, mounts_opts
 
     @staticmethod
     def to_cli_args(args: t.Mapping[str, t.Any], sep: str = '=', parent_arg: t.Optional[str] = None) -> str:

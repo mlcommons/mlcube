@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import (mock_open, patch)
 
-from mlcube.config import (IOType, MLCubeConfig, ParameterType)
+from mlcube.config import (IOType, MLCubeConfig, ParameterType, MountType)
 
 from omegaconf import (DictConfig, ListConfig, OmegaConf)
 
@@ -180,3 +180,10 @@ class TestConfig(TestCase):
         self.assertTrue(ParameterType.is_valid('unknown'))
 
         self.assertFalse(ParameterType.is_valid('parameter'))
+
+    def test_mount_type(self) -> None:
+        self.assertEqual(MountType.RW, 'rw')
+        self.assertTrue(MountType.is_valid('rw'))
+
+        self.assertEqual(MountType.RO, 'ro')
+        self.assertTrue(MountType.is_valid('ro'))

@@ -183,8 +183,10 @@ class DockerRun(Runner):
 
         # The 'mounts' dictionary maps host paths to container paths
         try:
-            # The `task_args` list will always contain task name as its first element.
-            mounts, task_args = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            if mounts_opts:
+                for key, value in mounts_opts.items():
+                    mounts[key]+=f':{value}'
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
