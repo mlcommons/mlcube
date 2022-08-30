@@ -161,6 +161,11 @@ class DockerRun(Runner):
 
     def run(self) -> None:
         """ Run a cube. """
+        # Validate Runner process is available
+        if not Validate.validate_running_process(self.mlcube.runner.runner):
+            raise ProcessLookupError("Docker process is not running!") 
+
+
         docker: t.Text = self.mlcube.runner.docker
         image: t.Text = self.mlcube.runner.image
 
