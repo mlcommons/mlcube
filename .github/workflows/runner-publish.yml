@@ -25,7 +25,7 @@ jobs:
         cd runners/mlcube_ssh
         python setup.py sdist bdist_wheel
     - name: Publish
-      uses: sub-mod/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
@@ -53,7 +53,7 @@ jobs:
         cd runners/mlcube_docker
         python setup.py sdist bdist_wheel
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
@@ -82,7 +82,7 @@ jobs:
         cd runners/mlcube_singularity
         python setup.py sdist bdist_wheel
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
@@ -111,7 +111,7 @@ jobs:
         cd runners/mlcube_k8s
         python setup.py sdist bdist_wheel
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
@@ -140,7 +140,7 @@ jobs:
         cd runners/mlcube_gcp
         python setup.py sdist bdist_wheel
     - name: Publish
-      uses: pypa/gh-action-pypi-publish@master
+      uses: pypa/gh-action-pypi-publish@release/v1
       with:
         user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
@@ -169,7 +169,7 @@ jobs:
           cd runners/mlcube_kubeflow
           python setup.py sdist bdist_wheel
       - name: Publish
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           user: ${{ secrets.PYPI_USER }}
           verify_metadata: true
