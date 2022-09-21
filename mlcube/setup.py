@@ -53,5 +53,9 @@ setup(
     extras_require={},
     cmdclass={
         'clean': Clean,
-    }
+    },
+    long_description="MLCube brings the concept of interchangeable parts to the world of machine learning models. "
+                     "It is the shipping container that enables researchers and developers to easily share the "
+                     "software that powers machine learning.",
+    long_description_content_type="text/markdown",
 )

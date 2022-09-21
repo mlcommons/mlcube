@@ -51,5 +51,7 @@ setup(
     extras_require={},
     cmdclass={
         'clean': Clean,
-    }
+    },
+    long_description="MLCube SSH runner.",
+    long_description_content_type="text/markdown",
 )
