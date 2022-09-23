@@ -1,5 +1,11 @@
 # MLCube™
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) 
+
+[![PyPI MLCube](https://img.shields.io/pypi/v/mlcube.svg?label="pypi%20(MLCube)")](https://pypi.org/project/mlcube)
+[![PyPI MLCube Docker Runner](https://img.shields.io/pypi/v/mlcube-docker.svg?label="pypi%20(Docker%20Runner)")](https://pypi.org/project/mlcube-docker)
+[![PyPI MLCube Singularity Runner](https://img.shields.io/pypi/v/mlcube-singularity.svg?label="pypi%20(Singularity%20Runner)")](https://pypi.org/project/mlcube-singularity)
+
 MLCube brings the concept of interchangeable parts to the world of machine learning models.  It is the shipping container that enables researchers and developers to easily share the software that powers machine learning. 
 
 MLCube is a set of common conventions for creating ML software that can just "plug-and-play" on many systems. MLCube makes it easier for researchers to share innovative ML models, for a developer to experiment with many models, and for software companies to create infrastructure for models. It creates opportunities by putting ML in the hands of more people.
