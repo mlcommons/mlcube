@@ -77,6 +77,11 @@ class Config(RunnerConfig):
                                       #   'pull': never try to build, always pull
                                       #   'auto': build if image not found and dockerfile found
                                       #   'always': build even if image found
+        '--network': '',              # Networking options defined during MLCube container execution.
+        '--security-opt': '',             # Security options defined during MLCube container execution.
+        '--gpus': '',                 # usage options defined during MLCube container execution.
+        '--memory': '',               # RAM options defined during MLCube container execution.
+        '--cpu-shares': ''                   # CPU options defined during MLCube container execution.
         # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
         #       switch as build arg to force pulling the base image.
     })
@@ -203,6 +208,10 @@ class DockerRun(Runner):
         num_gpus: int = self.mlcube.get('platform', {}).get('accelerator_count', None) or 0
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
+
+        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key]
+        extra_args = ' '.join([str(element) for element in extra_args_list])
+        run_args += extra_args
 
         if 'entrypoint' in self.mlcube.tasks[self.task]:
             logger.info(

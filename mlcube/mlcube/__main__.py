@@ -55,11 +55,11 @@ def _parse_cli_args(
     mlcube: str,
     platform: t.Optional[str],
     workspace: t.Optional[str],
-    network_option: t.Optional[str],
-    security_option: t.Optional[str],
-    gpus_option: t.Optional[str],
-    memory_option: t.Optional[str],
-    cpu_option: t.Optional[str],
+    network: t.Optional[str],
+    security: t.Optional[str],
+    gpus: t.Optional[str],
+    memory: t.Optional[str],
+    cpu: t.Optional[str],
     resolve: bool,
 ) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
     """Parse command line arguments.
@@ -69,25 +69,25 @@ def _parse_cli_args(
         mlcube: Path to MLCube root directory or mlcube.yaml file.
         platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
-        network_option: Networking options defined during MLCube container execution.
-        security_option: Security options defined during MLCube container execution.
-        gpus_option: GPU usage options defined during MLCube container execution.
-        memory_option: Memory RAM options defined during MLCube container execution.
-        cpu_option: CPU options defined during MLCube container execution.
+        network: Networking options defined during MLCube container execution.
+        security: Security options defined during MLCube container execution.
+        gpus: GPU usage options defined during MLCube container execution.
+        memory: Memory RAM options defined during MLCube container execution.
+        cpu: CPU options defined during MLCube container execution.
         resolve: if True, compute values in MLCube configuration.
     """
     mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
     Validate.validate_type(mlcube_inst, MLCubeDirectory)
     if platform in ["docker", "singularity"] and any(
-        network_option, security_option, gpus_option, memory_option, cpu_option
+        [network, security, gpus, memory, cpu]
     ):
         mlcube_cli_args, task_cli_args = CliParser.parse_optional_arg(
             platform,
-            network_option,
-            security_option,
-            gpus_option,
-            memory_option,
-            cpu_option,
+            network,
+            security,
+            gpus,
+            memory,
+            cpu,
         )
     elif ctx is not None:
         mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
@@ -289,11 +289,11 @@ def run(
     platform: str,
     task: str,
     workspace: str,
-    network_option: str,
-    security_option: str,
-    gpus_option: str,
-    memory_option: str,
-    cpu_option: str,
+    network: str,
+    security: str,
+    gpus: str,
+    memory: str,
+    cpu: str,
 ) -> None:
     """Run MLCube task(s).
 
@@ -303,22 +303,22 @@ def run(
         platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
         task: Comma separated list of tasks to run.
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
-        network_option: Networking options defined during MLCube container execution.
-        security_option: Security options defined during MLCube container execution.
-        gpus_option: GPU usage options defined during MLCube container execution.
-        memory_option: Memory RAM options defined during MLCube container execution.
-        cpu_option: CPU options defined during MLCube container execution.
+        network: Networking options defined during MLCube container execution.
+        security: Security options defined during MLCube container execution.
+        gpus: GPU usage options defined during MLCube container execution.
+        memory: Memory RAM options defined during MLCube container execution.
+        cpu: CPU options defined during MLCube container execution.
     """
     runner_cls, mlcube_config = _parse_cli_args(
         ctx,
         mlcube,
         platform,
         workspace,
-        network_option,
-        security_option,
-        gpus_option,
-        memory_option,
-        cpu_option,
+        network,
+        security,
+        gpus,
+        memory,
+        cpu,
         resolve=True,
     )
     mlcube_tasks: t.List[str] = list(

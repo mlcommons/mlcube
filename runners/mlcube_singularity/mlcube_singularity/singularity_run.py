@@ -33,6 +33,11 @@ class Config(RunnerConfig):
             # Sergey: there seems to be a better name for this parameter. Originally, the only source was a singularity
             # recipe (build file). Later, MLCube started to support other sources, such as docker images.
             "build_file": "Singularity.recipe",  # Source for the image build process.
+            "--network": "",  # Networking options defined during MLCube container execution.
+            "--security": "",  # Security options defined during MLCube container execution.
+            "--nv": "",  # usage options defined during MLCube container execution.
+            "--vm-ram": "",  # RAM options defined during MLCube container execution.
+            "--vm-cpu": ""  # CPU options defined during MLCube container execution.
         }
     )
 
@@ -230,6 +235,10 @@ class SingularityRun(Runner):
             )
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
+        run_args = self.mlcube.runner.run_args
+        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key]
+        extra_args = ' '.join([str(element) for element in extra_args_list])
+        run_args += extra_args
         try:
             entrypoint: t.Optional[str] = self.mlcube.tasks[self.task].get('entrypoint', None)
             if entrypoint:
@@ -237,11 +246,11 @@ class SingularityRun(Runner):
                     "Using custom task entrypoint: task=%s, entrypoint='%s'",
                     self.task, self.mlcube.tasks[self.task].entrypoint
                 )
-                Shell.run([self.mlcube.runner.singularity, 'exec', self.mlcube.runner.run_args, volumes,
+                Shell.run([self.mlcube.runner.singularity, 'exec', run_args, volumes,
                            str(image_file), entrypoint, ' '.join(task_args[1:])])
             else:
                 Shell.run([
-                    self.mlcube.runner.singularity, 'run', self.mlcube.runner.run_args, volumes,
+                    self.mlcube.runner.singularity, 'run', run_args, volumes,
                     str(image_file), ' '.join(task_args)
                 ])
         except ExecutionError as err:
