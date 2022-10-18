@@ -160,7 +160,7 @@ network_option = click.option(
     help="Networking options defined during MLCube container execution.",
 )
 security_option = click.option(
-    "--security",
+    "--security-opt",
     required=False,
     type=str,
     default=None,
@@ -181,7 +181,7 @@ memory_option = click.option(
     help="Memory RAM options defined during MLCube container execution.",
 )
 cpu_option = click.option(
-    "--cpu",
+    "--cpu-shares",
     required=False,
     type=str,
     default=None,
