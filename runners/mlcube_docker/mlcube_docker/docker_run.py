@@ -209,7 +209,7 @@ class DockerRun(Runner):
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
-        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key]
+        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key and self.mlcube.runner[key]!='']
         extra_args = ' '.join([str(element) for element in extra_args_list])
         run_args += extra_args
 
