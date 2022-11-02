@@ -12,6 +12,17 @@ MLCube runtime and MLCube runners accept multiple command line arguments. They c
 
 These command line arguments override system settings and MLCube configuration parameters.
 
+### Effective MLCube configuration
+`Effective MLCube configuration` is the actual configuration that MLCube runners use to run MLCubes. This effective
+configuration is built using the following algorithm. A platform configuration for a runner is retrieved from system 
+settings (users provide the platform name on a command line by passing `--platform=PLATFORM_NAME` argument). Then, 
+the MLCube configuration is loaded from the MLCube project to run, and this configuration can override default 
+configuration retrieved from system settings. The source for this configuration is specified by a user on a command line
+using `--mlcube=MLCUBE_PATH` argument. The third source of configuration is the command line. Users can provide 
+configuration parameters that override default behavior of a MLCube runner, or default parameters of the MLCube project.
+These parameters start with `-P`, for instance, `-Pdocker.build_strategy=always`. This parameters have highest priority 
+and override any other parameters loaded so far.
+
 ### MLCube Configuration
 `MLCube Configuration` provide MLCube-specific configuration, such as implemented `tasks` and, optionally, specific 
 platform (hardware) requirements, for instance, GPU and host memory required to run the tasks. This configuration 
