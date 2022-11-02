@@ -9,6 +9,8 @@ nav:
     - Installation: getting-started/index.md
     - Hello World: getting-started/hello-world.md
     - MNIST: getting-started/mnist.md
+    - System Settings: getting-started/system-settings.md
+    - Command Line Interface: getting-started/cli.md
   - Tutorials:
     - How to Create an MLCube: tutorials/create-mlcube.md
   - Runners:
@@ -40,5 +42,7 @@ markdown_extensions:
   - pymdownx.tasklist
   - pymdownx.details
   - pymdownx.superfences
+  - attr_list
+  - mkdocs-click
   - toc:
       permalink: True
