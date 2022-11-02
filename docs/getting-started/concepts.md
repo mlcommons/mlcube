@@ -1,0 +1,75 @@
+# MLCube concepts
+
+### Command Line Arguments
+MLCube runtime and MLCube runners accept multiple command line arguments. They can be classified into two categories:
+
+- Fixed command-specific parameters such as `--mlcube`, `--platform` and `--task` for the MLCube's `run` command, or
+  `create_platform` and `rename_platform` for the `config` command.
+- Parameters that override system settings or MLCube configuration. These parameters start with `-P` and should follow
+  [OmegaConf](https://omegaconf.readthedocs.io/)'s format (MLCube uses this library to manage its settings and 
+  configurations). For instance, to override docker runner settings and instruct it to always build MLCube images,
+  one should provide the following command line argument: `-Pdocker.build_strategy=always`.
+
+These command line arguments override system settings and MLCube configuration parameters.
+
+### MLCube Configuration
+`MLCube Configuration` provide MLCube-specific configuration, such as implemented `tasks` and, optionally, specific 
+platform (hardware) requirements, for instance, GPU and host memory required to run the tasks. This configuration 
+overrides system settings. For MLCubes that are distributed via GitHub (with source files), this configuration is
+stored in a YAML file with default location being `${MLCUBE_ROOT}/mlcube.yaml`.
+
+### MLCube Runtime
+The `MLCube Runtime` term is used to describe the core MLCube library with MLCube runners. MLCube runtime is responsible
+for managing MLCube system settings and MLCube configurations, and run MLCubes in various environments.
+
+### MLCubes
+The term `MLCubes` (or `MLCube project` in singular form) refers to Machine Learning projects packaged and distributed 
+using MLCube stack.
+
+### Platform
+A `platform` is a configured instance of a MLCube runner. Every runner has a default configured instance with the same
+name as runner. For instance, the MLCube docker runner (named `docker`) has a default platform named `docker` as well.
+Users may find it useful to have multiple configured instances (platforms) of one MLCube runner. For instance, if a user
+has personal and corporate accounts in some cloud provider, they can have multiple platforms - one for each account.
+Users directly interact with platforms via command line argument `--platform`. System settings provide platform 
+configurations, and users can manually edit system settings to add new platforms, or use MLCube's runtime `config` 
+command to perform basic operations with system settings, such as creating a new platform. See System Settings 
+description for more detailed explanation of MLCube runners and platforms, and how they relate to each other.
+
+### Runner
+`MLCube runners` are workhorses of MLCube runtime. They run MLCubes in different environments, such as docker and 
+singularity, remote on-prem or cloud compute nodes, and orchestration engines such as Kubernetes and KubeFlow. As part
+of MLCube ecosystem, we provide multiple MLCube reference runners. Users do not directly interact with MLCube runners,
+instead they interact with `platforms`, which are configured instances of MLCube runners.
+
+### System Settings
+MLCube `System Settings` configure MLCube and MLCube runners at a system level. The term `system level` here implies 
+that these settings are not tied to particular MLCubes (MLCube compliant ML projects). Instead, these settings are 
+used by MLCube runners on every machine where MLCube runtime is configured to use these settings. By default, system
+settings are stored in a YAML file with default location being `${MLCUBE_ROOT}/mlcube.yaml`. The location can be
+overriden by exporting the `MLCUBE_SYSTEM_SETTINGS` environment variable.
+
+### Task
+MLCube projects expose their functionality via `tasks`. A task implements one particular function, such as downloading
+a machine learning dataset, preprocessing this dataset, training a machine learning model, testing a machine learning 
+model or registering a machine learning model with the external model registry. It's up to developers to decide how they
+want to organize their projects into tasks. A close analogy would be machine learning pipelines composed of multiple
+steps organized into directed acyclic graph. Tasks in MLCubes are like steps on these pipelines, except that MLCube 
+runtime at this point is not aware about task dependencies, and so the MLCube task model could be described as 
+`bag of tasks` (similarly to `bag of words` term used in natural language processing to describe machine learning models
+that do not take into account positions of words in sentences).
+
+The MLCube examples [project](https://github.com/mlcommons/mlcube_examples) implements several MLCubes, including 
+[MNIST MLCube](https://github.com/mlcommons/mlcube_examples/blob/master/mnist/mlcube.yaml) that implements two tasks:
+`download` (download MNIST dataset) and `train` (train a simple classifier).
+
+When users run MLCubes, they can instruct MLCube runtime to execute a particular task by providing `--task` command
+line argument: `mlcube run --mlcube=. --task=download --platform=docker`. MLCube runtime can also accept 
+comma-separated list of tasks, in which case these tasks will be executed in the order users provided them on a command
+line: `mlcube run --mlcube=. --task=download,train --platform=docker`.
+
+### Workspace
+A `workspace` is a directory where input and output artifacts are stored. By default, its location is 
+`${MLCUBE_ROOT}/workspace`. Users can override this parameter on a command line by providing the `--workspace` argument.
+Users need to provide this parameter each time they run MLCube task, even when these tasks are logically grouped into 
+one execution. A better alternative would be to run multiple tasks at the same time (see task section).
