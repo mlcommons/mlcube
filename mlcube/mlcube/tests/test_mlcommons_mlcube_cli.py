@@ -11,6 +11,6 @@ def test_mlcube():
     assert 'Usage: mlcube [OPTIONS] COMMAND [ARGS]...' in response.output
     assert '--log-level, --log_level [critical|error|warning|info|debug]' in response.output
     assert '--help                      Show help message and exit.' in response.output
-    assert 'run          Run MLCube ML task.' in response.output
+    assert 'run          Run MLCube task(s).' in response.output
     assert 'show_config  Show effective MLCube configuration.' in response.output
     print("All assertions passed")

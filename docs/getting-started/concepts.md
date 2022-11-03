@@ -20,8 +20,8 @@ the MLCube configuration is loaded from the MLCube project to run, and this conf
 configuration retrieved from system settings. The source for this configuration is specified by a user on a command line
 using `--mlcube=MLCUBE_PATH` argument. The third source of configuration is the command line. Users can provide 
 configuration parameters that override default behavior of a MLCube runner, or default parameters of the MLCube project.
-These parameters start with `-P`, for instance, `-Pdocker.build_strategy=always`. This parameters have highest priority 
-and override any other parameters loaded so far.
+These parameters start with `-P`, for instance, `-Pdocker.build_strategy=always`. These parameters have the highest 
+priority and override any other parameters loaded so far.
 
 ### MLCube Configuration
 `MLCube Configuration` provide MLCube-specific configuration, such as implemented `tasks` and, optionally, specific 
@@ -29,9 +29,32 @@ platform (hardware) requirements, for instance, GPU and host memory required to 
 overrides system settings. For MLCubes that are distributed via GitHub (with source files), this configuration is
 stored in a YAML file with default location being `${MLCUBE_ROOT}/mlcube.yaml`.
 
+### MLCube Configuration Parameter
+`MLCube configuration paramter` is a configuration parameter for MLCube runners or MLCube projects that has (usually)
+a type from the following set: (integer, floating point number, string, bool). Every MLCube runner and all MLCube 
+projects have such parameters, usually organized in a hierarchy. Users can also provide these parameters on a command
+line when they interact with MLCube runtime to override default values for these parameters. MLCube uses 
+[OmegaConf](https://omegaconf.readthedocs.io/) library to manage its configuration. When users provide these parameters
+on a command line, they need to follow OmegaConf rules, in particular, nested parameters should use `.` symbol. Also,
+when providing these parameters on a command line, these parameters must have `-P` prefix. Several examples: 
+```shell
+# Overriding top level parameter. Here, the `description` is a parameter in a global namespace. 
+-Pdescription="MLCube project description"
+
+# Overriding nested parameter. Here, the `build_strategy` is a parameter defined in the `docker` namespace.   
+-Pdocker.build_strategy=always
+```
+
+### MLCube Home Directory
+`MLCube home directory` is the synonym for [MLCube Root Directory](#mlcube-root-directory).
+
 ### MLCube Runtime
 The `MLCube Runtime` term is used to describe the core MLCube library with MLCube runners. MLCube runtime is responsible
 for managing MLCube system settings and MLCube configurations, and run MLCubes in various environments.
+
+### MLCube Root Directory
+`MLCube root directory` is the directory that contains MLCube configuration file (`mlcube.yaml`). This definition 
+applies to MLCubes that are distributed, for instance, via GitHub.
 
 ### MLCubes
 The term `MLCubes` (or `MLCube project` in singular form) refers to Machine Learning projects packaged and distributed 
