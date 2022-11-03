@@ -109,6 +109,7 @@ class CliParser(object):
         gpus_option: t.Optional[str],
         memory_option: t.Optional[str],
         cpu_option: t.Optional[str],
+        mount_option: t.Optional[str],
     ) -> t.Tuple[DictConfig, t.Dict]:
         """platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
         network_option: Networking options defined during MLCube container execution.
@@ -116,9 +117,11 @@ class CliParser(object):
         gpus_option: GPU usage options defined during MLCube container execution.
         memory_option: Memory RAM options defined during MLCube container execution.
         cpu_option: CPU options defined during MLCube container execution.
+        mount_option: Mount options for paths.
         """
         mlcube_args, opts = {}, {}
 
+        opts["--mount_opts"] = mount_option
         if network_option is not None:
             opts["--network"] = network_option
 

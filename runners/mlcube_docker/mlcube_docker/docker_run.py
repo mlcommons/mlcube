@@ -78,10 +78,11 @@ class Config(RunnerConfig):
                                       #   'auto': build if image not found and dockerfile found
                                       #   'always': build even if image found
         '--network': '',              # Networking options defined during MLCube container execution.
-        '--security-opt': '',             # Security options defined during MLCube container execution.
+        '--security-opt': '',         # Security options defined during MLCube container execution.
         '--gpus': '',                 # usage options defined during MLCube container execution.
         '--memory': '',               # RAM options defined during MLCube container execution.
-        '--cpu-shares': ''                   # CPU options defined during MLCube container execution.
+        '--cpu-shares': '',           # CPU options defined during MLCube container execution.
+        '--mount_opts': ''            # Mount options for Docker volumes.
         # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
         #       switch as build arg to force pulling the base image.
     })
@@ -190,7 +191,11 @@ class DockerRun(Runner):
 
         # The 'mounts' dictionary maps host paths to container paths
         try:
-            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            if "--mount_opts" in self.mlcube.runner:
+                global_mount = self.mlcube.runner["--mount_opts"]
+            else:
+                global_mount = ""
+            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task, global_mount)
             if mounts_opts:
                 for key, value in mounts_opts.items():
                     mounts[key]+=f':{value}'
@@ -209,7 +214,9 @@ class DockerRun(Runner):
 
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
-        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key and self.mlcube.runner[key]!='']
+        
+        filtered_keys = [key for key in self.mlcube.runner.keys() if "--" in key and self.mlcube.runner[key]!='' and key!= "--mount_opts"]
+        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in filtered_keys]
         extra_args = ' '.join([str(element) for element in extra_args_list])
         run_args += extra_args
 
@@ -248,7 +255,7 @@ class DockerRun(Runner):
               Shell.run([docker, 'run', run_args, env_args, volumes, image, args_for_new_entrypoint, ' '.join(task_args)])
             elif (('entrypoint' in self.mlcube.tasks[self.task]) and (len(shlex.split(self.mlcube.tasks[self.task].entrypoint)) == 1)):
               #  new entrypoint executable specified with no optional parameters (e.g. entrypoint: "/bin/bash")
-              Shell.run([docker, 'run', run_args, env_args, volumes, image])   
+              Shell.run([docker, 'run', run_args, env_args, volumes, image]) 
             else:
               #  no new entrypoints specified, "entrypoint: " blank 
               Shell.run([docker, 'run', run_args, env_args, volumes, image, ' '.join(task_args)])   

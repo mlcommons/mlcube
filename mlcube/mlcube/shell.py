@@ -138,7 +138,7 @@ class Shell(object):
         return Shell.run(f"rsync -e 'ssh' '{source}' '{dest}'", on_error=on_error)
 
     @staticmethod
-    def generate_mounts_and_args(mlcube: DictConfig, task: str) -> t.Tuple[t.Dict, t.List]:
+    def generate_mounts_and_args(mlcube: DictConfig, task: str, global_mount: str) -> t.Tuple[t.Dict, t.List]:
         """Generate mount points and arguments for the given task.
 
         Return:
@@ -198,7 +198,10 @@ class Shell(object):
                     mounts[_host_path] = new_mount
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
-                if "opts" in _param_def:
+                if global_mount != "":
+                    if _io == IOType.INPUT:
+                        mounts_opts[_host_path] = global_mount
+                elif "opts" in _param_def:
                     if MountType.is_valid(_param_def.opts):
                         mounts_opts[_host_path] = _param_def.opts
                     else:

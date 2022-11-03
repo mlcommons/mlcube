@@ -60,6 +60,7 @@ def _parse_cli_args(
     gpus: t.Optional[str],
     memory: t.Optional[str],
     cpu: t.Optional[str],
+    mount: t.Optional[str],
     resolve: bool,
 ) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
     """Parse command line arguments.
@@ -74,12 +75,13 @@ def _parse_cli_args(
         gpus: GPU usage options defined during MLCube container execution.
         memory: Memory RAM options defined during MLCube container execution.
         cpu: CPU options defined during MLCube container execution.
+        mount: Mount options for volumes.
         resolve: if True, compute values in MLCube configuration.
     """
     mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
     Validate.validate_type(mlcube_inst, MLCubeDirectory)
     if platform in ["docker", "singularity"] and any(
-        [network, security, gpus, memory, cpu]
+        [network, security, gpus, memory, cpu, mount]
     ):
         mlcube_cli_args, task_cli_args = CliParser.parse_optional_arg(
             platform,
@@ -88,6 +90,7 @@ def _parse_cli_args(
             gpus,
             memory,
             cpu,
+            mount
         )
     elif ctx is not None:
         mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
@@ -160,7 +163,7 @@ network_option = click.option(
     help="Networking options defined during MLCube container execution.",
 )
 security_option = click.option(
-    "--security-opt",
+    "--security",
     required=False,
     type=str,
     default=None,
@@ -181,11 +184,18 @@ memory_option = click.option(
     help="Memory RAM options defined during MLCube container execution.",
 )
 cpu_option = click.option(
-    "--cpu-shares",
+    "--cpu",
     required=False,
     type=str,
     default=None,
     help="CPU options defined during MLCube container execution.",
+)
+mount_option = click.option(
+    "--mount",
+    required=False,
+    type=str,
+    default=None,
+    help="Mount options for all inputs.",
 )
 
 
@@ -282,6 +292,7 @@ def configure(ctx: click.core.Context, mlcube: str, platform: str) -> None:
 @gpus_option
 @memory_option
 @cpu_option
+@mount_option
 @click.pass_context
 def run(
     ctx: click.core.Context,
@@ -294,6 +305,7 @@ def run(
     gpus: str,
     memory: str,
     cpu: str,
+    mount: str,
 ) -> None:
     """Run MLCube task(s).
 
@@ -308,6 +320,7 @@ def run(
         gpus: GPU usage options defined during MLCube container execution.
         memory: Memory RAM options defined during MLCube container execution.
         cpu: CPU options defined during MLCube container execution.
+        mount: Mount options for paths.
     """
     runner_cls, mlcube_config = _parse_cli_args(
         ctx,
@@ -319,6 +332,7 @@ def run(
         gpus,
         memory,
         cpu,
+        mount,
         resolve=True,
     )
     mlcube_tasks: t.List[str] = list(
