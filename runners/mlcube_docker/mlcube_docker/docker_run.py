@@ -82,7 +82,7 @@ class Config(RunnerConfig):
         '--gpus': '',                 # usage options defined during MLCube container execution.
         '--memory': '',               # RAM options defined during MLCube container execution.
         '--cpu-shares': '',           # CPU options defined during MLCube container execution.
-        '--mount_opts': ''            # Mount options for Docker volumes.
+        '--mount_opts': '',           # Mount options for Docker volumes.
         # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
         #       switch as build arg to force pulling the base image.
     })
@@ -199,6 +199,7 @@ class DockerRun(Runner):
             if mounts_opts:
                 for key, value in mounts_opts.items():
                     mounts[key]+=f':{value}'
+            logger.info(f"mounts={mounts}, task_args={task_args}")
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,

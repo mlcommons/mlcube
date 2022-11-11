@@ -37,7 +37,8 @@ class Config(RunnerConfig):
             "--security": "",  # Security options defined during MLCube container execution.
             "--nv": "",  # usage options defined during MLCube container execution.
             "--vm-ram": "",  # RAM options defined during MLCube container execution.
-            "--vm-cpu": ""  # CPU options defined during MLCube container execution.
+            "--vm-cpu": "",  # CPU options defined during MLCube container execution.
+            "--mount_opts": "",  # Mount options for Singularity volumes.
         }
     )
 
@@ -221,7 +222,11 @@ class SingularityRun(Runner):
 
         try:
             # The `task_args` list of strings contains task name at the first position.
-            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task)
+            if "--mount_opts" in self.mlcube.runner:
+                global_mount = self.mlcube.runner["--mount_opts"]
+            else:
+                global_mount = ""
+            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task, global_mount)
             if mounts_opts:
                 for key, value in mounts_opts.items():
                     mounts[key]+=f':{value}'
@@ -236,7 +241,8 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
         run_args = self.mlcube.runner.run_args
-        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key]
+        filtered_keys = [key for key in self.mlcube.runner.keys() if "--" in key and self.mlcube.runner[key]!='' and key!= "--mount_opts"]
+        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in filtered_keys]
         extra_args = ' '.join([str(element) for element in extra_args_list])
         run_args += extra_args
         try:
