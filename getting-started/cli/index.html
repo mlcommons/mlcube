@@ -1,0 +1,939 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation site for MLCube">
+      
+      
+        <meta name="author" content="<MLPerf.org> mlcommons@googlegroups.com">
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.3.0">
+    
+    
+      
+        <title>Command Line Interface - MLCube</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.fd896c8a.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.cbb835fc.min.css">
+        
+      
+      
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/circular.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#command-line-interface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MLCube" class="md-header__button md-logo" aria-label="MLCube" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MLCube
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Command Line Interface
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MLCube" class="md-nav__button md-logo" aria-label="MLCube" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    MLCube
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        Home
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_2" type="checkbox" id="__nav_2" checked>
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_2">
+          Getting Started
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Getting Started" data-md-level="1">
+        <label class="md-nav__title" for="__nav_2">
+          <span class="md-nav__icon md-icon"></span>
+          Getting Started
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        Installation
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../hello-world/" class="md-nav__link">
+        Hello World
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mnist/" class="md-nav__link">
+        MNIST
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../concepts/" class="md-nav__link">
+        MLCube concepts
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../system-settings/" class="md-nav__link">
+        System Settings
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Command Line Interface
+      </a>
+      
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_3" type="checkbox" id="__nav_3" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_3">
+          Tutorials
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Tutorials" data-md-level="1">
+        <label class="md-nav__title" for="__nav_3">
+          <span class="md-nav__icon md-icon"></span>
+          Tutorials
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/create-mlcube/" class="md-nav__link">
+        How to Create an MLCube
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_4" type="checkbox" id="__nav_4" >
+      
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4">
+          Runners
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" aria-label="Runners" data-md-level="1">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Runners
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/" class="md-nav__link">
+        Runners
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/docker-runner/" class="md-nav__link">
+        Docker Runner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/singularity-runner/" class="md-nav__link">
+        Singularity Runner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/ssh-runner/" class="md-nav__link">
+        SSH Runner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/kubernetes/" class="md-nav__link">
+        Kubernetes Runner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/kubeflow/" class="md-nav__link">
+        Kubeflow Runner
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runners/gcp-runner/" class="md-nav__link">
+        GCP Runner
+      </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+
+
+<h1 id="command-line-interface">Command Line Interface<a class="headerlink" href="#command-line-interface" title="Permanent link">&para;</a></h1>
+<h1 id="mlcube">mlcube<a class="headerlink" href="#mlcube" title="Permanent link">&para;</a></h1>
+<p>MLCube 📦 is a tool for packaging, distributing and running Machine Learning (ML) projects and models.</p>
+<ul>
+<li>GitHub: https://github.com/mlcommons/mlcube</li>
+<li>Documentation: https://mlcommons.github.io/mlcube/</li>
+<li>Example MLCubes: https://github.com/mlcommons/mlcube_examples</li>
+</ul>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube [OPTIONS] COMMAND [ARGS]...
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--log-level</code>, <code>--log_level</code></td>
+<td>choice (<code>critical</code> &#x7C; <code>error</code> &#x7C; <code>warning</code> &#x7C; <code>info</code> &#x7C; <code>debug</code>)</td>
+<td>Logging level is a lower-case string value for Python's logging library (see <a href="https://docs.python.org/3/library/logging.html#logging-levels">Logging Levels</a> for more details). Only messages with this logging level or higher are logged.</td>
+<td><code>warning</code></td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mlcube-config">mlcube config<a class="headerlink" href="#mlcube-config" title="Permanent link">&para;</a></h2>
+<p>Work with MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/system-settings/">system settings</a> similar
+to <code>git config</code>.</p>
+<p>Manage MLCube system settings (these settings define global configuration common for all MLCube runners and
+platforms). When this command runs without arguments, a path to system settings file is printed out. This is useful
+to automate certain operations with system settings. Alternatively, it may be easier to manipulate system settings
+file directly (it is a yaml file).</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube config [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--list</code></td>
+<td>boolean</td>
+<td>Print out the content of system settings file.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>--get</code></td>
+<td>text</td>
+<td>Return value of the key (use OmegaConf notation, e.g. <code>mlcube config --get runners.docker</code>).</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--create_platform</code>, <code>--create-platform</code></td>
+<td>tuple</td>
+<td>Create a new platform instance for this runner. Default runner parameters are used to initialize this new platform.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--remove_platform</code>, <code>--remove-platform</code></td>
+<td>text</td>
+<td>Remove this platform. If this is one of the default platforms (e.g., <code>docker</code>), it will be recreated (with default values) next time <code>mlcube</code> runs.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--rename_platform</code>, <code>--rename-platform</code></td>
+<td>tuple</td>
+<td>Rename existing platform. If default platform is to be renamed (e.g., <code>docker</code>), it will be recreated (with default values) next time <code>mlcube</code> runs.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--copy_platform</code>, <code>--copy-platform</code></td>
+<td>tuple</td>
+<td>Copy existing platform. This can be useful for creating new platforms off existing platforms, for instance,creating a new SSH runner configuration that runs MLCubes on a new remote server.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--rename_runner</code>, <code>--rename-runner</code></td>
+<td>tuple</td>
+<td>Rename existing MLCube runner. If platforms exist that reference this runner, users must explicitly provide <code>--update-platforms</code> flag to confirm they want to update platforms' description too.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--remove_runner</code>, <code>--remove-runner</code></td>
+<td>text</td>
+<td>Remove existing runner. If platforms exist that reference this runner, users must explicitly provide <code>--remove-platforms</code> flag to confirm they want to remove platforms too.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mlcube-configure">mlcube configure<a class="headerlink" href="#mlcube-configure" title="Permanent link">&para;</a></h2>
+<p>Configure MLCube.</p>
+<p>Some MLCube projects need to be configured first. For instance, docker-based MLCubes distributed via GitHub with
+source code most likely will provide a <code>Dockerfile</code> to build a docker image. In this case, the process of building
+a docker image before MLCube runner can run it, is called a configuration phase. In general, users do not need to
+run this command manually - MLCube runners should be able to figure out when they need to run it, and will run it
+as part of <code>mlcube run</code> command.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube configure [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mlcube</code></td>
+<td>text</td>
+<td>Path to an MLCube project. It can be a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-root-directory">directory path</a>, or a path to an MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration file</a>. When it is a directory path, MLCube runtime assumes this directory is the MLCube root directory containing <code>mlcube.yaml</code> file. When it is a file path, this file is assumed to be the MLCube configuration file (<code>mlcube.yaml</code>), and a parent directory of this file is considered to be the MLCube root directory. Default value is current directory.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--platform</code></td>
+<td>text</td>
+<td><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#platform">Platform</a> name to run MLCube on (a platform is a configured instance of an MLCube runner). Multiple platforms are supported, including <code>docker</code> (<a href="https://mlcommons.github.io/mlcube/runners/docker-runner">Docker and Podman</a>), <code>singularity</code> (<a href="https://mlcommons.github.io/mlcube/runners/singularity-runner">Singularity</a>). Other runners are in experimental stage: <code>gcp</code> (<a href="https://mlcommons.github.io/mlcube/runners/gcp-runner">Google Cloud Platform</a>), <code>k8s</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubernetes">Kubernetes</a>), <code>kubeflow</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubeflow">KubeFlow</a>), ssh (<a href="https://mlcommons.github.io/mlcube/runners/ssh-runner">SSH runner</a>). Default is <code>docker</code>. Platforms are defined and configured in MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/system-settings/">system settings file</a>.</td>
+<td><code>docker</code></td>
+</tr>
+<tr>
+<td><code>-P</code>, <code>-p</code></td>
+<td>text</td>
+<td>MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration-parameter">configuration parameter</a> is a key-value pair. Must start with <code>-P</code> or '-p'. The dot (.) is used to refer to nested parameters, for instance, <code>-Pdocker.build_strategy=always</code>. These parameters have the highest priority and override any other parameters in <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a> and <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">MLCube configuration</a>.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mlcube-create">mlcube create<a class="headerlink" href="#mlcube-create" title="Permanent link">&para;</a></h2>
+<p>Create a new Python project from the MLCube cookiecutter template.</p>
+<p>MLCube uses the <a href="https://cookiecutter.readthedocs.io/">cookiecutter</a> library with the
+<a href="https://github.com/mlcommons/mlcube_cookiecutter">mlcube_cookiecutter</a> template. The library is not installed
+automatically: install it with <code>pip install cookiecutter</code>.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube create [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mlcube-describe">mlcube describe<a class="headerlink" href="#mlcube-describe" title="Permanent link">&para;</a></h2>
+<p>Describe this MLCube.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube describe [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mlcube</code></td>
+<td>text</td>
+<td>Path to an MLCube project. It can be a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-root-directory">directory path</a>, or a path to an MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration file</a>. When it is a directory path, MLCube runtime assumes this directory is the MLCube root directory containing <code>mlcube.yaml</code> file. When it is a file path, this file is assumed to be the MLCube configuration file (<code>mlcube.yaml</code>), and a parent directory of this file is considered to be the MLCube root directory. Default value is current directory.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mlcube-run">mlcube run<a class="headerlink" href="#mlcube-run" title="Permanent link">&para;</a></h2>
+<p>Run MLCube task(s).</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube run [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mlcube</code></td>
+<td>text</td>
+<td>Path to an MLCube project. It can be a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-root-directory">directory path</a>, or a path to an MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration file</a>. When it is a directory path, MLCube runtime assumes this directory is the MLCube root directory containing <code>mlcube.yaml</code> file. When it is a file path, this file is assumed to be the MLCube configuration file (<code>mlcube.yaml</code>), and a parent directory of this file is considered to be the MLCube root directory. Default value is current directory.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--platform</code></td>
+<td>text</td>
+<td><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#platform">Platform</a> name to run MLCube on (a platform is a configured instance of an MLCube runner). Multiple platforms are supported, including <code>docker</code> (<a href="https://mlcommons.github.io/mlcube/runners/docker-runner">Docker and Podman</a>), <code>singularity</code> (<a href="https://mlcommons.github.io/mlcube/runners/singularity-runner">Singularity</a>). Other runners are in experimental stage: <code>gcp</code> (<a href="https://mlcommons.github.io/mlcube/runners/gcp-runner">Google Cloud Platform</a>), <code>k8s</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubernetes">Kubernetes</a>), <code>kubeflow</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubeflow">KubeFlow</a>), ssh (<a href="https://mlcommons.github.io/mlcube/runners/ssh-runner">SSH runner</a>). Default is <code>docker</code>. Platforms are defined and configured in MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/system-settings/">system settings file</a>.</td>
+<td><code>docker</code></td>
+</tr>
+<tr>
+<td><code>--task</code></td>
+<td>text</td>
+<td>MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#task">task</a> name(s) to run, default is <code>main</code>. This parameter can take a list of values, in which case task names are separated with comma (,).</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--workspace</code></td>
+<td>text</td>
+<td>Location of a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace">workspace</a> to store input and output artifacts of MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#task">tasks</a>. If not specified (None), <code>${MLCUBE_ROOT}/workspace/</code> is used.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>-P</code>, <code>-p</code></td>
+<td>text</td>
+<td>MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration-parameter">configuration parameter</a> is a key-value pair. Must start with <code>-P</code> or '-p'. The dot (.) is used to refer to nested parameters, for instance, <code>-Pdocker.build_strategy=always</code>. These parameters have the highest priority and override any other parameters in <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a> and <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">MLCube configuration</a>.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="mlcube-show_config">mlcube show_config<a class="headerlink" href="#mlcube-show_config" title="Permanent link">&para;</a></h2>
+<p>Show effective MLCube configuration.</p>
+<p>Effective MLCube configuration is the one used by one of MLCube runners to run this MLCube. This configuration is
+built by merging (1) default runner configuration retrieved from system settings, (2) MLCube project configuration
+and (3) configuration parameters passed by a user on a command line (CONFIG_PARAM).</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube show_config [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mlcube</code></td>
+<td>text</td>
+<td>Path to an MLCube project. It can be a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-root-directory">directory path</a>, or a path to an MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration file</a>. When it is a directory path, MLCube runtime assumes this directory is the MLCube root directory containing <code>mlcube.yaml</code> file. When it is a file path, this file is assumed to be the MLCube configuration file (<code>mlcube.yaml</code>), and a parent directory of this file is considered to be the MLCube root directory. Default value is current directory.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--platform</code></td>
+<td>text</td>
+<td><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#platform">Platform</a> name to run MLCube on (a platform is a configured instance of an MLCube runner). Multiple platforms are supported, including <code>docker</code> (<a href="https://mlcommons.github.io/mlcube/runners/docker-runner">Docker and Podman</a>), <code>singularity</code> (<a href="https://mlcommons.github.io/mlcube/runners/singularity-runner">Singularity</a>). Other runners are in experimental stage: <code>gcp</code> (<a href="https://mlcommons.github.io/mlcube/runners/gcp-runner">Google Cloud Platform</a>), <code>k8s</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubernetes">Kubernetes</a>), <code>kubeflow</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubeflow">KubeFlow</a>), ssh (<a href="https://mlcommons.github.io/mlcube/runners/ssh-runner">SSH runner</a>). Default is <code>docker</code>. Platforms are defined and configured in MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/system-settings/">system settings file</a>.</td>
+<td><code>docker</code></td>
+</tr>
+<tr>
+<td><code>--workspace</code></td>
+<td>text</td>
+<td>Location of a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace">workspace</a> to store input and output artifacts of MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#task">tasks</a>. If not specified (None), <code>${MLCUBE_ROOT}/workspace/</code> is used.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--resolve</code></td>
+<td>boolean</td>
+<td>Resolve <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration-parameter">MLCube parameters</a>. The <code>mlcube</code> uses <a href="https://omegaconf.readthedocs.io/">OmegaConf</a> library to manage its configuration, including <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration files</a>, <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a> files and configuration parameters provided by users on command lines. OmegaConf supports variable interpolation (when one variables depend on other variables, e.g., <code>{'docker.image': 'mlcommons/{name}:${version}'}</code>). When this flag is set to true, the <code>mlcube</code> computes actual values of all variables.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>-P</code>, <code>-p</code></td>
+<td>text</td>
+<td>MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration-parameter">configuration parameter</a> is a key-value pair. Must start with <code>-P</code> or '-p'. The dot (.) is used to refer to nested parameters, for instance, <code>-Pdocker.build_strategy=always</code>. These parameters have the highest priority and override any other parameters in <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a> and <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">MLCube configuration</a>.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+
+              
+            </article>
+            
+          </div>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+    <nav class="md-footer__inner md-grid" aria-label="Footer" >
+      
+        
+        <a href="../system-settings/" class="md-footer__link md-footer__link--prev" aria-label="Previous: System Settings" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              System Settings
+            </div>
+          </div>
+        </a>
+      
+      
+        
+        <a href="../../tutorials/create-mlcube/" class="md-footer__link md-footer__link--next" aria-label="Next: How to Create an MLCube" rel="next">
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              How to Create an MLCube
+            </div>
+          </div>
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+          </div>
+        </a>
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.b028fd86.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version.title": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.0f659f14.min.js"></script>
+      
+    
+  </body>
+</html>
