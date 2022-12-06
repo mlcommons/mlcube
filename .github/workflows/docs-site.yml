@@ -22,8 +22,8 @@ jobs:
       - name: Build Docs
         working-directory: './'
         run: |
-          mkdocs build --theme material \
-                --site-dir ../site/
+          export PYTHONPATH=$(pwd)/mlcube:${PYTHONPATH}
+          mkdocs build --theme material --site-dir ../site/
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3.6.4
         with:
