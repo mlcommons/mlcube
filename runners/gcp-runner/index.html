@@ -721,40 +721,50 @@
 
 
 <h1 id="google-compute-platform-gcp-runner">Google Compute Platform (GCP) Runner<a class="headerlink" href="#google-compute-platform-gcp-runner" title="Permanent link">&para;</a></h1>
-<blockquote>
-<p><strong>DISCLAIMER</strong> MLCube is under active development. Allocating and using instances in clouds are associated with
-costs. Users of GCP runners should be aware about it, especially, taking into account capability of GCP runners to
-automatically create and start remote instances. GCP RUNNERS in current implementation DO NOT stop/destroy remote
-instances. Users are encouraged to visit web consoles to identify what virtual instances exist and run.</p>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
+<p>MLCube is under active development. Allocating and using instances in clouds are associated with costs. Users of 
+  GCP runners should be aware about it, especially, taking into account capability of GCP runners to automatically 
+  create and start remote instances. GCP RUNNERS in current implementation DO NOT stop/destroy remote instances. 
+  Users are encouraged to visit web consoles to identify what virtual instances exist and run.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
 <p>GCP runner can update users' <code>${HOME}/.ssh/config</code> configuration files.</p>
-</blockquote>
+</div>
 <p>GCP runner is a frontend runner for running MLCubes in Google cloud. It is called a frontend runner because it does not
 actually run cubes, but ensures that a remote instance is up and running, and then uses other runners to actually run
-MLCubes. The following chain of runners is supported and has been tested:
-1. A user interacts with GCP runners. These runners are responsible for creating remote instances (if they do not 
-   exist), start them, install required software stack (such as docker or singularity).
-2. Once a remote instance is up and running, GCP runners delegates further execution to other runners, such as 
+MLCubes. The following chain of runners is supported and has been tested:</p>
+<ol>
+<li>A user interacts with GCP runners. These runners are responsible for creating remote instances (if they do not 
+   exist), start them, install required software stack (such as docker or singularity).</li>
+<li>Once a remote instance is up and running, GCP runners delegates further execution to other runners, such as 
    <a href="https://mlcommons.github.io/mlcube/runners/ssh-runner/">SSH runners</a>. SSH runners are responsible for delivering
    MLCubes to remote instances. SSH runners then delegate the actual execution of cubes on those remote instances to
    such runners as <a href="https://mlcommons.github.io/mlcube/runners/docker-runner/">docker runner</a> or 
-   <a href="https://mlcommons.github.io/mlcube/runners/singularity-runner/">singularity runner</a>.</p>
+   <a href="https://mlcommons.github.io/mlcube/runners/singularity-runner/">singularity runner</a>.</li>
+</ol>
 <p>The described scenario assumes the presence of the following platform configuration files: GCP, SSH and one of Docker or
 Singularity. As MLCube project evolves, other paths may become possible to run cubes in clouds such as GCP.</p>
 <h2 id="pre-requisites">Pre-requisites<a class="headerlink" href="#pre-requisites" title="Permanent link">&para;</a></h2>
 <p>To use GCP runners, users need to have a GCP account. The following account details must be known and available in
-advance:
-1. Project ID.
-2. Zone.
-3. Service account <a href="https://cloud.google.com/docs/authentication/production#create_service_account">JSON file</a>.
-4. Users should configure their GCP accounts so that ever new virtual instance is automatically deployed with user 
-   public key making it available through SSH access automatically.</p>
+advance:</p>
+<ol>
+<li>Project ID.</li>
+<li>Zone.</li>
+<li>Service account <a href="https://cloud.google.com/docs/authentication/production#create_service_account">JSON file</a>.</li>
+<li>Users should configure their GCP accounts so that ever new virtual instance is automatically deployed with user 
+   public key making it available through SSH access automatically.</li>
+</ol>
 <h2 id="creating-remote-instances">Creating remote instances<a class="headerlink" href="#creating-remote-instances" title="Permanent link">&para;</a></h2>
-<p>Remote instances for running MLCubes can be created manually or automatically. 
-1. To create a virtual instance manually, go to GCP console, select <code>Compute Engine</code> and then <code>VM instances</code>. Write
-   down an instance name.
-2. To create a virtual instance automatically, a GCP platform file needs be configured. A limited functionality is
+<p>Remote instances for running MLCubes can be created manually or automatically. </p>
+<ol>
+<li>To create a virtual instance manually, go to GCP console, select <code>Compute Engine</code> and then <code>VM instances</code>. Write
+   down an instance name.</li>
+<li>To create a virtual instance automatically, a GCP platform file needs be configured. A limited functionality is
    supported. Basically, users can only specify <code>machine type</code> and <code>disk size</code>. Ubuntu 18.04 OS will be used as a base
-   image.</p>
+   image.</li>
+</ol>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span class="nt">gcp</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="c1"># These are your project ID and zone names. </span><span class="w"></span>
@@ -782,18 +792,20 @@ advance:
 <span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
 </code></pre></div>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
-<p>GCP runners execute the following steps during the configuration phase:
-1.  Check that SSH access has been configured. A runner loads users <code>${HOME}/.ssh/config</code> file and verifies it 
+<p>GCP runners execute the following steps during the configuration phase:</p>
+<ol>
+<li>Check that SSH access has been configured. A runner loads users <code>${HOME}/.ssh/config</code> file and verifies it 
     contains a section for the remote instance there (specified by the name). The configuration section must define 
-    <code>User</code> and <code>IdentityFile</code>.
-2. GCP runner connects to GCP using provided project ID, zone name and <code>credentials</code> (file name and scopes).
-3. GCP runner checks if a remote instance exists with the provided name. If it does not exist, it creates it using three
-   parameters described above - instance name, machine type and disk size.
-4. If a remote instance is not running, GCP runner starts it.
-5. GCP runner retrieves a remote instance's metadata that includes public IP address. If public IP address does not 
-   match <code>HostName</code> in ssh configuration file, <strong>GCP RUNNER UPDATES USER SSH CONFIG FILE</strong>.
-6. Currently, GCP runner automatically installs such packages, as <code>docker</code>, <code>python3</code> and <code>virtualenv</code>.
-7. GCP runner calls SSH runner to continue configuring remote instance in a MLCube-specific way.</p>
+    <code>User</code> and <code>IdentityFile</code>.</li>
+<li>GCP runner connects to GCP using provided project ID, zone name and <code>credentials</code> (file name and scopes).</li>
+<li>GCP runner checks if a remote instance exists with the provided name. If it does not exist, it creates it using three
+   parameters described above - instance name, machine type and disk size.</li>
+<li>If a remote instance is not running, GCP runner starts it.</li>
+<li>GCP runner retrieves a remote instance's metadata that includes public IP address. If public IP address does not 
+   match <code>HostName</code> in ssh configuration file, <strong>GCP RUNNER UPDATES USER SSH CONFIG FILE</strong>.</li>
+<li>Currently, GCP runner automatically installs such packages, as <code>docker</code>, <code>python3</code> and <code>virtualenv</code>.</li>
+<li>GCP runner calls SSH runner to continue configuring remote instance in a MLCube-specific way.</li>
+</ol>
 <h2 id="running-mlcubes">Running MLCubes<a class="headerlink" href="#running-mlcubes" title="Permanent link">&para;</a></h2>
 <p>GCP runner does not implement any specific logic and redirects its functionality to an SSH runner.   </p>
 <h2 id="recommendations">Recommendations<a class="headerlink" href="#recommendations" title="Permanent link">&para;</a></h2>
@@ -852,6 +864,19 @@ advance:
     Made with
     <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
       Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/mlcommons/mlcube" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
     </a>
   
 </div>

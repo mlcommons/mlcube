@@ -722,28 +722,41 @@
 <p>MLCube runners run MLCube cubes on one or multiple platforms. Examples of platforms are Docker and Singularity 
 containers, Kubernetes, remote hosts, virtual machines in the cloud, etc. Every runner has a fixed set of configuration
 parameters that users can change to configure MLCubes and runners for their environments. Concretely, runners can take
-information from three different sources:
-- MLCube configuration files that are located in the root directory of each file-system based MLCube. Parameters in 
-  these files configure generic parameters common for all environments, such as for instance, docker image names.
-- MLCube system settings file that is located (by default) in the user home directory (<code>~/mlcube.yaml</code>). This file
-  is created automatically, and can be used to configure parameters common for all MLCubes in a particular environments.
-  They can include docker executable, GPU and CPU docker arguments, user SSH and cloud credentials, etc.
-- Optionally, runners can use parameters defined in <code>platform</code> section of MLCube configuration file. This section 
+information from three different sources:</p>
+<ul>
+<li><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">MLCube configuration</a> files that 
+  are located in the root directory of each file-system based MLCube. Parameters in these files configure generic 
+  parameters common for all environments, such as for instance, docker image names.</li>
+<li><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">MLCube system settings</a> file that is 
+  located (by default) in the user home directory (<code>~/mlcube.yaml</code>). This file is created automatically, and can be 
+  used to configure parameters common for all MLCubes in a particular environments. They can include docker executable, 
+  GPU and CPU docker arguments, user SSH and cloud credentials, etc.</li>
+<li>Optionally, runners can use parameters defined in <code>platform</code> section of MLCube configuration file. This section 
   usually contains information about such requirements as memory and persistent storage requirements, number of
-  accelerators etc.</p>
+  accelerators etc.</li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
 <p>MLCube standard requires that all runners implement mandatory functionality. All reference runners implement it.
 Users can develop their own runners to meet their specific requirements, such as security, authentication and
 authorization policies, and others.   </p>
+</div>
 <h2 id="reference-mlcube-runners">Reference MLCube runners<a class="headerlink" href="#reference-mlcube-runners" title="Permanent link">&para;</a></h2>
 <p>Reference runners are:</p>
 <ul>
-<li><code>Docker Runner</code>: Runs cubes locally using docker runtime.  </li>
-<li><code>GCP Runner</code>: Runs cubes in Google cloud.  </li>
-<li><code>Kubernetes Runner</code>: Runs cubes in Kubernetes.  </li>
-<li><code>Kubeflow Runner</code>: Runs cubes using Kubeflow.  </li>
-<li><code>Singularity Runner</code>: Runs cubes using singularity runtime.    </li>
-<li><code>SSH Runner</code>: Runs cubes on remote hosts. SSH Runner uses other runners, such as Docker or Singularity runners, to
-  run cubes on remote hosts.  </li>
+<li><a href="https://mlcommons.github.io/mlcube/runners/docker-runner/">Docker Runner</a>: 
+  runs cubes locally using docker runtime.  </li>
+<li><a href="https://mlcommons.github.io/mlcube/runners/gcp-runner/">GCP Runner</a>: 
+  runs cubes in Google cloud.  </li>
+<li><a href="https://mlcommons.github.io/mlcube/runners/kubernetes/">Kubernetes Runner</a>: 
+  runs cubes in Kubernetes.  </li>
+<li><a href="https://mlcommons.github.io/mlcube/runners/kubeflow/">Kubeflow Runner</a>:
+  runs cubes using Kubeflow.  </li>
+<li><a href="https://mlcommons.github.io/mlcube/runners/singularity-runner/">Singularity Runner</a>: 
+  runs cubes using singularity runtime.    </li>
+<li><a href="https://mlcommons.github.io/mlcube/runners/ssh-runner/">SSH Runner</a>:
+  runs cubes on remote hosts. SSH Runner uses other runners, such as Docker or Singularity runners, to run cubes on 
+  remote hosts.  </li>
 </ul>
 <h2 id="runner-commands">Runner commands<a class="headerlink" href="#runner-commands" title="Permanent link">&para;</a></h2>
 <p>Each runner exposes mandatory and optional functionality through a set of commands. This is similar to, for instance,
@@ -780,15 +793,17 @@ mlcube run --mlcube<span class="o">=</span>examples/mnist --platform<span class=
 <h2 id="configuration-subsystem">Configuration subsystem<a class="headerlink" href="#configuration-subsystem" title="Permanent link">&para;</a></h2>
 <p>Runners are configured using information from three different sources:</p>
 <ul>
-<li>The base configuration comes from the system settings file. By default, the location of this file is 
-  <code>${HOME}/mlflow.yaml</code>. It is created automatically whenever a user runs <code>mlcube</code> command line tool. The purpose of
-  this file is to provide system-wide configuration for runners that are specific to user and their environment. This
-  is kind of information that should not generally present in MLCube configuration files (next item). It shoud include
-  such information as docker executable (docker, sudo docker, nvidia-docker, podman, etc), docker-specific runtime
-  arguments, user credentials for GCP and remote hosts, information about remote hosts etc.</li>
-<li>The MLCube configuration file that is available with each MLCube cube. This file contains (as of now) such parameters,
-  as docker and singularity image names, MLCube resource requirements and tasks. This information overrides information
-  from system settings file.</li>
+<li>The base configuration comes from the 
+  <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a> file. By default, 
+  the location of this file is <code>${HOME}/mlcube.yaml</code>. It is created automatically whenever a user runs <code>mlcube</code> command 
+  line tool. The purpose of this file is to provide system-wide configuration for runners that are specific to user and 
+  their environment. This is kind of information that should not generally present in MLCube configuration files 
+  (next item). It should include such information as docker executable (docker, sudo docker, nvidia-docker, podman, 
+  etc.), docker-specific runtime arguments, user credentials for GCP and remote hosts, information about 
+  remote hosts etc.</li>
+<li>The <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">MLCube configuration</a> file 
+  that is available with each MLCube cube. This file contains (as of now) such parameters, as docker and singularity 
+  image names, MLCube resource requirements and tasks. This information overrides information from system settings file.</li>
 <li>Configuration that is provided on a command line. Users are allowed (but not encouraged) to override parameters on
   the fly when they run MLCube cubes.</li>
 </ul>
@@ -926,9 +941,10 @@ mlcube config --rename-runner OLD_NAME NEW_NAME
 <span class="c1"># Remove runner</span>
 mlcube config --remove-runner NAME
 </code></pre></div></p>
-<blockquote>
+<div class="admonition attention">
+<p class="admonition-title">Attention</p>
 <p>Removed standard runners (MLCube reference runners) will be recreated when mlcube runs next time.</p>
-</blockquote>
+</div>
 
               
             </article>
@@ -984,6 +1000,19 @@ mlcube config --remove-runner NAME
     Made with
     <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
       Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/mlcommons/mlcube" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
     </a>
   
 </div>

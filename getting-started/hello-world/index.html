@@ -801,23 +801,37 @@
 
 
 <h1 id="hello-world">Hello World<a class="headerlink" href="#hello-world" title="Permanent link">&para;</a></h1>
-<p>Hello World MLCube is an example of a Docker-based cube.  </p>
+<p>Hello World MLCube is an example of a Docker-based MLCube.  </p>
 <h2 id="quickstart">QuickStart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
 <p>Get started with MLCube Docker runner with below commands.   </p>
 <h3 id="create-python-environment">Create python environment<a class="headerlink" href="#create-python-environment" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>virtualenv -p python3.6 ./env &amp;&amp; source ./env/bin/activate
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Conda</label><label for="__tabbed_1_2">VirtualEnv</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>conda create -n mlcube <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8
+conda activate mlcube
 </code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="highlight"><pre><span></span><code>virtualenv --python<span class="o">=</span><span class="m">3</span>.8 .mlcube
+<span class="nb">source</span> .mlcube/bin/activate
+</code></pre></div>
+</div>
+</div>
+</div>
 <h3 id="install-mlcube-docker-runner">Install MLCube Docker runner<a class="headerlink" href="#install-mlcube-docker-runner" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code>pip install mlcube-docker      # Install.
-mlcube config --get runners    # Check it was installed.
-mlcube config --list           # Show system settings for local MLCube runners.
+<p><div class="highlight"><pre><span></span><code>pip install mlcube-docker      <span class="c1"># Install.</span>
+mlcube config --get runners    <span class="c1"># Check it was installed.</span>
+mlcube config --list           <span class="c1"># Show system settings for local MLCube runners.</span>
 </code></pre></div>
-Depending on how your local system is configured, it may be required to change the following settings:
-- <code>platforms.docker.docker</code> (string): A docker executable. Examples are <code>docker</code>, <code>nvidia-docker</code>, <code>sudo docker</code>,
-  <code>podman</code> etc.
-- <code>platforms.docker.env_args</code> (dictionary) and <code>platforms.docker.build_args</code> (dictionary). Environmental variables
-  for docker run and build phases. Http and https proxy settings can be configured here.
-A custom configuration could look like:
+Depending on how your local system is configured, it may be required to change the following settings:</p>
+<ul>
+<li><code>platforms.docker.docker</code> (string): A docker executable. Examples are <code>docker</code>, <code>nvidia-docker</code>, <code>sudo docker</code>,
+  <code>podman</code> etc.</li>
+<li><code>platforms.docker.env_args</code> (dictionary) and <code>platforms.docker.build_args</code> (dictionary). Environmental variables
+  for docker run and build phases. Http and https proxy settings can be configured here.</li>
+</ul>
+<p>A custom configuration could look like:
 <div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span><span class="w"></span>
 <span class="w">  </span><span class="nt">docker</span><span class="p">:</span><span class="w"></span>
 <span class="w">    </span><span class="nt">docker</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo docker</span><span class="w"></span>
@@ -829,19 +843,22 @@ A custom configuration could look like:
 <span class="w">      </span><span class="nt">https_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://proxy.company.com:8088</span><span class="w"></span>
 </code></pre></div></p>
 <h3 id="run-hello-world-mlcube-example">Run Hello World MLCube example<a class="headerlink" href="#run-hello-world-mlcube-example" title="Permanent link">&para;</a></h3>
-<p><div class="highlight"><pre><span></span><code># The hello_world MLCube is part of the mlcube_examples GitHub repository.
-git clone https://github.com/mlcommons/mlcube_examples.git &amp;&amp; cd ./mlcube_examples/hello_world
+<p>The hello_world MLCube is part of the <a href="https://github.com/mlcommons/mlcube_examples">mlcube_examples</a> GitHub repository:
+<div class="highlight"><pre><span></span><code>git clone https://github.com/mlcommons/mlcube_examples.git 
+<span class="nb">cd</span> ./mlcube_examples/hello_world
+</code></pre></div></p>
+<p>Run Hello World MLCube on a local machine with Docker runner. Show available tasks:
+<div class="highlight"><pre><span></span><code>mlcube describe
+</code></pre></div></p>
+<p>Run Hello World example tasks. Very first run can take some time to download (or build) the MLCube docker image:
+<div class="highlight"><pre><span></span><code><span class="c1"># No output expected.</span>
+mlcube run --mlcube<span class="o">=</span>. --task<span class="o">=</span>hello --platform<span class="o">=</span>docker
 
-# Run Hello World MLCube on a local machine with Docker runner.
-# Show available tasks
-mlcube describe
+<span class="c1"># No output expected.</span>
+mlcube run --mlcube<span class="o">=</span>. --task<span class="o">=</span>bye --platform<span class="o">=</span>docker
 
-# Run Hello World example tasks. Very first run can take some time to download (or build)
-# the MLCube docker image.
-mlcube run --mlcube=. --task=hello --platform=docker   # No output expected.
-mlcube run --mlcube=. --task=bye --platform=docker     # No output expected.
-cat ./workspace/chats/chat_with_alice.txt              # You should some log lines in this file.
-cat 
+<span class="c1"># You should some log lines in this file.</span>
+cat ./workspace/chats/chat_with_alice.txt
 </code></pre></div>
 If above mlcube runs fail (with the error message saying there is no docker image available, try to change the system
 settings file by changing <code>platforms.docker.build_strategy</code> to <code>auto</code>.</p>
@@ -850,12 +867,18 @@ settings file by changing <code>platforms.docker.build_strategy</code> to <code>
 Installation guides for various operating systems can be found <a href="https://docs.docker.com/engine/install/">here</a>. This
 example was tested on a system where users are in the docker group and run docker without <code>sudo</code>. To add yourself to a
 docker group, run the following:
-<div class="highlight"><pre><span></span><code>sudo groupadd docker             # Add the docker group if it doesn&#39;t already exist.
-sudo gpasswd -a ${USER} docker   # Add the connected user &quot;${USER}&quot; to the docker group. Change 
-                                 # the user name to match your preferred user.
-sudo service docker restart      # Restart the Docker daemon.
-newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the 
-                                 # changes to groups.
+<div class="highlight"><pre><span></span><code># Add the docker group if it doesn&#39;t already exist.
+sudo groupadd docker
+
+# Add the connected user &quot;${USER}&quot; to the docker group. Change 
+# the user name to match your preferred user.
+sudo gpasswd -a ${USER} docker
+
+# Restart the Docker daemon.
+sudo service docker restart
+
+# Either do a `newgrp docker` or log out/in to activate the changes to groups.
+newgrp docker 
 </code></pre></div></p>
 <h2 id="configuring-hello-world-mlcube">Configuring Hello World MLCube<a class="headerlink" href="#configuring-hello-world-mlcube" title="Permanent link">&para;</a></h2>
 <p>Cubes need to be configured before they can run. MLCube runners do that automatically, and users do not need to run
@@ -980,6 +1003,19 @@ The MLCube recognized it was not the first time it talked to Alice, and changed 
     Made with
     <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
       Material for MkDocs
+    </a>
+  
+</div>
+      
+        <div class="md-social">
+  
+    
+    
+      
+      
+    
+    <a href="https://github.com/mlcommons/mlcube" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
     </a>
   
 </div>
