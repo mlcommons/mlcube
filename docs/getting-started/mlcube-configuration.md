@@ -57,7 +57,8 @@ MLCube configuration can contain metadata about MLCube developers. The following
 ## Resources
 The `platform` section (optional) can provide information about resources that MLCubes require. 
 
-> Parameters defined in this section are not supported yet by MLCube runners. 
+!!! warning
+    Parameters defined in this section are not supported yet by MLCube runners. 
  
 This section is intended to be used by MLCube 
 [runners](https://mlcommons.github.io/mlcube/getting-started/concepts/#runner). For instance, cloud runners can use

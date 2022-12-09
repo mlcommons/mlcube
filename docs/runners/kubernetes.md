@@ -1,13 +1,14 @@
 # Kubernetes Runner
 
-The Kubernetes Runner runs a MLCube on a Kubernetes cluster.
+!!! warning
+    Work in progress. Some functionality described below may not be available.
 
+The Kubernetes Runner runs a MLCube on a Kubernetes cluster.
 
 ## Why Kubernetes?
 
-One of the key goals of the MLCube project is to enable portability of ML models.
-Kubernetes offers a good set of abstractions to enable model training to be portable
-across different compute platforms.
+One of the key goals of the MLCube project is to enable portability of ML models. Kubernetes offers a good set of 
+abstractions to enable model training to be portable across different compute platforms.
 
 ## Design
 
@@ -21,7 +22,8 @@ platform config and prepares a Kubernetes Job manifest. The runner then creates 
 
 ## Configuration parameters
 
-> Currently, users must create persistent volume claim (PVC) that points to an actual MLCube workspace directory.
+!!! attention
+    Currently, users must create persistent volume claim (PVC) that points to an actual MLCube workspace directory.
 
 ```yaml
 # By default, PVC name equals to the name of this MLCube (mnist, matmul, ...).

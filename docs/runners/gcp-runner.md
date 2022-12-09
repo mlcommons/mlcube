@@ -1,16 +1,19 @@
 # Google Compute Platform (GCP) Runner
 
-> __DISCLAIMER__ MLCube is under active development. Allocating and using instances in clouds are associated with
-> costs. Users of GCP runners should be aware about it, especially, taking into account capability of GCP runners to
-> automatically create and start remote instances. GCP RUNNERS in current implementation DO NOT stop/destroy remote
-> instances. Users are encouraged to visit web consoles to identify what virtual instances exist and run.
+!!! attention
+      MLCube is under active development. Allocating and using instances in clouds are associated with costs. Users of 
+      GCP runners should be aware about it, especially, taking into account capability of GCP runners to automatically 
+      create and start remote instances. GCP RUNNERS in current implementation DO NOT stop/destroy remote instances. 
+      Users are encouraged to visit web consoles to identify what virtual instances exist and run.
 
 
-> GCP runner can update users' `${HOME}/.ssh/config` configuration files.
+!!! warning
+      GCP runner can update users' `${HOME}/.ssh/config` configuration files.
 
 GCP runner is a frontend runner for running MLCubes in Google cloud. It is called a frontend runner because it does not
 actually run cubes, but ensures that a remote instance is up and running, and then uses other runners to actually run
 MLCubes. The following chain of runners is supported and has been tested:
+
 1. A user interacts with GCP runners. These runners are responsible for creating remote instances (if they do not 
    exist), start them, install required software stack (such as docker or singularity).
 2. Once a remote instance is up and running, GCP runners delegates further execution to other runners, such as 
@@ -25,6 +28,7 @@ Singularity. As MLCube project evolves, other paths may become possible to run c
 ## Pre-requisites
 To use GCP runners, users need to have a GCP account. The following account details must be known and available in
 advance:
+
 1. Project ID.
 2. Zone.
 3. Service account [JSON file](https://cloud.google.com/docs/authentication/production#create_service_account).
@@ -34,6 +38,7 @@ advance:
 
 ## Creating remote instances
 Remote instances for running MLCubes can be created manually or automatically. 
+
 1. To create a virtual instance manually, go to GCP console, select `Compute Engine` and then `VM instances`. Write
    down an instance name.
 2. To create a virtual instance automatically, a GCP platform file needs be configured. A limited functionality is
@@ -71,6 +76,7 @@ platform: ''
 
 ## Configuring MLCubes
 GCP runners execute the following steps during the configuration phase:
+
 1.  Check that SSH access has been configured. A runner loads users `${HOME}/.ssh/config` file and verifies it 
     contains a section for the remote instance there (specified by the name). The configuration section must define 
     `User` and `IdentityFile`.

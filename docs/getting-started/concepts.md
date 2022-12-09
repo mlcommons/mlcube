@@ -42,10 +42,12 @@ line when they interact with MLCube runtime to override default values for these
 on a command line, they need to follow OmegaConf rules, in particular, nested parameters should use `.` symbol. Also,
 when providing these parameters on a command line, these parameters must have `-P` prefix. Several examples: 
 ```shell
-# Overriding top level parameter. Here, the `description` is a parameter in a global namespace. 
+# Overriding top level parameter. Here, the `description` is a 
+# parameter in a global namespace. 
 -Pdescription="MLCube project description"
 
-# Overriding nested parameter. Here, the `build_strategy` is a parameter defined in the `docker` namespace.   
+# Overriding nested parameter. Here, the `build_strategy` is a 
+# parameter defined in the `docker` namespace.   
 -Pdocker.build_strategy=always
 ```
 

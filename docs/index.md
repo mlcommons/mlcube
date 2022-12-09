@@ -1,24 +1,33 @@
 # MLCube
 
-Interested in getting started with MLCube?   
-Follow the Getting Started instructions, or watch the video below.
+MLCube is a project that reduces friction for machine learning by ensuring that models are easily portable and 
+reproducible, e.g., between different stacks such as different clouds, between cloud and on-prem, etc.
 
-[![Watch the video](http://img.youtube.com/vi/YmaXNIliPrc/0.jpg)](https://youtu.be/YmaXNIliPrc)
+Interested in getting started with MLCube? Follow the 
+[Getting Started](https://mlcommons.github.io/mlcube/getting-started/) instructions, or watch the video below.
 
-
-MLCube is a project that reduces friction for machine learning by ensuring that models are easily portable and reproducible, e.g., between different stacks such as different clouds, between cloud and on-prem, etc.
+<div style="text-align: center" markdown="block">
+[![Watch the video](https://img.youtube.com/vi/YmaXNIliPrc/0.jpg)](https://youtu.be/YmaXNIliPrc){style="align: center"}
+</div>
 
 ## Installing MLCube
 
-Install from PyPI:  
-```sh
-pip install mlcube
-```
+Create python environment
+=== "Conda"
+    ```shell
+    conda create -n mlcube python=3.8
+    conda activate mlcube
+    ```
 
-To uninstall:
+=== "VirtualEnv" 
+    ```shell
+    virtualenv --python=3.8 .mlcube
+    source .mlcube/bin/activate
+    ```
 
-```sh
-pip uninstall mlcube
+Install MLCube with docker and singularity runners
+```shell
+pip install mlcube mlcube-docker docker-singularity
 ```
 
 

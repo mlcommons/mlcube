@@ -1,26 +1,37 @@
 # Hello World
-Hello World MLCube is an example of a Docker-based cube.  
+Hello World MLCube is an example of a Docker-based MLCube.  
 
 
 ## QuickStart
 Get started with MLCube Docker runner with below commands.   
 
 ### Create python environment
-```
-virtualenv -p python3.6 ./env && source ./env/bin/activate
-```
+
+=== "Conda"
+    ```shell
+    conda create -n mlcube python=3.8
+    conda activate mlcube
+    ```
+
+=== "VirtualEnv" 
+    ```shell
+    virtualenv --python=3.8 .mlcube
+    source .mlcube/bin/activate
+    ```
 
 ### Install MLCube Docker runner
-```
+```shell
 pip install mlcube-docker      # Install.
 mlcube config --get runners    # Check it was installed.
 mlcube config --list           # Show system settings for local MLCube runners.
 ```
 Depending on how your local system is configured, it may be required to change the following settings:
+
 - `platforms.docker.docker` (string): A docker executable. Examples are `docker`, `nvidia-docker`, `sudo docker`,
   `podman` etc.
 - `platforms.docker.env_args` (dictionary) and `platforms.docker.build_args` (dictionary). Environmental variables
   for docker run and build phases. Http and https proxy settings can be configured here.
+
 A custom configuration could look like:
 ```yaml
 platforms:
@@ -35,20 +46,27 @@ platforms:
 ```
 
 ### Run Hello World MLCube example
+The hello_world MLCube is part of the [mlcube_examples](https://github.com/mlcommons/mlcube_examples) GitHub repository:
+```shell
+git clone https://github.com/mlcommons/mlcube_examples.git 
+cd ./mlcube_examples/hello_world
 ```
-# The hello_world MLCube is part of the mlcube_examples GitHub repository.
-git clone https://github.com/mlcommons/mlcube_examples.git && cd ./mlcube_examples/hello_world
 
-# Run Hello World MLCube on a local machine with Docker runner.
-# Show available tasks
+Run Hello World MLCube on a local machine with Docker runner. Show available tasks:
+```shell
 mlcube describe
+```
 
-# Run Hello World example tasks. Very first run can take some time to download (or build)
-# the MLCube docker image.
-mlcube run --mlcube=. --task=hello --platform=docker   # No output expected.
-mlcube run --mlcube=. --task=bye --platform=docker     # No output expected.
-cat ./workspace/chats/chat_with_alice.txt              # You should some log lines in this file.
-cat 
+Run Hello World example tasks. Very first run can take some time to download (or build) the MLCube docker image:
+```shell
+# No output expected.
+mlcube run --mlcube=. --task=hello --platform=docker
+
+# No output expected.
+mlcube run --mlcube=. --task=bye --platform=docker
+
+# You should some log lines in this file.
+cat ./workspace/chats/chat_with_alice.txt
 ```
 If above mlcube runs fail (with the error message saying there is no docker image available, try to change the system
 settings file by changing `platforms.docker.build_strategy` to `auto`.
@@ -59,12 +77,18 @@ Installation guides for various operating systems can be found [here](https://do
 example was tested on a system where users are in the docker group and run docker without `sudo`. To add yourself to a
 docker group, run the following:
 ```
-sudo groupadd docker             # Add the docker group if it doesn't already exist.
-sudo gpasswd -a ${USER} docker   # Add the connected user "${USER}" to the docker group. Change 
-                                 # the user name to match your preferred user.
-sudo service docker restart      # Restart the Docker daemon.
-newgrp docker                    # Either do a `newgrp docker` or log out/in to activate the 
-                                 # changes to groups.
+# Add the docker group if it doesn't already exist.
+sudo groupadd docker
+
+# Add the connected user "${USER}" to the docker group. Change 
+# the user name to match your preferred user.
+sudo gpasswd -a ${USER} docker
+ 
+# Restart the Docker daemon.
+sudo service docker restart
+
+# Either do a `newgrp docker` or log out/in to activate the changes to groups.
+newgrp docker 
 ```
 
 ## Configuring Hello World MLCube
