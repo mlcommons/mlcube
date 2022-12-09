@@ -1,11 +1,11 @@
 # SSH Runner
+
+!!! warning
+    Work in progress. Some functionality described below may not be available.
+
 SSH runner uses other runners to run MLCube cubes on remote hosts. It uses `ssh` and `rsync` internally. It
 supports two mandatory commands - `configure` and `run` with standard arguments - `mlcube`, `platform` and `task`. Users 
-can configure SSH runner in system setting file, and override parameters on a command line. 
-
-
-> Work in progress. Some functionality described below may not be available.
-
+can configure SSH runner in system setting file, and override parameters on a command line.
 
 ## Configuration parameters
 ```yaml
@@ -41,7 +41,8 @@ If passwordless login is not configured, SSH runner asks for password many times
   
 ## Configuring MLCubes
 
-> This runner must be configured by users explicitly: `mlcube configure --mlcube=. --platform=ssh`
+!!! attention
+    This runner must be configured by users explicitly: `mlcube configure --mlcube=. --platform=ssh`
 
 During the `configure` phase, the following steps are performed.
 

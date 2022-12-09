@@ -57,9 +57,18 @@ markdown_extensions:
   - admonition
   - codehilite
   - pymdownx.tasklist
-  - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.details         # Allowing hidden expandable regions denoted by ???
+  - pymdownx.superfences     # Seems to enable syntax highlighting when used with the Material theme.
+  - pymdownx.tabbed:
+      alternate_style: true
   - attr_list
-  - mkdocs-click
+  - mkdocs-click             # Generate documentation for `click`-based console applications.
   - toc:
       permalink: True
+  - md_in_html               # Parse markdown inside HTML tags (default is not to parse).
+
+extra:
+  social:
+    # Buttons at the bottom of every page.
+    - icon: fontawesome/brands/github
+      link: https://github.com/mlcommons/mlcube

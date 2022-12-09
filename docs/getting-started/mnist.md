@@ -3,21 +3,25 @@ The [MNIST dataset](http://yann.lecun.com/exdb/mnist/) is a collection of 60,000
 training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCube example demonstrates
 how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
 validation and inference code) as MLCube cubes. MLCube establishes a standard to package user workloads,
-and provides unified command line interface. In addition, MLCube provides a number of reference runners - python
-packages that can run cubes on different platforms including 
+and provides unified command line interface. In addition, MLCube provides a number of reference 
+[runners](https://mlcommons.github.io/mlcube/getting-started/concepts/#runner) - python packages that can run cubes on 
+different platforms including 
 [Docker](https://mlcommons.github.io/mlcube/runners/docker-runner/),
 [Singularity](https://mlcommons.github.io/mlcube/runners/singularity-runner/),
 [KubeFlow](https://mlcommons.github.io/mlcube/runners/kubeflow/)
 and several others.
 
-> A data scientist has been working on a machine learning project. The goal is to train a simple neural network to
-> classify the collection of 60,000 small images into 10 classes. 
+!!! Example
+    A data scientist has been working on a machine learning project. The goal is to train a simple neural network to
+    classify the collection of 60,000 small images into 10 classes.
 
-> The source files for this MNIST example can be found on  GitHub in MLCube Example [repository](https://github.com/mlcommons/mlcube_examples).
+!!! information
+    The source files for this MNIST example can be found on GitHub in MLCube 
+    Example [repository](https://github.com/mlcommons/mlcube_examples).
 
 ## MNIST training code
 Training an ML model is a process involving multiple steps such as downloading data, analyzing and cleaning data, 
-splitting data into train/validation/test data sets, running hyper-parameter optimization experiments and performing final
+splitting data into train/validation/test data sets, running hyperparameter optimization experiments and performing final
 model testing. MNIST dataset is a relatively small and well studied dataset that provides standard train/test split. In this simple
 example a developer needs to implement two steps - (1) downloading data and (2) training a model. We call these steps
 as `tasks`. Each task requires several parameters, such as a URL of the data set that we need to download, location on a
@@ -48,7 +52,7 @@ Then, our implementation could look like this. Parse command line arguments and 
 the `download` task, call a function that downloads data sets. If it is the `train` task, train a model. This is sort 
 of single entrypoint implementation where we run one script asking to perform various tasks. We run our script (mnist.py)
 in the following way:
-```
+```shell
 python mnist.py download --data_config=PATH --data_dir=PATH --log_dir=PATH
 python mnist.py train --train_config=PATH --data_dir=PATH --model_dir=PATH --log_dir=PATH
 ```
@@ -200,27 +204,40 @@ mnist/
 ## Running MNIST MLCube
 We need to set up the Python virtual environment. These are the steps outlined in the `Introduction` section except we 
 do not clone GitHub repository with the example MLCube cubes. 
-```
-# Create Python Virtual Environment
-virtualenv -p python3.6 ./env && source ./env/bin/activate
 
-# Install MLCube Docker and Singularity runners 
-pip install mlcube-docker mlcube-singularity
+Create python environment.
+=== "Conda"
+    ```shell
+    conda create -n mlcube python=3.8
+    conda activate mlcube
+    ```
+
+=== "VirtualEnv" 
+    ```shell
+    virtualenv --python=3.8 .mlcube
+    source .mlcube/bin/activate
+    ```
+
+Install MLCube Docker and Singularity runners.
+```shell
+pip install mlcube mlcube-docker mlcube-singularity
 ``` 
 
-> Before running MNIST cube below, it is probably a good idea to remove tasks' outputs from previous runs that are
-> located in the `workspace` directory. All directories except can be removed.
+!!! attention
+    Before running MNIST cube below, it is probably a good idea to remove tasks' outputs from previous runs that are
+    located in the `workspace` directory. All files and directories except `data.yaml` and `train.yaml` files can 
+    be removed.
 
 
 ### Docker Runner
 Configure MNIST cube (this is optional step, docker runner checks if image exists, and if it does not, runs `configure`
 phase automatically):
-```
+```shell
 mlcube configure --mlcube=. --platform=docker
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
-```
+```shell
 mlcube run --mlcube=. --platform=docker --task=download
 mlcube run --mlcube=. --platform=docker --task=train
 ```
@@ -228,12 +245,12 @@ mlcube run --mlcube=. --platform=docker --task=train
 
 ### Singularity Runner
 Configure MNIST cube:
-```
+```shell
 mlcube configure --mlcube=. --platform=singularity
 ```
 
 Run two tasks - `download` (download data) and `train` (train tiny neural network):
-```
+```shell
 mlcube run --mlcube=. --platform=singularity --task=download
 mlcube run --mlcube=. --platform=singularity --task=train
 ```
