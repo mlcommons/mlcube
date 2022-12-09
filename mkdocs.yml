@@ -10,6 +10,7 @@ nav:
     - Hello World: getting-started/hello-world.md
     - MNIST: getting-started/mnist.md
     - MLCube concepts: getting-started/concepts.md
+    - MLCube configuration: getting-started/mlcube-configuration.md
     - System Settings: getting-started/system-settings.md
     - Command Line Interface: getting-started/cli.md
   - Tutorials:

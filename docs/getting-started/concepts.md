@@ -10,7 +10,9 @@ MLCube runtime and MLCube runners accept multiple command line arguments. They c
   configurations). For instance, to override docker runner settings and instruct it to always build MLCube images,
   one should provide the following command line argument: `-Pdocker.build_strategy=always`.
 
-These command line arguments override system settings and MLCube configuration parameters.
+These command line arguments override system settings and MLCube configuration parameters. 
+The [Command Line Interface](https://mlcommons.github.io/mlcube/getting-started/cli/) section provides detailed 
+description of MLCube commands and their arguments.
 
 ### Effective MLCube configuration
 `Effective MLCube configuration` is the actual configuration that MLCube runners use to run MLCubes. This effective
@@ -27,7 +29,9 @@ priority and override any other parameters loaded so far.
 `MLCube Configuration` provide MLCube-specific configuration, such as implemented `tasks` and, optionally, specific 
 platform (hardware) requirements, for instance, GPU and host memory required to run the tasks. This configuration 
 overrides system settings. For MLCubes that are distributed via GitHub (with source files), this configuration is
-stored in a YAML file with default location being `${MLCUBE_ROOT}/mlcube.yaml`.
+stored in a YAML file with default location being `${MLCUBE_ROOT}/mlcube.yaml`. The 
+[MLCube configuration](https://mlcommons.github.io/mlcube/getting-started/mlcube-configuration/) 
+section provides detailed description.
 
 ### MLCube Configuration Parameter
 `MLCube configuration paramter` is a configuration parameter for MLCube runners or MLCube projects that has (usually)
@@ -81,7 +85,8 @@ MLCube `System Settings` configure MLCube and MLCube runners at a system level. 
 that these settings are not tied to particular MLCubes (MLCube compliant ML projects). Instead, these settings are 
 used by MLCube runners on every machine where MLCube runtime is configured to use these settings. By default, system
 settings are stored in a YAML file with default location being `${MLCUBE_ROOT}/mlcube.yaml`. The location can be
-overriden by exporting the `MLCUBE_SYSTEM_SETTINGS` environment variable.
+overriden by exporting the `MLCUBE_SYSTEM_SETTINGS` environment variable. Detailed description of system settings
+is [here](https://mlcommons.github.io/mlcube/getting-started/system-settings/).
 
 ### Task
 MLCube projects expose their functionality via `tasks`. A task implements one particular function, such as downloading
@@ -97,13 +102,17 @@ The MLCube examples [project](https://github.com/mlcommons/mlcube_examples) impl
 [MNIST MLCube](https://github.com/mlcommons/mlcube_examples/blob/master/mnist/mlcube.yaml) that implements two tasks:
 `download` (download MNIST dataset) and `train` (train a simple classifier).
 
-When users run MLCubes, they can instruct MLCube runtime to execute a particular task by providing `--task` command
-line argument: `mlcube run --mlcube=. --task=download --platform=docker`. MLCube runtime can also accept 
-comma-separated list of tasks, in which case these tasks will be executed in the order users provided them on a command
-line: `mlcube run --mlcube=. --task=download,train --platform=docker`.
+Users can can instruct [MLCube runtime](#mlcube-runtime) to execute a particular task or tasks by providing `--task` 
+command line argument:
+
+- `mlcube run --mlcube=. --task=download --platform=docker`: execute one task (`download`). 
+- `mlcube run --mlcube=. --task=download,train --platform=docker`: execute two tasks named(`download` and `train`).
+
+MLCube runtime executes tasks in the order provided by users. In the above example, MLCube will run the `download` task,
+and then - the `train` task.
 
 ### Workspace
 A `workspace` is a directory where input and output artifacts are stored. By default, its location is 
 `${MLCUBE_ROOT}/workspace`. Users can override this parameter on a command line by providing the `--workspace` argument.
 Users need to provide this parameter each time they run MLCube task, even when these tasks are logically grouped into 
-one execution. A better alternative would be to run multiple tasks at the same time (see task section).
+one execution. A better alternative would be to run multiple tasks at the same time (see [task section](#task)).
