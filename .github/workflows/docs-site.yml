@@ -3,8 +3,9 @@ name: Build & Deploy Docs Site (on-merge)
 on:
   push:
     paths:
-    - 'docs/**'
     - '.github/workflows/docs-site.yml'
+    - 'docs/**'
+    - 'mkdocs.yml'
 
 jobs:
   docs:
@@ -23,7 +24,7 @@ jobs:
         working-directory: './'
         run: |
           export PYTHONPATH=$(pwd)/mlcube:${PYTHONPATH}
-          mkdocs build --theme material --site-dir ../site/
+          mkdocs build --site-dir ../site/
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3.6.4
         with:
