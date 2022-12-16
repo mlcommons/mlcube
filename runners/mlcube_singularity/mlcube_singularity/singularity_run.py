@@ -7,7 +7,7 @@ from spython.utils.terminal import (
     get_singularity_version_info,
     check_install as check_singularity_installed,
 )
-from mlcube.errors import (ConfigurationError, ExecutionError)
+from mlcube.errors import ConfigurationError, ExecutionError
 from mlcube.shell import Shell
 from mlcube.runner import Runner, RunnerConfig
 
@@ -54,8 +54,8 @@ class Config(RunnerConfig):
         Idea is that if mlcube contains `singularity` section, then it means that we use it as is. Else, we can try
         to run this MLCube using information from `docker` section if it exists.
         """
-        if 'runner' not in mlcube:
-            mlcube['runner'] = {}
+        if "runner" not in mlcube:
+            mlcube["runner"] = {}
 
         s_cfg: t.Optional[DictConfig] = mlcube.get("singularity", None)
         if not s_cfg:
@@ -94,7 +94,9 @@ class Config(RunnerConfig):
             except Exception as err:
                 logger.warning(
                     "SingularityRun can't get singularity version (do you have singularity installed?). "
-                    "Source=Config.merge. Exception=%s", str(err), exc_info=True
+                    "Source=Config.merge. Exception=%s",
+                    str(err),
+                    exc_info=True,
                 )
 
             build_file = "docker://" + d_cfg["image"]
@@ -137,11 +139,13 @@ class SingularityRun(Runner):
                 "SingularityRun check_install returned false ('singularity --version' failed to run). MLCube cannot "
                 "run singularity images unless this check passes. Singularity runner uses `check_install` function "
                 "from singularity-cli python library (https://github.com/singularityhub/singularity-cli).",
-                function='check_singularity_installed',
-                args={'software': singularity_exec}
+                function="check_singularity_installed",
+                args={"software": singularity_exec},
             )
 
-    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]) -> None:
+    def __init__(
+        self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]
+    ) -> None:
         super().__init__(mlcube, task)
         try:
             # Check version and log a warning message if fakeroot is used with singularity version < 3.5
@@ -157,7 +161,9 @@ class SingularityRun(Runner):
         except Exception as err:
             logger.warning(
                 "SingularityRun can't get singularity version (do you have singularity installed?). "
-                "Source=SingularityRun.__init__. Exception=%s.", str(err), exc_info=True
+                "Source=SingularityRun.__init__. Exception=%s.",
+                str(err),
+                exc_info=True,
             )
 
     def configure(self) -> None:
@@ -189,17 +195,30 @@ class SingularityRun(Runner):
         else:
             # This must be a recipe file. Make sure it exists.
             if not Path(build_path, recipe).exists():
-                raise IOError(f"SIF recipe file does not exist (path={build_path}, file={recipe})")
-            logger.info("Building SIF from recipe file (path=%s, file=%s).", build_path, recipe)
+                raise IOError(
+                    f"SIF recipe file does not exist (path={build_path}, file={recipe})"
+                )
+            logger.info(
+                "Building SIF from recipe file (path=%s, file=%s).", build_path, recipe
+            )
         try:
-            Shell.run([
-                'cd', str(build_path), ';', s_cfg.singularity, 'build', s_cfg.build_args, str(image_file), recipe
-            ])
+            Shell.run(
+                [
+                    "cd",
+                    str(build_path),
+                    ";",
+                    s_cfg.singularity,
+                    "build",
+                    s_cfg.build_args,
+                    str(image_file),
+                    recipe,
+                ]
+            )
         except ExecutionError as err:
             raise ExecutionError.mlcube_configure_error(
                 self.__class__.__name__,
                 "Error occurred while building SIF image. See context for more details.",
-                **err.context
+                **err.context,
             )
 
     def run(self) -> None:
@@ -217,7 +236,7 @@ class SingularityRun(Runner):
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
                 "Error occurred while syncing MLCube workspace. See context for more details.",
-                error=str(err)
+                error=str(err),
             )
 
         try:
@@ -226,42 +245,66 @@ class SingularityRun(Runner):
                 global_mount = self.mlcube.runner["--mount_opts"]
             else:
                 global_mount = ""
-            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(self.mlcube, self.task, global_mount)
+            mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(
+                self.mlcube, self.task, global_mount
+            )
             if mounts_opts:
                 for key, value in mounts_opts.items():
-                    mounts[key]+=f':{value}'
+                    mounts[key] += f":{value}"
             logger.info(f"mounts={mounts}, task_args={task_args}")
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
                 "Error occurred while generating mount points for singularity run command. See context for more "
                 "details and check your MLCube configuration file.",
-                error=str(err)
+                error=str(err),
             )
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
         run_args = self.mlcube.runner.run_args
-        filtered_keys = [key for key in self.mlcube.runner.keys() if "--" in key and self.mlcube.runner[key]!='' and key!= "--mount_opts"]
-        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in filtered_keys]
-        extra_args = ' '.join([str(element) for element in extra_args_list])
+        filtered_keys = [
+            key
+            for key in self.mlcube.runner.keys()
+            if "--" in key and self.mlcube.runner[key] != "" and key != "--mount_opts"
+        ]
+        extra_args_list = [f"{key}={self.mlcube.runner[key]}" for key in filtered_keys]
+        extra_args = " ".join([str(element) for element in extra_args_list])
         run_args += extra_args
         try:
-            entrypoint: t.Optional[str] = self.mlcube.tasks[self.task].get('entrypoint', None)
+            entrypoint: t.Optional[str] = self.mlcube.tasks[self.task].get(
+                "entrypoint", None
+            )
             if entrypoint:
                 logger.info(
                     "Using custom task entrypoint: task=%s, entrypoint='%s'",
-                    self.task, self.mlcube.tasks[self.task].entrypoint
+                    self.task,
+                    self.mlcube.tasks[self.task].entrypoint,
                 )
-                Shell.run([self.mlcube.runner.singularity, 'exec', run_args, volumes,
-                           str(image_file), entrypoint, ' '.join(task_args[1:])])
+                Shell.run(
+                    [
+                        self.mlcube.runner.singularity,
+                        "exec",
+                        run_args,
+                        volumes,
+                        str(image_file),
+                        entrypoint,
+                        " ".join(task_args[1:]),
+                    ]
+                )
             else:
-                Shell.run([
-                    self.mlcube.runner.singularity, 'run', run_args, volumes,
-                    str(image_file), ' '.join(task_args)
-                ])
+                Shell.run(
+                    [
+                        self.mlcube.runner.singularity,
+                        "run",
+                        run_args,
+                        volumes,
+                        str(image_file),
+                        " ".join(task_args),
+                    ]
+                )
         except ExecutionError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
                 f"Error occurred while running MLCube task (task={self.task}). See context for more details.",
-                **err.context
+                **err.context,
             )
