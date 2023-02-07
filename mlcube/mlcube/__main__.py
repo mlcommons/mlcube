@@ -1,6 +1,7 @@
 """This requires the MLCube 2.0 that's located somewhere in one of dev branches."""
 import logging
 import os
+import shutil
 import sys
 import typing as t
 
@@ -19,8 +20,9 @@ from omegaconf import OmegaConf
 logger = logging.getLogger(__name__)
 
 
-_TERMINAL_WIDTH = click.termui.get_terminal_size()[0]
-"""Width of a user terminal. MLCube overrides default (80) character width to make usage examples look better."""
+_TERMINAL_WIDTH = shutil.get_terminal_size()[0]
+"""Width (number of columns) of a user terminal. 
+MLCube overrides default (80) character width to make usage examples look better."""
 
 
 @click.group(name='mlcube', add_help_option=False)

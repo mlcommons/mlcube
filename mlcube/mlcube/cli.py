@@ -4,7 +4,6 @@ from io import StringIO
 from xml.etree.ElementTree import Element
 
 import click
-from click.core import DEPRECATED_HELP_NOTICE
 
 from markdown import Markdown
 
@@ -20,6 +19,9 @@ from mlcube.platform import Platform
 from mlcube.runner import Runner
 from mlcube.system_settings import SystemSettings
 from mlcube.validate import Validate
+
+
+DEPRECATED_HELP_NOTICE = '(DEPRECATED)'
 
 
 def parse_cli_args(ctx: t.Optional[t.Union[click.core.Context, t.List[str]]],
