@@ -7,7 +7,7 @@ Interested in getting started with MLCube? Follow the
 [Getting Started](https://mlcommons.github.io/mlcube/getting-started/) instructions, or watch the video below.
 
 <div style="text-align: center" markdown="block">
-[![Watch the video](https://img.youtube.com/vi/YmaXNIliPrc/0.jpg)](https://youtu.be/YmaXNIliPrc){style="align: center"}
+[![Watch the video](https://img.youtube.com/vi/ByG24HmBLUM/0.jpg)](https://youtu.be/ByG24HmBLUM){style="align: center"}
 </div>
 
 ## Installing MLCube
