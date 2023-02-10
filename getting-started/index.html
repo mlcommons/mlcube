@@ -684,13 +684,13 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Conda</label><label for="__tabbed_1_2">VirtualEnv</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>conda create -n mlcube <span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8
-conda activate mlcube
+<div class="highlight"><pre><span></span><code>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>mlcube<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8
+conda<span class="w"> </span>activate<span class="w"> </span>mlcube
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>virtualenv --python<span class="o">=</span><span class="m">3</span>.8 .mlcube
-<span class="nb">source</span> .mlcube/bin/activate
+<div class="highlight"><pre><span></span><code>virtualenv<span class="w"> </span>--python<span class="o">=</span><span class="m">3</span>.8<span class="w"> </span>.mlcube
+<span class="nb">source</span><span class="w"> </span>.mlcube/bin/activate
 </code></pre></div>
 </div>
 </div>
@@ -701,27 +701,27 @@ separate python packages.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:6"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><input id="__tabbed_2_5" name="__tabbed_2" type="radio" /><input id="__tabbed_2_6" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">Docker</label><label for="__tabbed_2_2">Singularity</label><label for="__tabbed_2_3">GCP (alpha)</label><label for="__tabbed_2_4">K8S (alpha)</label><label for="__tabbed_2_5">Kubeflow (alpha)</label><label for="__tabbed_2_6">SSH (alpha)</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pip install mlcube-docker    
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mlcube-docker<span class="w">    </span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pip install mlcube-singularity    
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mlcube-singularity<span class="w">    </span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pip install mlcube-gcp    
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mlcube-gcp<span class="w">    </span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pip install mlcube-k8s    
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mlcube-k8s<span class="w">    </span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pip install mlcube-kubeflow    
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mlcube-kubeflow<span class="w">    </span>
 </code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="highlight"><pre><span></span><code>pip install mlcube-ssh    
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>mlcube-ssh<span class="w">    </span>
 </code></pre></div>
 </div>
 </div>
@@ -734,7 +734,7 @@ separate python packages.</p>
 <a href="https://mlcommons.github.io/mlcube/runners/ssh-runner/">SSH</a> runners are in early stages of development.</p>
 </div>
 <p>Check that the <a href="https://mlcommons.github.io/mlcube/runners/docker-runner/">docker runner</a> has been installed.
-<div class="highlight"><pre><span></span><code>mlcube config --get runners
+<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>config<span class="w"> </span>--get<span class="w"> </span>runners
 </code></pre></div></p>
 <p>Show MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a>.
 <div class="highlight"><pre><span></span><code>mlcube config --list
@@ -744,22 +744,22 @@ separate python packages.</p>
 <p>This system settings file (<code>~/mlcube.yaml</code>) configures local MLCube runners. Documentation for MLCube runners 
 describes each of these parameters in details. A typical first step for enterprise environments that are usually 
 behind a firewall is to configure proxy servers.
-<div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="nt">docker</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">env_args</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">http_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://ADDRESS:PORT</span><span class="w"></span>
-<span class="w">      </span><span class="nt">https_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://ADDRESS:PORT</span><span class="w"></span>
-<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span><span class="w"></span>
-<span class="w">      </span><span class="nt">http_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://ADDRESS:PORT</span><span class="w"></span>
-<span class="w">      </span><span class="nt">https_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://ADDRESS:PORT</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">platforms</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">docker</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">env_args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">http_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://ADDRESS:PORT</span>
+<span class="w">      </span><span class="nt">https_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://ADDRESS:PORT</span>
+<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">http_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http://ADDRESS:PORT</span>
+<span class="w">      </span><span class="nt">https_proxy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://ADDRESS:PORT</span>
 </code></pre></div></p>
 </div>
 <h2 id="explore-with-examples">Explore with examples<a class="headerlink" href="#explore-with-examples" title="Permanent link">&para;</a></h2>
 <p>A great way to learn about MLCube is try out the example MLCube cubes 
 located in the <a href="https://github.com/mlcommons/mlcube_examples">mlcube_examples</a> GitHub repository.
-<div class="highlight"><pre><span></span><code>git clone https://github.com/mlcommons/mlcube_examples.git 
-<span class="nb">cd</span> ./mlcube_examples
-mlcube describe --mlcube ./mnist
+<div class="highlight"><pre><span></span><code>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mlcommons/mlcube_examples.git<span class="w"> </span>
+<span class="nb">cd</span><span class="w"> </span>./mlcube_examples
+mlcube<span class="w"> </span>describe<span class="w"> </span>--mlcube<span class="w"> </span>./mnist
 </code></pre></div></p>
 
               

@@ -684,30 +684,30 @@
 configuration file, system setting file, and override parameters on a command line.</p>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
 <p>MLCube reference docker runner supports the following configuration parameters (with default values):
-<div class="highlight"><pre><span></span><code><span class="c1"># Docker Image name, for instance &quot;mlcommons/mnist:0.0.1&quot;</span><span class="w"></span>
-<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${docker.image}</span><span class="w"></span>
-<span class="c1"># Docker executable (docker, podman, sudo docker ...).</span><span class="w"></span>
-<span class="nt">docker</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Docker Image name, for instance &quot;mlcommons/mnist:0.0.1&quot;</span>
+<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${docker.image}</span>
+<span class="c1"># Docker executable (docker, podman, sudo docker ...).</span>
+<span class="nt">docker</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">docker</span>
 
-<span class="c1"># Environmental variables for run command (-e name=value).</span><span class="w"></span>
+<span class="c1"># Environmental variables for run command (-e name=value).</span>
 <span class="nt">env_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w">               </span>
 
-<span class="c1"># Docker run arguments when ${platform.accelerator_count} &gt; 0.</span><span class="w"></span>
-<span class="nt">gpu_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Docker run arguments when ${platform.accelerator_count} == 0.</span><span class="w"></span>
-<span class="nt">cpu_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
+<span class="c1"># Docker run arguments when ${platform.accelerator_count} &gt; 0.</span>
+<span class="nt">gpu_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="c1"># Docker run arguments when ${platform.accelerator_count} == 0.</span>
+<span class="nt">cpu_args</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
 
-<span class="c1"># Docker build arguments (--build-arg name=value)</span><span class="w"></span>
-<span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
-<span class="c1"># Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.</span><span class="w"></span>
-<span class="nt">build_context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span><span class="w"></span>
-<span class="c1"># Docker file relative to $MLCUBE_ROOT, default is `$MLCUBE_ROOT/Dockerfile`.</span><span class="w"></span>
-<span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span><span class="w"></span>
-<span class="c1"># MLCube configuration strategy</span><span class="w"></span>
-<span class="c1">#   &#39;pull&#39;: never try to build, always pull</span><span class="w"></span>
-<span class="c1">#   &#39;auto&#39;: build if image not found and dockerfile found</span><span class="w"></span>
-<span class="c1">#   &#39;always&#39;: build even if image found</span><span class="w"></span>
-<span class="nt">build_strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pull</span><span class="w"></span>
+<span class="c1"># Docker build arguments (--build-arg name=value)</span>
+<span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
+<span class="c1"># Docker build context relative to $MLCUBE_ROOT. Default is $MLCUBE_ROOT.</span>
+<span class="nt">build_context</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.</span>
+<span class="c1"># Docker file relative to $MLCUBE_ROOT, default is `$MLCUBE_ROOT/Dockerfile`.</span>
+<span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Dockerfile</span>
+<span class="c1"># MLCube configuration strategy</span>
+<span class="c1">#   &#39;pull&#39;: never try to build, always pull</span>
+<span class="c1">#   &#39;auto&#39;: build if image not found and dockerfile found</span>
+<span class="c1">#   &#39;always&#39;: build even if image found</span>
+<span class="nt">build_strategy</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pull</span>
 </code></pre></div></p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
 <p>Docker runner uses <code>build_strategy</code> configuration parameter to decide on build strategy:</p>

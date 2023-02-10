@@ -684,18 +684,18 @@
 configuration file, system setting file, and override parameters on a command line.</p>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
 <p>MLCube reference singularity runner supports the following configuration parameters (with default values):
-<div class="highlight"><pre><span></span><code><span class="c1"># Name of a singularity image, for instance &quot;mnist-0.0.1.simg&quot;.</span><span class="w"></span>
-<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span><span class="w"></span>
-<span class="c1"># Path where to build the image. By default, it is `.image` inside workspace directory.</span><span class="w"></span>
-<span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Name of a singularity image, for instance &quot;mnist-0.0.1.simg&quot;.</span>
+<span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span>
+<span class="c1"># Path where to build the image. By default, it is `.image` inside workspace directory.</span>
+<span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span>
 
-<span class="c1"># Singularity executable</span><span class="w"></span>
-<span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
+<span class="c1"># Singularity executable</span>
+<span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span>
 
-<span class="c1"># Build arguments</span><span class="w"></span>
-<span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--fakeroot</span><span class="w"></span>
-<span class="c1"># Singularity recipe file relative to workspace.</span><span class="w"></span>
-<span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w"></span>
+<span class="c1"># Build arguments</span>
+<span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--fakeroot</span>
+<span class="c1"># Singularity recipe file relative to workspace.</span>
+<span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>
 </code></pre></div></p>
 <h2 id="configuring-mlcubes">Configuring MLCubes<a class="headerlink" href="#configuring-mlcubes" title="Permanent link">&para;</a></h2>
 <p>Users do not need to run the <code>configure</code> command manually, singularity docker runs this whenever image is not found. 

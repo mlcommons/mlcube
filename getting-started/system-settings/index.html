@@ -706,77 +706,77 @@ command (<code>mlcube config --help</code>) to perform typical operations, such 
 existing one. Users can override the location of this file by defining <code>MLCUBE_SYSTEM_SETTINGS</code> environment variable. </p>
 <h2 id="mlcube-system-settings_1">MLCube System Settings<a class="headerlink" href="#mlcube-system-settings_1" title="Permanent link">&para;</a></h2>
 <p>The MLCube system settings are stored in a YAML file. This file has the following schema:
-<div class="highlight"><pre><span></span><code><span class="nt">runners</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># A dictionary with metadata on installed MLCube runners. This section is updated (if </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># necessary) every time MLCube runs (this means that this section is not updated once </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># a new runner is installed). Every key in this dictionary is a runner name (must be </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># unique across all MLCube runners), and every value is (usually) a dictionary providing </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># runner metadata. In general, it is runner-specific. This section does not provide a </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># specific configuration for instances of MLCube runners, and users should not modify </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># content of this section - it is maintained automatically by MLCube runtime.</span><span class="w"></span>
-<span class="w">  </span><span class="nt">docker</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># MLCube provides several reference runners including docker and singularity runners. </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># All reference runners are implemented in Python and are distributed as separate python </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># packages on pypi (e.g., `pip install mlcube-docker`). All these reference runners use </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># the same metadata schema. Their metadata is a dictionary with just one field - `pkg`. </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Names of MLCube runners in this section are not directly exposed to users via command </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># line API.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># All MLCube reference runners are described with a dictionary with one field (`pkg`) </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># that points to a Python package name.</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="nt">runners</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># A dictionary with metadata on installed MLCube runners. This section is updated (if </span>
+<span class="w">  </span><span class="c1"># necessary) every time MLCube runs (this means that this section is not updated once </span>
+<span class="w">  </span><span class="c1"># a new runner is installed). Every key in this dictionary is a runner name (must be </span>
+<span class="w">  </span><span class="c1"># unique across all MLCube runners), and every value is (usually) a dictionary providing </span>
+<span class="w">  </span><span class="c1"># runner metadata. In general, it is runner-specific. This section does not provide a </span>
+<span class="w">  </span><span class="c1"># specific configuration for instances of MLCube runners, and users should not modify </span>
+<span class="w">  </span><span class="c1"># content of this section - it is maintained automatically by MLCube runtime.</span>
+<span class="w">  </span><span class="nt">docker</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># MLCube provides several reference runners including docker and singularity runners. </span>
+<span class="w">    </span><span class="c1"># All reference runners are implemented in Python and are distributed as separate python </span>
+<span class="w">    </span><span class="c1"># packages on pypi (e.g., `pip install mlcube-docker`). All these reference runners use </span>
+<span class="w">    </span><span class="c1"># the same metadata schema. Their metadata is a dictionary with just one field - `pkg`. </span>
+<span class="w">    </span><span class="c1"># Names of MLCube runners in this section are not directly exposed to users via command </span>
+<span class="w">    </span><span class="c1"># line API.</span>
+<span class="w">    </span><span class="nt">pkg</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mlcube_docker</span>
+<span class="w">    </span><span class="c1"># All MLCube reference runners are described with a dictionary with one field (`pkg`) </span>
+<span class="w">    </span><span class="c1"># that points to a Python package name.</span>
 
-<span class="nt">platforms</span><span class="p">:</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># This section (a dictionary) configures instances of MLCube runners. Why there might be </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># more than one instance of a particular runner? For instance, users might have two Google </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Cloud Platform accounts - personal and corporate. Or they might have access to a number </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># of on-prem compute nodes via ssh, and so they will have respective number of MLCube SSH </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># runner instances configured here. There is always a default MLCube runner instance that </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># has the same name as the runner itself (e.g., for Docker runner the name of a default </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># MLCube docker runner is `docker`). This default section is created automatically by </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># MLCube runtime if it does not exist.</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Every MLCube runner has its own schema (see MLCube runners documentation) with its own </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># unique set of configuration parameters.</span><span class="w"></span>
-<span class="w">  </span><span class="c1"># Names of MLCube runner instances defined here are directly exposed to users via command </span><span class="w"></span>
-<span class="w">  </span><span class="c1"># line argument `--platform`:</span><span class="w"></span>
-<span class="w">  </span><span class="c1">#    - By default, a default MLCube runner instance is configured with the same name as </span><span class="w"></span>
-<span class="w">  </span><span class="c1">#      its MLCube runner class name: docker, singularity etc.</span><span class="w"></span>
-<span class="w">  </span><span class="c1">#    - When users configure their own unique MLCube runner instances (either via `mlcube </span><span class="w"></span>
-<span class="w">  </span><span class="c1">#      config create_platform` command, or manually modifying this file(*)), these instances </span><span class="w"></span>
-<span class="w">  </span><span class="c1">#      become available to use, i.e., something like is possible:</span><span class="w"></span>
-<span class="w">  </span><span class="c1">#        $ mlcube run --mlcube=. --task=train --platform=my_mlcube_runner_instance_name</span><span class="w"></span>
-<span class="w">  </span><span class="c1">#    (*): To configure a new runner instance manually, duplicate default configuration with </span><span class="w"></span>
-<span class="w">  </span><span class="c1">#         a new name and change its parameters.</span><span class="w"></span>
-<span class="w">  </span><span class="nt">singularity</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># This is the example of a default configuration for a MLCube reference singularity runner.</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># This runner instance, as any other instance, defines the `runner` key which servers as </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># a foreign key to the `runners` section.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># MLCube runner class (defined in `runners` section).</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Image name, usually defined in MLCube configuration file.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Default build directory for MLCubes distributed with sources.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Singularity executable.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--fakeroot</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Build arguments.</span><span class="w"></span>
-<span class="w">    </span><span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Default Singularity build file for MLCubes distributed with sources</span><span class="w"></span>
+<span class="nt">platforms</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># This section (a dictionary) configures instances of MLCube runners. Why there might be </span>
+<span class="w">  </span><span class="c1"># more than one instance of a particular runner? For instance, users might have two Google </span>
+<span class="w">  </span><span class="c1"># Cloud Platform accounts - personal and corporate. Or they might have access to a number </span>
+<span class="w">  </span><span class="c1"># of on-prem compute nodes via ssh, and so they will have respective number of MLCube SSH </span>
+<span class="w">  </span><span class="c1"># runner instances configured here. There is always a default MLCube runner instance that </span>
+<span class="w">  </span><span class="c1"># has the same name as the runner itself (e.g., for Docker runner the name of a default </span>
+<span class="w">  </span><span class="c1"># MLCube docker runner is `docker`). This default section is created automatically by </span>
+<span class="w">  </span><span class="c1"># MLCube runtime if it does not exist.</span>
+<span class="w">  </span><span class="c1"># Every MLCube runner has its own schema (see MLCube runners documentation) with its own </span>
+<span class="w">  </span><span class="c1"># unique set of configuration parameters.</span>
+<span class="w">  </span><span class="c1"># Names of MLCube runner instances defined here are directly exposed to users via command </span>
+<span class="w">  </span><span class="c1"># line argument `--platform`:</span>
+<span class="w">  </span><span class="c1">#    - By default, a default MLCube runner instance is configured with the same name as </span>
+<span class="w">  </span><span class="c1">#      its MLCube runner class name: docker, singularity etc.</span>
+<span class="w">  </span><span class="c1">#    - When users configure their own unique MLCube runner instances (either via `mlcube </span>
+<span class="w">  </span><span class="c1">#      config create_platform` command, or manually modifying this file(*)), these instances </span>
+<span class="w">  </span><span class="c1">#      become available to use, i.e., something like is possible:</span>
+<span class="w">  </span><span class="c1">#        $ mlcube run --mlcube=. --task=train --platform=my_mlcube_runner_instance_name</span>
+<span class="w">  </span><span class="c1">#    (*): To configure a new runner instance manually, duplicate default configuration with </span>
+<span class="w">  </span><span class="c1">#         a new name and change its parameters.</span>
+<span class="w">  </span><span class="nt">singularity</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># This is the example of a default configuration for a MLCube reference singularity runner.</span>
+<span class="w">    </span><span class="c1"># This runner instance, as any other instance, defines the `runner` key which servers as </span>
+<span class="w">    </span><span class="c1"># a foreign key to the `runners` section.</span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span>
+<span class="w">    </span><span class="c1"># MLCube runner class (defined in `runners` section).</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span>
+<span class="w">    </span><span class="c1"># Image name, usually defined in MLCube configuration file.</span>
+<span class="w">    </span><span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span>
+<span class="w">    </span><span class="c1"># Default build directory for MLCubes distributed with sources.</span>
+<span class="w">    </span><span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span>
+<span class="w">    </span><span class="c1"># Singularity executable.</span>
+<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">--fakeroot</span>
+<span class="w">    </span><span class="c1"># Build arguments.</span>
+<span class="w">    </span><span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>
+<span class="w">    </span><span class="c1"># Default Singularity build file for MLCubes distributed with sources</span>
 
-<span class="w">  </span><span class="nt">singularity-1.5.3</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># This is an example of another MLCube singularity runner instance. Maybe, a user has </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># an outdated version that requires sudo and does not support --fakeroot argument.</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># Then, this user use this name on a command line to run MLCubes with singularity runner:</span><span class="w"></span>
-<span class="w">    </span><span class="c1">#        $ mlcube run --mlcube=. --task=train --platform=singularity-1.5.3</span><span class="w"></span>
-<span class="w">    </span><span class="c1"># BTW, users can create this section by running the following command (they need to edit </span><span class="w"></span>
-<span class="w">    </span><span class="c1"># it manually though anyway):</span><span class="w"></span>
-<span class="w">    </span><span class="c1">#        $ mlcube config create_platform singularity singularity-1.5.3 </span><span class="w"></span>
-<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span><span class="w"></span>
-<span class="w">    </span><span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span><span class="w"></span>
-<span class="w">    </span><span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo singularity</span><span class="w"></span>
-<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span><span class="w"></span>
-<span class="w">    </span><span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span><span class="w"></span>
+<span class="w">  </span><span class="nt">singularity-1.5.3</span><span class="p">:</span>
+<span class="w">    </span><span class="c1"># This is an example of another MLCube singularity runner instance. Maybe, a user has </span>
+<span class="w">    </span><span class="c1"># an outdated version that requires sudo and does not support --fakeroot argument.</span>
+<span class="w">    </span><span class="c1"># Then, this user use this name on a command line to run MLCubes with singularity runner:</span>
+<span class="w">    </span><span class="c1">#        $ mlcube run --mlcube=. --task=train --platform=singularity-1.5.3</span>
+<span class="w">    </span><span class="c1"># BTW, users can create this section by running the following command (they need to edit </span>
+<span class="w">    </span><span class="c1"># it manually though anyway):</span>
+<span class="w">    </span><span class="c1">#        $ mlcube config create_platform singularity singularity-1.5.3 </span>
+<span class="w">    </span><span class="nt">runner</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">singularity</span>
+<span class="w">    </span><span class="nt">image</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${singularity.image}</span>
+<span class="w">    </span><span class="nt">image_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${runtime.workspace}/.image</span>
+<span class="w">    </span><span class="nt">singularity</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo singularity</span>
+<span class="w">    </span><span class="nt">build_args</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">build_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Singularity.recipe</span>
 </code></pre></div></p>
 
               

@@ -687,30 +687,30 @@
 supports two mandatory commands - <code>configure</code> and <code>run</code> with standard arguments - <code>mlcube</code>, <code>platform</code> and <code>task</code>. Users 
 can configure SSH runner in system setting file, and override parameters on a command line.</p>
 <h2 id="configuration-parameters">Configuration parameters<a class="headerlink" href="#configuration-parameters" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span class="c1"># Remote host name or IP address</span><span class="w"></span>
-<span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Platform (runner) to use on remote host</span><span class="w"></span>
-<span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Root path for MLCubes on remote host</span><span class="w"></span>
-<span class="nt">remote_root</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span><span class="w"></span>
-<span class="c1"># Remote python interpreter. It&#39;s a dictionary. </span><span class="w"></span>
-<span class="c1"># - Must contain:</span><span class="w"></span>
-<span class="c1">#   - `type`: interpreter type (system, virtualenv)</span><span class="w"></span>
-<span class="c1"># - When type is system (system-wide interpreter), additional parameters must be:</span><span class="w"></span>
-<span class="c1">#   - `python`: python executable, maybe full path or just `python`.</span><span class="w"></span>
-<span class="c1">#   - `requirements`: is a whitespace-separated list of python dependencies.</span><span class="w"></span>
-<span class="c1"># - When type is virtualenv (python environment created with virtualenv tool), </span><span class="w"></span>
-<span class="c1">#   additional parameters must be:</span><span class="w"></span>
-<span class="c1">#   - `python`: python executable</span><span class="w"></span>
-<span class="c1">#   - `requirements`: is a whitespace-separated list of python dependencies.</span><span class="w"></span>
-<span class="c1">#   - `location`: path where virtual environment must be created.</span><span class="w"></span>
-<span class="c1">#   - `name`: name of the virtual environment.</span><span class="w"></span>
+<div class="highlight"><pre><span></span><code><span class="c1"># Remote host name or IP address</span>
+<span class="nt">host</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="c1"># Platform (runner) to use on remote host</span>
+<span class="nt">platform</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="c1"># Root path for MLCubes on remote host</span>
+<span class="nt">remote_root</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;&#39;</span>
+<span class="c1"># Remote python interpreter. It&#39;s a dictionary. </span>
+<span class="c1"># - Must contain:</span>
+<span class="c1">#   - `type`: interpreter type (system, virtualenv)</span>
+<span class="c1"># - When type is system (system-wide interpreter), additional parameters must be:</span>
+<span class="c1">#   - `python`: python executable, maybe full path or just `python`.</span>
+<span class="c1">#   - `requirements`: is a whitespace-separated list of python dependencies.</span>
+<span class="c1"># - When type is virtualenv (python environment created with virtualenv tool), </span>
+<span class="c1">#   additional parameters must be:</span>
+<span class="c1">#   - `python`: python executable</span>
+<span class="c1">#   - `requirements`: is a whitespace-separated list of python dependencies.</span>
+<span class="c1">#   - `location`: path where virtual environment must be created.</span>
+<span class="c1">#   - `name`: name of the virtual environment.</span>
 <span class="nt">interpreter</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w">          </span>
-<span class="c1"># Authentication on remote host. It&#39;s a dictionary that contain the following fields:</span><span class="w"></span>
-<span class="c1">#   - `identify_file`: if present, will be used as part of the connection </span><span class="w"></span>
-<span class="c1">#     string (&#39;-i {identity_file}&#39;)</span><span class="w"></span>
-<span class="c1">#   - `user`: username for the remote host, will be used as &#39;{user}@{host}&#39;</span><span class="w"></span>
-<span class="nt">authentication</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span><span class="w"></span>
+<span class="c1"># Authentication on remote host. It&#39;s a dictionary that contain the following fields:</span>
+<span class="c1">#   - `identify_file`: if present, will be used as part of the connection </span>
+<span class="c1">#     string (&#39;-i {identity_file}&#39;)</span>
+<span class="c1">#   - `user`: username for the remote host, will be used as &#39;{user}@{host}&#39;</span>
+<span class="nt">authentication</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">{}</span>
 </code></pre></div>
 <p>SSH runner uses IP or name of a remote host (<code>host</code>) and ssh tool to log in and execute shell commands on remote hosts. 
 If passwordless login is not configured, SSH runner asks for password many times during configure and run phases.  </p>
