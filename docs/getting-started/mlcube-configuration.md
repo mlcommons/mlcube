@@ -81,11 +81,16 @@ Each task configuration is a dictionary with two parameters:
   defines one input parameter (`data_config`) and two output parameters (`data_dir` and `log_dir`). Each parameter 
   description is a dictionary with the following fields:
     - `type (type=string)` Specifies parameter type, and must be one of `file` or `directory`.
-    - `default (type=string)` Default parameter value. If file system paths here are relative, then they are considered to
-      be relative with respect to 
-      [MLCube workspace](https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace). In other words,
-      the `data_conig` parameter's default value for the `download` task specified above is a short form of 
-      `${workspace}/data.yaml`. 
+    - `default (type=string)` Parameter value: path to a directory of path to a file. 
+      - Paths can contain `~` (user home directory) and environment variables (e.g., `${HOME}`). MLCube does not 
+        encourage the use of environment variables  since this makes MLCube less portable and reproducible. The use 
+        of `~` should be OK though.
+      - Paths can be absolute or relative. Relative paths are always relative to current  
+        [MLCube workspace](https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace) directory. 
+        In the example above,  the `data_conig` parameter's default value for the `download` task is a short form of 
+        `${workspace}/data.yaml`. 
+    - `opts (type=string)` This optional field specifies file or path access options (e.g., mount options for container
+      runtimes). Valid values are `rw` (read and write) and `ro` (read only).
 
 
 ## Examples

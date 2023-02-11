@@ -160,7 +160,20 @@ class Shell(object):
                 if not ParameterType.is_valid(_param_def.type):
                     raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
                                              f"type={_param_def.type}. Type is invalid.")
-                _host_path = Path(mlcube.runtime.workspace) / _param_def.default
+
+                # MLCube contract says relative paths in MLCube configuration files are relative with respect to MLCube
+                # workspace directory. In certain cases it makes sense to use absolute paths too. This maybe the case
+                # when we want to reuse host cache directories that many machine learning frameworks use to cache models
+                # and datasets. We also need to be able to resolve `~` (user home directory), as well as environment
+                # variables (BTW, this is probably needs some discussion at some point in time). This environment
+                # variable could be, for instance, `${HOME}`.
+                _param_path = Path(
+                    os.path.expandvars(os.path.expanduser(_param_def.default))
+                )
+                if _param_path.is_absolute():
+                    _host_path = _param_path
+                else:
+                    _host_path = Path(mlcube.runtime.workspace) / _param_path
 
                 if _param_def.type == ParameterType.UNKNOWN:
                     if _io == IOType.OUTPUT:
