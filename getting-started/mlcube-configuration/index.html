@@ -766,11 +766,16 @@ a task name to a task configuration. In the example above, two tasks are defined
   defines one input parameter (<code>data_config</code>) and two output parameters (<code>data_dir</code> and <code>log_dir</code>). Each parameter 
   description is a dictionary with the following fields:<ul>
 <li><code>type (type=string)</code> Specifies parameter type, and must be one of <code>file</code> or <code>directory</code>.</li>
-<li><code>default (type=string)</code> Default parameter value. If file system paths here are relative, then they are considered to
-  be relative with respect to 
-  <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace">MLCube workspace</a>. In other words,
-  the <code>data_conig</code> parameter's default value for the <code>download</code> task specified above is a short form of 
-  <code>${workspace}/data.yaml</code>. </li>
+<li><code>default (type=string)</code> Parameter value: path to a directory of path to a file. </li>
+<li>Paths can contain <code>~</code> (user home directory) and environment variables (e.g., <code>${HOME}</code>). MLCube does not 
+    encourage the use of environment variables  since this makes MLCube less portable and reproducible. The use 
+    of <code>~</code> should be OK though.</li>
+<li>Paths can be absolute or relative. Relative paths are always relative to current<br />
+<a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace">MLCube workspace</a> directory. 
+    In the example above,  the <code>data_conig</code> parameter's default value for the <code>download</code> task is a short form of 
+    <code>${workspace}/data.yaml</code>. </li>
+<li><code>opts (type=string)</code> This optional field specifies file or path access options (e.g., mount options for container
+  runtimes). Valid values are <code>rw</code> (read and write) and <code>ro</code> (read only).</li>
 </ul>
 </li>
 </ul>
