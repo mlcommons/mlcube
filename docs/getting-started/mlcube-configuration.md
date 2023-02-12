@@ -82,15 +82,18 @@ Each task configuration is a dictionary with two parameters:
   description is a dictionary with the following fields:
     - `type (type=string)` Specifies parameter type, and must be one of `file` or `directory`.
     - `default (type=string)` Parameter value: path to a directory of path to a file. 
-      - Paths can contain `~` (user home directory) and environment variables (e.g., `${HOME}`). MLCube does not 
-        encourage the use of environment variables  since this makes MLCube less portable and reproducible. The use 
-        of `~` should be OK though.
-      - Paths can be absolute or relative. Relative paths are always relative to current  
-        [MLCube workspace](https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace) directory. 
-        In the example above,  the `data_conig` parameter's default value for the `download` task is a short form of 
-        `${workspace}/data.yaml`. 
+        - Paths can contain `~` (user home directory) and environment variables (e.g., `${HOME}`). MLCube does not 
+          encourage the use of environment variables  since this makes MLCube less portable and reproducible. The use 
+          of `~` should be OK though.
+        - Paths can be absolute or relative. Relative paths are always relative to current  
+          [MLCube workspace](https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace) directory. 
+          In the example above,  the `data_conig` parameter's default value for the `download` task is a short form of 
+          `${workspace}/data.yaml`. 
     - `opts (type=string)` This optional field specifies file or path access options (e.g., mount options for container
-      runtimes). Valid values are `rw` (read and write) and `ro` (read only).
+      runtimes). Valid values are `rw` (read and write) and `ro` (read only). When parameter is a file, these options 
+      are set for a volume associated with the file's parent directory. When read-only option is specified for
+      an output parameter, MLCube runner will use it and will log to a log file. When conflicting options are 
+      found, MLCube will log a warning message and will use the `rw` option. 
 
 
 ## Examples

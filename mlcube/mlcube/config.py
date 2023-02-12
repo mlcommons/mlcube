@@ -15,7 +15,7 @@ from omegaconf import (DictConfig, OmegaConf)
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['IOType', 'ParameterType', 'MLCubeConfig']
+__all__ = ['IOType', 'ParameterType', 'MountType', 'MLCubeConfig']
 
 
 class IOType(object):
