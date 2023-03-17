@@ -4,7 +4,7 @@ import typing as t
 from pathlib import Path
 from omegaconf import (DictConfig, OmegaConf)
 from mlcube.validate import Validate
-from mlcube_ssh.ssh_run import Shell
+from mlcube.shell import Shell
 from ssh_config.client import (SSHConfig, Host)
 from mlcube.runner import (RunnerConfig, Runner)
 from mlcube.errors import ExecutionError

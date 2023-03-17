@@ -138,78 +138,130 @@ class Shell(object):
         return Shell.run(f"rsync -e 'ssh' '{source}' '{dest}'", on_error=on_error)
 
     @staticmethod
-    def generate_mounts_and_args(mlcube: DictConfig, task: str) -> t.Tuple[t.Dict, t.List]:
-        """Generate mount points and arguments for the given task.
+    def get_host_path(workspace_path: str, path_from_config: str) -> str:
+        """Return host path for a task parameter.
 
+        Args:
+            workspace_path: Workspace directory path for this MLCube.
+            path_from_config: Parameter path as specified by a user in an MLCube configuration file (e.g., mlcube.yaml).
+
+        Returns:
+            Absolute host path.
+        """
+        # Omega conf will resolve any variables defined in MLCube configuration file. We need to take care about `~`
+        # (user home directory) and environment variables.
+        host_path = Path(
+            os.path.expandvars(os.path.expanduser(path_from_config))
+        )
+        # According to MLCube contract, relative paths are relative to MLCube workspace directory.
+        if not host_path.is_absolute():
+            host_path = Path(workspace_path) / host_path
+        return host_path.as_posix()
+
+    @staticmethod
+    def generate_mounts_and_args(mlcube: DictConfig, task: str,
+                                 make_dirs: bool = True) -> t.Tuple[t.Dict, t.List, t.Dict]:
+        """Generate mount points, task arguments and mount options for the given task.
+
+        Args:
+            mlcube: MLCube configuration (e.g., coming from `mlcube.yaml` file).
+            task: Task name for which mount points need to be generated.
+            make_dirs: If true, make host directories recursively if they do not exist. We need this to actually make
+                unit tests work (that set this value to false).
         Return:
-            A tuple containing two elements:
-                -  A mapping from host path to path inside container.
-                -  A list of task arguments.
+            A tuple containing three elements:
+                - A mapping from host path to path inside container.
+                - A list of task arguments.
+                - A mapping from host paths to mount options (optional).
         """
         # First task argument is always the task name.
-        mounts, args, mounts_opts = {}, [task], {}
+        mounts: t.Dict[str, str] = {}         # Mapping from host paths to container paths.
+        args: t.List[str] = [task]            # List of arguments for the given task.
+        mounts_opts: t.Dict[str, str] = {}    # Mapping from host paths to mount options (rw/ro).
 
         def _generate(_params: DictConfig, _io: str) -> None:
-            """_params here is a dictionary containing input or output parameters.
+            """Process parameters (could be inputs or outputs).
 
-            It maps parameter name to DictConfig(type, default)
+            This function updates `mounts`, `args` and `mounts_opts`.
+
+            Args:
+                _params: Dictionary of input or output parameters.
+                _io: Specifies if these parameters are input our output parameters.
             """
             if not IOType.is_valid(_io):
                 raise ConfigurationError(f"Invalid IO = {_io}")
             for _param_name, _param_def in _params.items():
+                assert isinstance(_param_def, DictConfig), f"Unexpected parameter definition: {_param_def}."
                 if not ParameterType.is_valid(_param_def.type):
-                    raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
-                                             f"type={_param_def.type}. Type is invalid.")
-                _host_path = Path(mlcube.runtime.workspace) / _param_def.default
+                    raise ConfigurationError(
+                        f"Invalid task: task={task}, param={_param_name}, type={_param_def.type}. Type is invalid."
+                    )
+
+                # MLCube contract says relative paths in MLCube configuration files are relative with respect to MLCube
+                # workspace directory. In certain cases it makes sense to use absolute paths too. This maybe the case
+                # when we want to reuse host cache directories that many machine learning frameworks use to cache models
+                # and datasets. We also need to be able to resolve `~` (user home directory), as well as environment
+                # variables (BTW, this is probably needs some discussion at some point in time). This environment
+                # variable could be, for instance, `${HOME}`.
+                _host_path: str = Shell.get_host_path(mlcube.runtime.workspace, _param_def.default)
 
                 if _param_def.type == ParameterType.UNKNOWN:
                     if _io == IOType.OUTPUT:
-                        raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
-                                                 f"type={_param_def.type}. Type is unknown.")
+                        raise ConfigurationError(
+                            f"Invalid task: task={task}, param={_param_name}, type={_param_def.type}. "
+                            "Type cannot be unknown for output parameters."
+                        )
                     else:
                         if os.path.isdir(_host_path):
                             _param_def.type = ParameterType.DIRECTORY
                         elif os.path.isfile(_host_path):
                             _param_def.type = ParameterType.FILE
                         else:
-                            raise ConfigurationError(f"Invalid task: task={task}, param={_param_name}, "
-                                                     f"type={_param_def.type}. Type is unknown and unable to identify "
-                                                     f"it ({_host_path}).")
+                            raise ConfigurationError(
+                                f"Invalid task: task={task}, param={_param_name}, type={_param_def.type}. "
+                                f"Type is unknown and unable to identify it ({_host_path})."
+                            )
 
                 if _param_def.type == ParameterType.DIRECTORY:
-                    os.makedirs(_host_path, exist_ok=True)
-                    mounts[_host_path] = mounts.get(
-                        _host_path,
-                        '/mlcube_io{}/{}'.format(len(mounts), os.path.basename(_host_path))
-                    )
+                    if make_dirs:
+                        os.makedirs(_host_path, exist_ok=True)
+                    mounts[_host_path] = mounts.get(_host_path, f"/mlcube_io{len(mounts)}")
                     args.append('--{}={}'.format(_param_name, mounts[_host_path]))
                 elif _param_def.type == ParameterType.FILE:
                     _host_path, _file_name = os.path.split(_host_path)
-                    os.makedirs(_host_path, exist_ok=True)
-                    new_mount = mounts.get(
-                        _host_path,
-                        '/mlcube_io{}/{}'.format(len(mounts), _host_path)
-                    )
-                    windows_match = ':\\'
-                    if windows_match in new_mount:
-                        index = new_mount.index(windows_match)
-                        substring = new_mount[index - 1: index + 2]
-                        new_mount = new_mount.replace(substring, '').replace('\\', '/')
-                    mounts[_host_path] = new_mount
+                    if make_dirs:
+                        os.makedirs(_host_path, exist_ok=True)
+                    mounts[_host_path] = mounts.get(_host_path, f"/mlcube_io{len(mounts)}")
                     args.append('--{}={}'.format(_param_name, mounts[_host_path] + '/' + _file_name))
 
-                if "opts" in _param_def:
-                    if MountType.is_valid(_param_def.opts):
-                        mounts_opts[_host_path] = _param_def.opts
-                    else:
-                        raise ConfigurationError(f"Invalid mount options: mount={task}, param={_param_name}, "
-                                                     f"opts={_param_def.opts}. Option is unknown and unable to identify")
-                else:
-                    mounts_opts[_host_path] = MountType.RW
+                mount_type: t.Optional[str] = _param_def.get('opts', None)
+                if mount_type:
+                    if not MountType.is_valid(_param_def.opts):
+                        raise ConfigurationError(
+                            f"Invalid mount options: mount={task}, param={_param_name}, opts={_param_def.opts}."
+                        )
+                    if mount_type == MountType.RO and _io == IOType.OUTPUT:
+                        logger.warning(
+                            "Task's (%s) parameter (%s) is OUTPUT and requested to mount as RO.", task, _param_name
+                        )
+                    if _host_path in mounts_opts and mounts_opts[_host_path] != mount_type:
+                        logger.warning(
+                            "Conflicting mount options found. Host path (%s) has already been requested to mount as "
+                            "'%s', but new parameter (%s) requests to mount as '%s'.",
+                            _host_path, mounts_opts[_host_path], _param_name, mount_type
+                        )
+                        # Since we can only have `ro`/`rw`, we'll set the mount option to `rw`.
+                        mount_type = MountType.RW
 
-        params = mlcube.tasks[task].parameters
-        _generate(params.inputs, IOType.INPUT)
-        _generate(params.outputs, IOType.OUTPUT)
+                    mounts_opts[_host_path] = mount_type
+                    logger.info(
+                        "Host path (%s) for parameter '%s' will be mounted with '%s' option.",
+                        _host_path, _param_name, mount_type
+                    )
+
+        params = mlcube.tasks[task].parameters     # Dictionary of input and output parameters for the task.
+        _generate(params.inputs, IOType.INPUT)     # Process input parameters.
+        _generate(params.outputs, IOType.OUTPUT)   # Process output parameters.
 
         return mounts, args, mounts_opts
 

@@ -1,7 +1,10 @@
-site_name: 'MLCube'
-site_description: 'Documentation site for MLCube'
-site_author: '<MLPerf.org> mlcommons@googlegroups.com'
-docs_dir: 'docs/'
+site_name: MLCube
+site_description: Documentation site for MLCube
+site_author: <mlcommons.org> mlcommons@googlegroups.com
+docs_dir: docs/
+
+repo_url: https://github.com/mlcommons/mlcube
+repo_name: mlcommons/mlcube
 
 nav:
   - Home: index.md
@@ -9,6 +12,10 @@ nav:
     - Installation: getting-started/index.md
     - Hello World: getting-started/hello-world.md
     - MNIST: getting-started/mnist.md
+    - MLCube concepts: getting-started/concepts.md
+    - MLCube configuration: getting-started/mlcube-configuration.md
+    - System Settings: getting-started/system-settings.md
+    - Command Line Interface: getting-started/cli.md
   - Tutorials:
     - How to Create an MLCube: tutorials/create-mlcube.md
   - Runners:
@@ -21,24 +28,47 @@ nav:
     - GCP Runner: runners/gcp-runner.md
 
 theme:
-  name: 'material'
-  favicon: 'assets/favicon.ico'
+  features:
+    - search.suggest
+    - search.highlight
+    - search.share
+  name: material
+  logo: assets/logo.png
+  favicon: assets/favicon.ico
   language: 'en'
   palette:
-    primary: 'blue'
-    accent: 'blue'
-  font:
-    text: 'Circular'
-    code: 'Inconsolata'
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: teal
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: teal
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
 
-extra_css:
-  - 'assets/stylesheets/circular.css'
+plugins:
+  - search
 
 markdown_extensions:
   - admonition
   - codehilite
   - pymdownx.tasklist
-  - pymdownx.details
-  - pymdownx.superfences
+  - pymdownx.details         # Allowing hidden expandable regions denoted by ???
+  - pymdownx.superfences     # Seems to enable syntax highlighting when used with the Material theme.
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - mkdocs-click             # Generate documentation for `click`-based console applications.
   - toc:
       permalink: True
+  - md_in_html               # Parse markdown inside HTML tags (default is not to parse).
+
+extra:
+  social:
+    # Buttons at the bottom of every page.
+    - icon: fontawesome/brands/github
+      link: https://github.com/mlcommons/mlcube

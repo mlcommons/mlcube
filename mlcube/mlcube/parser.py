@@ -127,7 +127,12 @@ class CliParser(object):
             opts[key] = security_option
 
         if gpus_option is not None:
-            key = "--gpus" if platform == "docker" else "--nv"
+            if platform == "docker":
+                key = "--gpus" 
+            else:
+                key = "--nv"
+                os.environ['SINGULARITYENV_CUDA_VISIBLE_DEVICES'] = gpus_option
+                gpus_option = ""
             opts[key] = gpus_option
 
         if memory_option is not None:
@@ -135,7 +140,7 @@ class CliParser(object):
             opts[key] = memory_option
 
         if cpu_option is not None:
-            key = "--cpu-shares" if platform == "docker" else "--vm-cpu"
+            key = "--cpuset-cpus" if platform == "docker" else "--vm-cpu"
             opts[key] = cpu_option
 
         mlcube_args[platform] = opts

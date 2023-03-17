@@ -1,4 +1,5 @@
-flake8>=3.7.8
 mkdocs>=1.0.4
 mkdocs-material>=4.4.0
+mkdocs-click
 pymdown-extensions>=7.1
+-r ../mlcube/requirements.txt
