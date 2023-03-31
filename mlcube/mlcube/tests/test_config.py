@@ -33,7 +33,7 @@ tasks:
       inputs:
         data_config: {type: file, default: data.yaml}
       outputs:
-        data_dir: {type: directory, default: data}
+        data_dir: data/
         log_dir: {type: directory, default: logs}
   train:
     parameters:
@@ -41,8 +41,8 @@ tasks:
         data_dir: {type: directory, default: data}
         train_config: {type: file, default: train.yaml}
       outputs:
-        log_dir: {type: directory, default: logs}
-        model_dir: {type: directory, default: model}
+        log_dir: logs/
+        model_dir: model\\
 """
 
 _DOWNLOAD_TASK_ENTRY_POINT = '/workspace/mnist/download.py'
@@ -104,7 +104,7 @@ class TestConfig(TestCase):
                         'data_config': {'type': 'file', 'default': 'data.yaml'}
                     },
                     'outputs': {
-                        'data_dir': {'type': 'directory', 'default': 'data'},
+                        'data_dir': {'type': 'directory', 'default': 'data/'},
                         'log_dir': {'type': 'directory', 'default': 'logs'}
                     }
                 },
@@ -116,8 +116,8 @@ class TestConfig(TestCase):
                         'train_config': {'type': 'file', 'default': 'train.yaml'}
                     },
                     'outputs': {
-                        'log_dir': {'type': 'directory', 'default': 'logs'},
-                        'model_dir': {'type': 'directory', 'default': 'model'}
+                        'log_dir': {'type': 'directory', 'default': 'logs/'},
+                        'model_dir': {'type': 'directory', 'default': 'model\\'}
                     }
                 }
             }
@@ -159,6 +159,7 @@ class TestConfig(TestCase):
     def test_create_mlcube_config_entrypoints(self) -> None:
         mlcube: DictConfig = MLCubeConfig.create_mlcube_config("/some/path/to/mlcube.yaml")
         self._check_standard_config(mlcube, entry_points=True)
+
 
     def test_io_type(self) -> None:
         self.assertEqual(IOType.INPUT, 'input')

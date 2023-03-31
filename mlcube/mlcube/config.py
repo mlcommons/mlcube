@@ -174,6 +174,18 @@ class MLCubeConfig(object):
             task_cli_args: Task parameters from command line.
         This function does not set `type` of parameters (if not present) in all cases.
         """
+        # Path separators that users can use in the MLCube configuration files. This function uses the presence of
+        # a path separator at the end of the parameter value as a hint that the type of this parameter is a directory
+        # (when not specified by a user). We should not relly on `os.sep` since MLCubes are expected to run in different
+        # environments (e.g., Unix and Windows).
+        separators = ('/', '\\')
+        if os.sep not in separators:
+            logger.warning("The os-specific path separator ('%s') not in list of standard separators.", os.sep)
+        if os.altsep is not None and os.altsep not in separators:
+            logger.warning(
+                "The os-specific alternative path separator ('%s') not in list of standard separators.", os.altsep
+            )
+        #
         for name in parameters.keys():
             # The `_param_name` is anyway there, so check it's not None.
             [param_def] = MLCubeConfig.ensure_values_exist(parameters, name, dict)
@@ -189,7 +201,7 @@ class MLCubeConfig(object):
             # Make sure every parameter definition contains 'type' field. Also, if it's unknown, we can assume it's a
             # directory if a value ends with forward/backward slash.
             _ = MLCubeConfig.ensure_values_exist(param_def, 'type', lambda: ParameterType.UNKNOWN)
-            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
+            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(separators):
                 param_def.type = ParameterType.DIRECTORY
             # See if there is value on a command line
             param_def.default = task_cli_args.get(name, param_def.default)
@@ -198,7 +210,7 @@ class MLCubeConfig(object):
             # if we can do the same with user-provided values.
             # TODO: what if a parameter in mlcube.yaml is declared to be a file, but users provided something with
             #       slash at the end.
-            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
+            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(separators):
                 param_def.type = ParameterType.DIRECTORY
 
             # TODO: For some input parameters, that generally speaking must exist, we can figure out types later,
