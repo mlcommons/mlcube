@@ -4,10 +4,12 @@ from io import StringIO
 from xml.etree.ElementTree import Element
 
 import click
-from click.core import DEPRECATED_HELP_NOTICE
+try:
+    from click.core import DEPRECATED_HELP_NOTICE
+except ImportError:
+    DEPRECATED_HELP_NOTICE = "(Deprecated)"
 
 from markdown import Markdown
-
 
 __all__ = ["parse_cli_args", "markdown2text", "MultiValueOption", "Options", "MLCubeCommand", "UsageExamples",
            "parse_cli_args"]
