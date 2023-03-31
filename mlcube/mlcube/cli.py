@@ -22,29 +22,49 @@ from mlcube.system_settings import SystemSettings
 from mlcube.validate import Validate
 
 
-def parse_cli_args(ctx: t.Optional[t.Union[click.core.Context, t.List[str]]],
-                   mlcube: t.Optional[str], platform: t.Optional[str],
-                   workspace: t.Optional[str],
-                   resolve: bool) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
+def parse_cli_args(
+    ctx: t.Optional[click.core.Context],
+    mlcube: str,
+    platform: t.Optional[str],
+    workspace: t.Optional[str],
+    network: t.Optional[str],
+    security: t.Optional[str],
+    gpus: t.Optional[str],
+    memory: t.Optional[str],
+    cpu: t.Optional[str],
+    resolve: bool,
+) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
     """Parse command line arguments.
 
     Args:
-        ctx: Click context or list of extra arguments from a command line. We need this to get access to extra
-             CLI arguments.
+        ctx: Click context. We need this to get access to extra CLI arguments.
         mlcube: Path to MLCube root directory or mlcube.yaml file.
         platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
         workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
+        network: Networking options defined during MLCube container execution.
+        security: Security options defined during MLCube container execution.
+        gpus: GPU usage options defined during MLCube container execution.
+        memory: Memory RAM options defined during MLCube container execution.
+        cpu: CPU options defined during MLCube container execution.
         resolve: if True, compute values in MLCube configuration.
     """
     if mlcube is None:
         mlcube = os.getcwd()
     mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
     Validate.validate_type(mlcube_inst, MLCubeDirectory)
-    if ctx is not None:
-        _ctx = ctx
-        if isinstance(_ctx, click.core.Context):
-            _ctx = _ctx.args
-        mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*_ctx)
+    if platform in ["docker", "singularity"] and any(
+        [network, security, gpus, memory, cpu]
+    ):
+        mlcube_cli_args, task_cli_args = CliParser.parse_optional_arg(
+            platform,
+            network,
+            security,
+            gpus,
+            memory,
+            cpu,
+        )
+    elif ctx is not None:
+        mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
     else:
         mlcube_cli_args, task_cli_args = None, None
     if platform is not None:
@@ -56,8 +76,13 @@ def parse_cli_args(ctx: t.Optional[t.Union[click.core.Context, t.List[str]]],
     else:
         runner_cls, runner_config = None, None
     mlcube_config = MLCubeConfig.create_mlcube_config(
-        os.path.join(mlcube_inst.path, mlcube_inst.file), mlcube_cli_args, task_cli_args, runner_config, workspace,
-        resolve=resolve, runner_cls=runner_cls
+        os.path.join(mlcube_inst.path, mlcube_inst.file),
+        mlcube_cli_args,
+        task_cli_args,
+        runner_config,
+        workspace,
+        resolve=resolve,
+        runner_cls=runner_cls,
     )
     return runner_cls, mlcube_config
 
