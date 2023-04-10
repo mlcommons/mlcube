@@ -22,6 +22,7 @@ logger = logging.getLogger(__name__)
 _TERMINAL_WIDTH = shutil.get_terminal_size()[0]   # Since Python version 3.3
 """Width of a user terminal. MLCube overrides default (80) character width to make usage examples look better."""
 
+
 def add_to_parser(self, parser: click.parser.OptionParser, ctx: click.core.Context):
     def parser_process(value: str, state: click.parser.ParsingState):
         values: t.List[str] = [value]
@@ -170,7 +171,9 @@ def show_config(ctx: click.core.Context, mlcube: t.Optional[str], platform: str,
     if mlcube is None:
         mlcube = os.getcwd()
     _, mlcube_config = parse_cli_args(
-        ctx.args + ['-P' + param for param in p], mlcube, platform, workspace, None, None, None, None, None, resolve
+        unparsed_args=ctx.args + ['-P' + param for param in p],
+        parsed_args={"mlcube": mlcube, "platform": platform, "workspace": workspace},
+        resolve=resolve
     )
     print(OmegaConf.to_yaml(mlcube_config))
 
@@ -196,13 +199,19 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
     Args:
         mlcube: Path to MLCube root directory or mlcube.yaml file.
         platform: Platform to use to configure this MLCube for (docker, singularity, gcp, k8s etc).
-        p: Additional configuration parameters.
+        p: Additional MLCube configuration parameters (these parameters are those parameters that normally start with
+            `-P` prefix). Here, due to original implementation, we need to `unparse` by adding `-P` prefix.
     """
+    logger.debug("mlcube::configure, mlcube=%s, platform=%s, p=%s", mlcube, platform, str(p))
     if mlcube is None:
         mlcube = os.getcwd()
     logger.info("Configuring MLCube (`%s`) for `%s` platform.", os.path.abspath(mlcube), platform)
     try:
-        runner_cls, mlcube_config = parse_cli_args([*p], mlcube, platform, None, None, None, None, None, None, True)
+        runner_cls, mlcube_config = parse_cli_args(
+            unparsed_args=['-P' + param for param in p],
+            parsed_args={"mlcube": mlcube, "platform": platform},
+            resolve=True
+        )
         runner = runner_cls(mlcube_config, task=None)
         runner.configure()
     except MLCubeError as err:
@@ -231,6 +240,7 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
 @gpus_option
 @memory_option
 @cpu_option
+@Options.help
 @click.pass_context
 def run(
     ctx: click.core.Context,
@@ -260,16 +270,12 @@ def run(
         cpu: CPU options defined during MLCube container execution.
     """
     runner_cls, mlcube_config = parse_cli_args(
-        ctx,
-        mlcube,
-        platform,
-        workspace,
-        network,
-        security,
-        gpus,
-        memory,
-        cpu,
-        resolve=True,
+        unparsed_args=ctx.args,
+        parsed_args={
+            "mlcube": mlcube, "platform": platform, "workspace": workspace,
+            "network": network, "security": security, "gpus": gpus, "memory": memory, "cpu": cpu
+        },
+        resolve=True
     )
     mlcube_tasks: t.List[str] = list(
         (mlcube_config.get("tasks", None) or {}).keys()
@@ -336,7 +342,9 @@ def describe(mlcube: t.Optional[str]) -> None:
     if mlcube is None:
         mlcube = os.getcwd()
     _, mlcube_config = parse_cli_args(
-        None, mlcube, None, None, None, None, None, None, None, resolve=True
+        unparsed_args=[],
+        parsed_args={"mlcube": mlcube},
+        resolve=True
     )
     print("MLCube")
     print(f"  path = {mlcube_config.runtime.root}")

@@ -76,14 +76,13 @@ class Config(RunnerConfig):
             #   'pull': never try to build, always pull
             #   'auto': build if image not found and dockerfile found
             #   'always': build even if image found
-            "--network": "",  # Networking options defined during MLCube container execution.
-            "--security-opt": "",  # Security options for Docker.
-            "--gpus": "",  # GPU usage options defined during MLCube container execution.
-            "--nv": "",  # GPU usage options for Singularity.
-            "--memory": "",  # RAM options defined during MLCube container execution.
-            "--cpuset-cpus": "",  # CPU cores options for Docker.
             # TODO: The above variable may be confusing. Is `configure_strategy` better? Docker uses `--pull`
             #       switch as build arg to force pulling the base image.
+            "--network": None,  # Networking options defined during MLCube container execution.
+            "--security-opt": None,  # Security options for Docker.
+            "--gpus": None,  # GPU usage options defined during MLCube container execution.
+            "--memory": None,  # RAM options defined during MLCube container execution.
+            "--cpuset-cpus": None,  # CPU cores options for Docker.
         }
     )
 
@@ -248,12 +247,13 @@ class DockerRun(Runner):
         run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
 
         extra_args_list = [
-            f"{key}={self.mlcube.runner[key]}"
-            for key in self.mlcube.runner.keys()
-            if "--" in key and self.mlcube.runner[key] != ""
+            f"{key}={value}"
+            for key, value in self.mlcube.runner.items()
+            if key.startswith('--') and value is not None
         ]
-        extra_args = " ".join([str(element) for element in extra_args_list])
-        run_args += extra_args
+        extra_args = " ".join(extra_args_list)
+        if extra_args:
+            run_args += " " + extra_args
 
         if "entrypoint" in self.mlcube.tasks[self.task]:
             logger.info(
@@ -263,7 +263,7 @@ class DockerRun(Runner):
             )
             # If entrypoints contain whitespaces e.g. "python /workspace/download.py"
             # pass only the first token (e.g. python) to --entrypoint
-            # the remaining aruguments are specified after the container_image_name, as shown here:
+            # the remaining arguments are specified after the container_image_name, as shown here:
             # "docker run --entrypoint [new_command] [container_image_name] [optional_arguments_for_entrypoint]"
 
             if len(shlex.split(self.mlcube.tasks[self.task].entrypoint)) > 1:
@@ -282,7 +282,8 @@ class DockerRun(Runner):
                     )
 
                 # use first item in entry point list as the executable to specify in docker run --entrypoint
-                # specify the arguments to the new entrypoint executable immediatly after the container_image_name in the docker run command
+                # specify the arguments to the new entrypoint executable immediatly after the container_image_name
+                # in the docker run command
                 run_args += f" --entrypoint={shlex.split(self.mlcube.tasks[self.task].entrypoint)[0]}"
 
             else:

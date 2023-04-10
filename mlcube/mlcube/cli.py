@@ -1,3 +1,4 @@
+import copy
 import os
 import typing as t
 from io import StringIO
@@ -25,64 +26,43 @@ from mlcube.validate import Validate
 
 
 def parse_cli_args(
-    ctx: t.Optional[click.core.Context],
-    mlcube: str,
-    platform: t.Optional[str],
-    workspace: t.Optional[str],
-    network: t.Optional[str],
-    security: t.Optional[str],
-    gpus: t.Optional[str],
-    memory: t.Optional[str],
-    cpu: t.Optional[str],
-    resolve: bool,
+        unparsed_args: t.List[str], parsed_args: t.Dict, resolve: bool
 ) -> t.Tuple[t.Optional[t.Type[Runner]], DictConfig]:
     """Parse command line arguments.
 
     Args:
-        ctx: Click context. We need this to get access to extra CLI arguments.
-        mlcube: Path to MLCube root directory or mlcube.yaml file.
-        platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
-        workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
-        network: Networking options defined during MLCube container execution.
-        security: Security options defined during MLCube container execution.
-        gpus: GPU usage options defined during MLCube container execution.
-        memory: Memory RAM options defined during MLCube container execution.
-        cpu: CPU options defined during MLCube container execution.
+        unparsed_args: List of arguments that have not been parsed yet. These are parameters that are described
+            above (MLCube runtime arguments and task arguments).
+        parsed_args: CLI arguments that have already been parsed. These are all other CLI arguments that start with
+            `--` prefix, and are normally parsed by libraries such as `click` or `argparse`. This dictionary will
+            also include such arguments as `--platform`, `--mlcube` and others. Keys in this dictionary are argument
+            names without `--` prefix.
         resolve: if True, compute values in MLCube configuration.
     """
-    if mlcube is None:
-        mlcube = os.getcwd()
-    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(mlcube)
+    parsed_args = copy.deepcopy(parsed_args)
+
+    if parsed_args.get("mlcube", None) is None:
+        parsed_args["mlcube"] = os.getcwd()
+    mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(parsed_args["mlcube"])
     Validate.validate_type(mlcube_inst, MLCubeDirectory)
-    if platform in ["docker", "singularity"] and any(
-        [network, security, gpus, memory, cpu]
-    ):
-        mlcube_cli_args, task_cli_args = CliParser.parse_optional_arg(
-            platform,
-            network,
-            security,
-            gpus,
-            memory,
-            cpu,
-        )
-    elif ctx is not None:
-        mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(*ctx.args)
-    else:
-        mlcube_cli_args, task_cli_args = None, None
-    if platform is not None:
+
+    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(unparsed_args, parsed_args)
+
+    if parsed_args.get("platform", None) is not None:
         system_settings = SystemSettings()
-        runner_config: t.Optional[DictConfig] = system_settings.get_platform(platform)
+        runner_config: t.Optional[DictConfig] = system_settings.get_platform(parsed_args["platform"])
         runner_cls: t.Optional[t.Type[Runner]] = Platform.get_runner(
             system_settings.runners.get(runner_config.runner, None)
         )
     else:
         runner_cls, runner_config = None, None
+
     mlcube_config = MLCubeConfig.create_mlcube_config(
         os.path.join(mlcube_inst.path, mlcube_inst.file),
         mlcube_cli_args,
         task_cli_args,
         runner_config,
-        workspace,
+        parsed_args.get("workspace", None),
         resolve=resolve,
         runner_cls=runner_cls,
     )
