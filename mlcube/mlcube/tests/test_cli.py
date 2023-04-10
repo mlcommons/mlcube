@@ -1,9 +1,11 @@
 import typing as t
 from unittest import TestCase
 
-from click import Option
+from click import Option, BaseCommand
+from click.testing import CliRunner, Result
 
 from mlcube.cli import (markdown2text, Options)
+from mlcube.__main__ import cli, show_config, configure, run, describe, config, create
 
 
 class TestCli(TestCase):
@@ -34,3 +36,13 @@ class TestCli(TestCase):
         self.assertEqual(
             8, len(decorators), f"Expected number of option decorators is 8. Actual tested decorators: {decorators}."
         )
+
+    def test_help(self) -> None:
+        """python -m unittest  mlcube.tests.test_cli"""
+        cli_funcs = [
+            cli, show_config, configure, run, describe, config, create
+        ]
+        for cli_func in cli_funcs:
+            self.assertIsInstance(cli_func, BaseCommand)
+            result: Result = CliRunner().invoke(cli_func, [f"--help"])
+            self.assertEqual(result.exit_code, 0, f"Error while running `{cli_func.name}`. Output: {result.output}")

@@ -33,11 +33,11 @@ class Config(RunnerConfig):
             # Sergey: there seems to be a better name for this parameter. Originally, the only source was a singularity
             # recipe (build file). Later, MLCube started to support other sources, such as docker images.
             "build_file": "Singularity.recipe",  # Source for the image build process.
-            "--network": "",  # Networking options defined during MLCube container execution.
-            "--security": "",  # Security options defined during MLCube container execution.
-            "--nv": "",  # usage options defined during MLCube container execution.
-            "--vm-ram": "",  # RAM options defined during MLCube container execution.
-            "--vm-cpu": ""  # CPU options defined during MLCube container execution.
+            "--network": None,  # Networking options defined during MLCube container execution.
+            "--security": None,  # Security options defined during MLCube container execution.
+            "--nv": None,  # usage options defined during MLCube container execution.
+            "--vm-ram": None,  # RAM options defined during MLCube container execution.
+            "--vm-cpu": None  # CPU options defined during MLCube container execution.
         }
     )
 
@@ -140,6 +140,14 @@ class SingularityRun(Runner):
                 args={'software': singularity_exec}
             )
 
+    def _get_extra_args(self) -> str:
+        """Temporary solution to take into account run arguments provided by users."""
+        # Collect all parameters that start with '--' and have a non-None value.
+        extra_args = [
+            f'{key}={value}' for key, value in self.mlcube.runner.items() if key.startswith('--') and value is not None
+        ]
+        return ' '.join(extra_args)
+
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]) -> None:
         super().__init__(mlcube, task)
         try:
@@ -236,9 +244,12 @@ class SingularityRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
         run_args = self.mlcube.runner.run_args
-        extra_args_list = [f'{key}={self.mlcube.runner[key]}' for key in self.mlcube.runner.keys() if "--" in key]
-        extra_args = ' '.join([str(element) for element in extra_args_list])
-        run_args += extra_args
+
+        # Temporary solution
+        extra_args = self._get_extra_args()
+        if extra_args:
+            run_args += " " + extra_args
+
         try:
             entrypoint: t.Optional[str] = self.mlcube.tasks[self.task].get('entrypoint', None)
             if entrypoint:
