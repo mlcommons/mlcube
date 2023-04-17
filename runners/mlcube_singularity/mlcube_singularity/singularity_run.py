@@ -53,9 +53,12 @@ class Config(RunnerConfig):
         Idea is that if mlcube contains `singularity` section, then it means that we use it as is. Else, we can try
         to run this MLCube using information from `docker` section if it exists.
         """
+        # The `runner` section will contain effective runner configuration. At this point, it may contain configuration
+        # from system settings file.
         if 'runner' not in mlcube:
             mlcube['runner'] = {}
 
+        # We need to merge with the user-provided configuration.
         s_cfg: t.Optional[DictConfig] = mlcube.get("singularity", None)
         if not s_cfg:
             # Singularity runner will try to use docker section. At this point, it will work as long as we assume we
@@ -77,8 +80,11 @@ class Config(RunnerConfig):
             # generating an image name in a local environment. Key here is that the source has a scheme - `docker://`
             # The --fakeroot switch is useful and is supported in singularity version >= 3.5
             build_args = ""
+            # There's no `singularity` section, so we do not know what singularity executable to use. Let's assume
+            # it's just `singularity`.
+            singularity = "singularity"
             try:
-                SingularityRun.check_install()
+                SingularityRun.check_install(singularity)
                 version: semver.VersionInfo = get_singularity_version_info()
                 logger.info("SingularityRun singularity version %s", str(version))
                 if version >= semver.VersionInfo(major=3, minor=5):
@@ -106,7 +112,7 @@ class Config(RunnerConfig):
                     build_file=build_file,
                     build_args=build_args,
                     run_args=run_args,
-                    singularity="singularity",
+                    singularity=singularity,
                 )
             )
             logger.info(
@@ -150,6 +156,14 @@ class SingularityRun(Runner):
 
     def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]) -> None:
         super().__init__(mlcube, task)
+        if self.mlcube.runner.singularity != 'singularity':
+            logger.warning(
+                "Singularity executable is not exactly 'singularity' (singularity=%s). The MLCube singularity runner "
+                "will use this executable, however the version of the `spython` library that the runner uses (which is "
+                "`0.2.1`) does not allow specifying a custom singularity executable when checking the singularity "
+                "version. It's OK if `singularity` resolves to` %s`, in other cases this may cause issues.",
+                self.mlcube.runner.singularity, self.mlcube.runner.singularity
+            )
         try:
             # Check version and log a warning message if fakeroot is used with singularity version < 3.5
             version: semver.VersionInfo = get_singularity_version_info()
@@ -162,14 +176,27 @@ class SingularityRun(Runner):
                     "parameter that is present in MLCube configuration."
                 )
         except Exception as err:
+            # It's correct to use `singularity` here, since the function that identifies the singularity version
+            # does not allow specifying a custom singularity executable (at least in spython == 0.2.1).
+            ver_cmd = f"singularity --version"
+            try:
+                self.check_install(self.mlcube.runner.singularity)
+                msg = "The runner has been able to successfully run the singularity executable (which is "\
+                      f"`{self.mlcube.runner.singularity}`). Most likely, the output of `{ver_cmd}` could not be "\
+                      "parsed. Please, create an issue in MLCube repository and provide the output of "\
+                      f"this command ({ver_cmd})"
+            except:
+                # And here we use the correct executable, since check_install supports user-provided executable.
+                msg = f"The runner has not been able to run this command (`{self.mlcube.runner.singularity} --help`)." \
+                      f"Please check that this executable is in PATH, or specify a custom path in ~/mlcube.yaml."
             logger.warning(
-                "SingularityRun can't get singularity version (do you have singularity installed?). "
-                "Source=SingularityRun.__init__. Exception=%s.", str(err), exc_info=True
+                "Singularity runner (cmd=%s) can't detect singularity version. %s. "
+                "Source=SingularityRun.__init__. Exception=%s.", ver_cmd, msg, str(err), exc_info=True
             )
 
     def configure(self) -> None:
         """Build Singularity Image on a current host."""
-        SingularityRun.check_install()
+        SingularityRun.check_install(self.mlcube.runner.singularity)
 
         s_cfg: DictConfig = self.mlcube.runner
 
@@ -215,7 +242,7 @@ class SingularityRun(Runner):
         if not image_file.exists():
             self.configure()
         else:
-            SingularityRun.check_install()
+            SingularityRun.check_install(self.mlcube.runner.singularity)
 
         # Deal with user-provided workspace
         try:
@@ -243,6 +270,7 @@ class SingularityRun(Runner):
             )
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--bind")
+        print(OmegaConf.to_container(self.mlcube.runner))
         run_args = self.mlcube.runner.run_args
 
         # Temporary solution
