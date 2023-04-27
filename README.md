@@ -35,7 +35,7 @@ Check out the [examples](https://github.com/mlcommons/mlcube_examples) for detai
 ## License
 [MLCube](https://github.com/mlcommons/mlcube/) is licensed under the Apache License 2.0. 
 
-See [LICENSE](https://github.com/mlcommons/mlcube/blob/master/LICENSE) for more information.
+See [LICENSE](https://github.com/mlcommons/mlcube/blob/master/LICENSE.md) for more information.
 
 MLCube is a trademark of the MLCommons™ Association.
 
