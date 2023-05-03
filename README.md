@@ -37,7 +37,7 @@ Check out the [examples](https://github.com/mlcommons/mlcube_examples) for detai
 
 See [LICENSE](https://github.com/mlcommons/mlcube/blob/master/LICENSE) for more information.
 
-MLCube is a trademark of the MLCommons™ Association.
+MLCube is a trademark of the MLCommons® Association.
 
 ## Support
 
