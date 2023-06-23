@@ -38,7 +38,7 @@ extra_files = schemas()
 
 setup(
     name="mlcube_kubeflow",
-    version="0.0.8",
+    version="0.0.9",
     packages=find_packages(exclude=["tests"]),
     license="Apache 2.0",
     entry_points='''

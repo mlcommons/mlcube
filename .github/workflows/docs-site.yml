@@ -3,27 +3,28 @@ name: Build & Deploy Docs Site (on-merge)
 on:
   push:
     paths:
-    - 'docs/**'
     - '.github/workflows/docs-site.yml'
+    - 'docs/**'
+    - 'mkdocs.yml'
 
 jobs:
   docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.6'
+          python-version: '3.8'
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r mkdocs-requirements.txt
+          pip install -r docs/requirements.txt
       - name: Build Docs
         working-directory: './'
         run: |
-          mkdocs build --theme material \
-                --site-dir ../site/
+          export PYTHONPATH=$(pwd)/mlcube:${PYTHONPATH}
+          mkdocs build --site-dir ../site/
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3.6.4
         with:

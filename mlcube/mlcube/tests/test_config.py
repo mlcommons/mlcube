@@ -33,7 +33,7 @@ tasks:
       inputs:
         data_config: {type: file, default: data.yaml}
       outputs:
-        data_dir: {type: directory, default: data}
+        data_dir: data/
         log_dir: {type: directory, default: logs}
   train:
     parameters:
@@ -41,8 +41,8 @@ tasks:
         data_dir: {type: directory, default: data}
         train_config: {type: file, default: train.yaml}
       outputs:
-        log_dir: {type: directory, default: logs}
-        model_dir: {type: directory, default: model}
+        log_dir: logs/
+        model_dir: model\\
 """
 
 _DOWNLOAD_TASK_ENTRY_POINT = '/workspace/mnist/download.py'
@@ -59,6 +59,9 @@ _MLCUBE_MNIST_CONFIG_ENTRYPOINT = _MLCUBE_MNIST_CONFIG_TEMPLATE.replace(
 
 
 class TestConfig(TestCase):
+
+    def setUp(self) -> None:
+        self.maxDiff = None
 
     def _check_standard_config(self, mlcube: DictConfig, entry_points: bool = False) -> None:
         self.assertIsInstance(mlcube, DictConfig)
@@ -104,7 +107,7 @@ class TestConfig(TestCase):
                         'data_config': {'type': 'file', 'default': 'data.yaml'}
                     },
                     'outputs': {
-                        'data_dir': {'type': 'directory', 'default': 'data'},
+                        'data_dir': {'type': 'directory', 'default': 'data/'},
                         'log_dir': {'type': 'directory', 'default': 'logs'}
                     }
                 },
@@ -116,8 +119,8 @@ class TestConfig(TestCase):
                         'train_config': {'type': 'file', 'default': 'train.yaml'}
                     },
                     'outputs': {
-                        'log_dir': {'type': 'directory', 'default': 'logs'},
-                        'model_dir': {'type': 'directory', 'default': 'model'}
+                        'log_dir': {'type': 'directory', 'default': 'logs/'},
+                        'model_dir': {'type': 'directory', 'default': 'model\\'}
                     }
                 }
             }
@@ -187,3 +190,62 @@ class TestConfig(TestCase):
 
         self.assertEqual(MountType.RO, 'ro')
         self.assertTrue(MountType.is_valid('ro'))
+
+    def test_check_with_logging(self) -> None:
+        mlcube_config = DictConfig({
+            "singularity": {
+                "image": "mnist-0.0.1.sif"
+            },
+            "runtime": {
+                "workspace": "/some/path/to/workspace"
+            },
+            "runner": {
+                "runner": "singularity",
+                "image": "${singularity.image}",
+                "image_dir": "${runtime.workspace}/.image",
+                "singularity": "singularity",
+                "build_args": "--fakeroot",
+                "run_args": "-C --net",
+                "build_file": "Singularity2.recipe"
+            }
+        })
+        default_runner_config = DictConfig({
+            "runner": "singularity",
+            "image": "${singularity.image}",
+            "image_dir": "${runtime.workspace}/.image",
+            "singularity": "singularity",
+            "build_args": "--fakeroot",
+            "run_args": "",
+            "build_file": "Singularity.recipe",
+            "--network": None,
+            "--security": None,
+            "--nv": None,
+            "--vm-ram": None,
+            "--vm-cpu": None
+        })
+        MLCubeConfig.merge_with_logging(mlcube_config, default_runner_config)
+        self.assertDictEqual(
+            OmegaConf.to_container(mlcube_config, resolve=True),
+            {
+                "singularity": {
+                    "image": "mnist-0.0.1.sif"
+                },
+                "runtime": {
+                    "workspace": "/some/path/to/workspace"
+                },
+                "runner": {
+                    "runner": "singularity",
+                    "image": "mnist-0.0.1.sif",
+                    "image_dir": "/some/path/to/workspace/.image",
+                    "singularity": "singularity",
+                    "build_args": "--fakeroot",
+                    "run_args": "-C --net",
+                    "build_file": "Singularity2.recipe",
+                    "--network": None,
+                    "--security": None,
+                    "--nv": None,
+                    "--vm-ram": None,
+                    "--vm-cpu": None
+                }
+            }
+        )

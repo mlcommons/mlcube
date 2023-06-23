@@ -1,0 +1,4 @@
+# Development dependencies for MLCube and all MLCube runners.
+black==v19.10b0
+flake8>=3.7.9, <4.0
+isort

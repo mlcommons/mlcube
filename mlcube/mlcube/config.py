@@ -15,7 +15,7 @@ from omegaconf import (DictConfig, OmegaConf)
 
 logger = logging.getLogger(__name__)
 
-__all__ = ['IOType', 'ParameterType', 'MLCubeConfig']
+__all__ = ['IOType', 'ParameterType', 'MountType', 'MLCubeConfig']
 
 
 class IOType(object):
@@ -103,11 +103,16 @@ class MLCubeConfig(object):
             mlcube_config_file: Path to mlcube.yaml file.
             mlcube_cli_args: MLCube parameters from command line.
             task_cli_args: Task parameters from command line.
-            runner_config: MLCube runner configuration, usually comes from system settings file.
+            runner_config: MLCube runner configuration from system settings file. Can theoretically be None if
+                runner (or, to be more correct, associated platform instance) is not specified in system settings. If
+                None, empty config will be used.
             workspace: Workspace path to use in this MLCube run.
             resolve: If true, compute all values (some of them may reference other parameters or environmental
                 variables).
-            runner_cls: A python class for the runner type specified in `runner_config`.
+            runner_cls: A python class for the runner type specified in `runner_config`. Can also be None if no runner
+                is specified in system settings (see `runner_config` above). If not None, we'll use it to get parameters
+                not present in system settings (e.g., outdated version)and to validate to overall configuration.
+                TODO: This class should also be used to do runner-specific parsing of input parameters.
         """
         if mlcube_cli_args is None:
             mlcube_cli_args = OmegaConf.create({})
@@ -124,14 +129,14 @@ class MLCubeConfig(object):
         # Load MLCube configuration and maybe override parameters from command line (like -Pdocker.build_strategy=...).
         actual_workspace = '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)
         mlcube_config = OmegaConf.merge(
-            OmegaConf.load(mlcube_config_file),
-            mlcube_cli_args,
-            OmegaConf.create({
+            OmegaConf.load(mlcube_config_file),                     # MLCube configuration file.
+            mlcube_cli_args,                                        # MLCube parameters from command line.
+            OmegaConf.create({                                      # Section defining runtime parameters.
                 'runtime': {
                     'root': os.path.dirname(mlcube_config_file),
                     'workspace': actual_workspace
                 },
-                'runner': runner_config
+                'runner': runner_config                             # Effective (final) runner configuration.
             })
         )
         # Maybe this is not the best idea, but originally MLCube used $WORKSPACE token to refer to the internal
@@ -141,6 +146,11 @@ class MLCubeConfig(object):
         mlcube_config['workspace'] = actual_workspace
         # Merge, for instance, docker runner config from system settings with docker config from MLCube config.
         if runner_cls:
+            # Make sure all default parameters are present - this can be done automatically for all runners (so that
+            # those runners do not check if certain fields are present).
+            MLCubeConfig.merge_with_logging(mlcube_config, runner_cls.CONFIG.DEFAULT)
+            # The goal is to take runner-specific parameters from MLCube config and merge them into `runner` section.
+            # This maybe runner-specific, so runners are responsible for this.
             runner_cls.CONFIG.merge(mlcube_config)
         # Need to apply CLI arguments again just in case users provided something like -Prunner.build_strategy=...
         mlcube_config = OmegaConf.merge(mlcube_config, mlcube_cli_args)
@@ -166,6 +176,29 @@ class MLCubeConfig(object):
         return mlcube_config
 
     @staticmethod
+    def merge_with_logging(mlcube_config: DictConfig, default_runner_config: DictConfig) -> None:
+        """Merge default runner config with current effective runner config.
+
+        The goal is to make sure the effective configuration contains all parameters accepted by the runner so that this
+        runner does not need to check if certain parameters are present.
+
+        Args:
+             mlcube_config: Current effective MLCube configuration.
+             default_runner_config: Default runner configuration.
+        """
+        params_to_merge = [k for k in default_runner_config.keys() if k not in mlcube_config['runner']]
+        if params_to_merge:
+            logger.warning(
+                "Default runner config contains parameters that are not present in the effective runner config "
+                "(params=%s). This probably means that a new version of a runner was installed that introduced "
+                "new parameters.",
+                str(params_to_merge)
+            )
+            current_effective_cfg = mlcube_config['runner']
+            mlcube_config["runner"] = default_runner_config.copy()
+            mlcube_config.merge_with({'runner': current_effective_cfg})
+
+    @staticmethod
     def check_parameters(parameters: DictConfig, task_cli_args: t.Dict) -> None:
         """Check that task parameters are defined according to MLCube schema.
 
@@ -174,6 +207,18 @@ class MLCubeConfig(object):
             task_cli_args: Task parameters from command line.
         This function does not set `type` of parameters (if not present) in all cases.
         """
+        # Path separators that users can use in the MLCube configuration files. This function uses the presence of
+        # a path separator at the end of the parameter value as a hint that the type of this parameter is a directory
+        # (when not specified by a user). We should not relly on `os.sep` since MLCubes are expected to run in different
+        # environments (e.g., Unix and Windows).
+        separators = ('/', '\\')
+        if os.sep not in separators:
+            logger.warning("The os-specific path separator ('%s') not in list of standard separators.", os.sep)
+        if os.altsep is not None and os.altsep not in separators:
+            logger.warning(
+                "The os-specific alternative path separator ('%s') not in list of standard separators.", os.altsep
+            )
+        #
         for name in parameters.keys():
             # The `_param_name` is anyway there, so check it's not None.
             [param_def] = MLCubeConfig.ensure_values_exist(parameters, name, dict)
@@ -189,7 +234,7 @@ class MLCubeConfig(object):
             # Make sure every parameter definition contains 'type' field. Also, if it's unknown, we can assume it's a
             # directory if a value ends with forward/backward slash.
             _ = MLCubeConfig.ensure_values_exist(param_def, 'type', lambda: ParameterType.UNKNOWN)
-            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
+            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(separators):
                 param_def.type = ParameterType.DIRECTORY
             # See if there is value on a command line
             param_def.default = task_cli_args.get(name, param_def.default)
@@ -198,7 +243,7 @@ class MLCubeConfig(object):
             # if we can do the same with user-provided values.
             # TODO: what if a parameter in mlcube.yaml is declared to be a file, but users provided something with
             #       slash at the end.
-            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(os.sep):
+            if param_def.type == ParameterType.UNKNOWN and param_def.default.endswith(separators):
                 param_def.type = ParameterType.DIRECTORY
 
             # TODO: For some input parameters, that generally speaking must exist, we can figure out types later,

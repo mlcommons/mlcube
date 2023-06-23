@@ -3,30 +3,40 @@ MLCube runners run MLCube cubes on one or multiple platforms. Examples of platfo
 containers, Kubernetes, remote hosts, virtual machines in the cloud, etc. Every runner has a fixed set of configuration
 parameters that users can change to configure MLCubes and runners for their environments. Concretely, runners can take
 information from three different sources:
-- MLCube configuration files that are located in the root directory of each file-system based MLCube. Parameters in 
-  these files configure generic parameters common for all environments, such as for instance, docker image names.
-- MLCube system settings file that is located (by default) in the user home directory (`~/mlcube.yaml`). This file
-  is created automatically, and can be used to configure parameters common for all MLCubes in a particular environments.
-  They can include docker executable, GPU and CPU docker arguments, user SSH and cloud credentials, etc.
+
+- [MLCube configuration](https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration) files that 
+  are located in the root directory of each file-system based MLCube. Parameters in these files configure generic 
+  parameters common for all environments, such as for instance, docker image names.
+- [MLCube system settings](https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings) file that is 
+  located (by default) in the user home directory (`~/mlcube.yaml`). This file is created automatically, and can be 
+  used to configure parameters common for all MLCubes in a particular environments. They can include docker executable, 
+  GPU and CPU docker arguments, user SSH and cloud credentials, etc.
 - Optionally, runners can use parameters defined in `platform` section of MLCube configuration file. This section 
   usually contains information about such requirements as memory and persistent storage requirements, number of
   accelerators etc.
 
-MLCube standard requires that all runners implement mandatory functionality. All reference runners implement it.
-Users can develop their own runners to meet their specific requirements, such as security, authentication and
-authorization policies, and others.   
+!!! important
+    MLCube standard requires that all runners implement mandatory functionality. All reference runners implement it.
+    Users can develop their own runners to meet their specific requirements, such as security, authentication and
+    authorization policies, and others.   
 
 
 ## Reference MLCube runners
 Reference runners are:
 
-- `Docker Runner`: Runs cubes locally using docker runtime.  
-- `GCP Runner`: Runs cubes in Google cloud.  
-- `Kubernetes Runner`: Runs cubes in Kubernetes.  
-- `Kubeflow Runner`: Runs cubes using Kubeflow.  
-- `Singularity Runner`: Runs cubes using singularity runtime.    
-- `SSH Runner`: Runs cubes on remote hosts. SSH Runner uses other runners, such as Docker or Singularity runners, to
-  run cubes on remote hosts.  
+- [Docker Runner](https://mlcommons.github.io/mlcube/runners/docker-runner/): 
+  runs cubes locally using docker runtime.  
+- [GCP Runner](https://mlcommons.github.io/mlcube/runners/gcp-runner/): 
+  runs cubes in Google cloud.  
+- [Kubernetes Runner](https://mlcommons.github.io/mlcube/runners/kubernetes/): 
+  runs cubes in Kubernetes.  
+- [Kubeflow Runner](https://mlcommons.github.io/mlcube/runners/kubeflow/):
+  runs cubes using Kubeflow.  
+- [Singularity Runner](https://mlcommons.github.io/mlcube/runners/singularity-runner/): 
+  runs cubes using singularity runtime.    
+- [SSH Runner](https://mlcommons.github.io/mlcube/runners/ssh-runner/):
+  runs cubes on remote hosts. SSH Runner uses other runners, such as Docker or Singularity runners, to run cubes on 
+  remote hosts.  
 
 
 ## Runner commands
@@ -71,15 +81,17 @@ mlcube run --mlcube=examples/mnist --platform=docker --task=train
 ## Configuration subsystem
 Runners are configured using information from three different sources:
 
-- The base configuration comes from the system settings file. By default, the location of this file is 
-  `${HOME}/mlflow.yaml`. It is created automatically whenever a user runs `mlcube` command line tool. The purpose of
-  this file is to provide system-wide configuration for runners that are specific to user and their environment. This
-  is kind of information that should not generally present in MLCube configuration files (next item). It shoud include
-  such information as docker executable (docker, sudo docker, nvidia-docker, podman, etc), docker-specific runtime
-  arguments, user credentials for GCP and remote hosts, information about remote hosts etc.
-- The MLCube configuration file that is available with each MLCube cube. This file contains (as of now) such parameters,
-  as docker and singularity image names, MLCube resource requirements and tasks. This information overrides information
-  from system settings file.
+- The base configuration comes from the 
+  [system settings](https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings) file. By default, 
+  the location of this file is `${HOME}/mlcube.yaml`. It is created automatically whenever a user runs `mlcube` command 
+  line tool. The purpose of this file is to provide system-wide configuration for runners that are specific to user and 
+  their environment. This is kind of information that should not generally present in MLCube configuration files 
+  (next item). It should include such information as docker executable (docker, sudo docker, nvidia-docker, podman, 
+  etc.), docker-specific runtime arguments, user credentials for GCP and remote hosts, information about 
+  remote hosts etc.
+- The [MLCube configuration](https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration) file 
+  that is available with each MLCube cube. This file contains (as of now) such parameters, as docker and singularity 
+  image names, MLCube resource requirements and tasks. This information overrides information from system settings file.
 - Configuration that is provided on a command line. Users are allowed (but not encouraged) to override parameters on
   the fly when they run MLCube cubes.
 
@@ -225,4 +237,5 @@ mlcube config --rename-runner OLD_NAME NEW_NAME
 mlcube config --remove-runner NAME
 ```
 
-> Removed standard runners (MLCube reference runners) will be recreated when mlcube runs next time.
+!!! attention
+    Removed standard runners (MLCube reference runners) will be recreated when mlcube runs next time.
