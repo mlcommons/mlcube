@@ -6,20 +6,24 @@ import sys
 import typing as t
 
 import click
-
 import coloredlogs
+from omegaconf import OmegaConf
 
+from mlcube.cli import (
+    MLCubeCommand,
+    MultiValueOption,
+    Options,
+    UsageExamples,
+    parse_cli_args,
+)
+from mlcube.errors import ExecutionError, IllegalParameterValueError, MLCubeError
 from mlcube.parser import CliParser
-from mlcube.cli import (MLCubeCommand, MultiValueOption, Options, parse_cli_args, UsageExamples)
-from mlcube.errors import (ExecutionError, IllegalParameterValueError, MLCubeError)
 from mlcube.shell import Shell
 from mlcube.system_settings import SystemSettings
 
-from omegaconf import OmegaConf
-
 logger = logging.getLogger(__name__)
 
-_TERMINAL_WIDTH = shutil.get_terminal_size()[0]   # Since Python version 3.3
+_TERMINAL_WIDTH = shutil.get_terminal_size()[0]  # Since Python version 3.3
 """Width of a user terminal. MLCube overrides default (80) character width to make usage examples look better."""
 
 
@@ -120,7 +124,8 @@ cpu_option = click.option(
     help="CPU options defined during MLCube container execution.",
 )
 
-@click.group(name='mlcube', add_help_option=False)
+
+@click.group(name="mlcube", add_help_option=False)
 @Options.loglevel
 @Options.help
 def cli(log_level: t.Optional[str]):
@@ -142,8 +147,15 @@ def cli(log_level: t.Optional[str]):
 
 
 @cli.command(
-    name='show_config', cls=MLCubeCommand, add_help_option=False, epilog=UsageExamples.show_config,
-    context_settings={'ignore_unknown_options': True, 'allow_extra_args': True, 'max_content_width': _TERMINAL_WIDTH}
+    name="show_config",
+    cls=MLCubeCommand,
+    add_help_option=False,
+    epilog=UsageExamples.show_config,
+    context_settings={
+        "ignore_unknown_options": True,
+        "allow_extra_args": True,
+        "max_content_width": _TERMINAL_WIDTH,
+    },
 )
 @Options.mlcube
 @Options.platform
@@ -152,8 +164,14 @@ def cli(log_level: t.Optional[str]):
 @Options.parameter
 @Options.help
 @click.pass_context
-def show_config(ctx: click.core.Context, mlcube: t.Optional[str], platform: str, workspace: str,
-                resolve: bool, p: t.Tuple[str]) -> None:
+def show_config(
+    ctx: click.core.Context,
+    mlcube: t.Optional[str],
+    platform: str,
+    workspace: str,
+    resolve: bool,
+    p: t.Tuple[str],
+) -> None:
     """Show effective MLCube configuration.
 
     Effective MLCube configuration is the one used by one of MLCube runners to run this MLCube. This configuration is
@@ -172,16 +190,23 @@ def show_config(ctx: click.core.Context, mlcube: t.Optional[str], platform: str,
     if mlcube is None:
         mlcube = os.getcwd()
     _, mlcube_config = parse_cli_args(
-        unparsed_args=ctx.args + ['-P' + param for param in p],
+        unparsed_args=ctx.args + ["-P" + param for param in p],
         parsed_args={"mlcube": mlcube, "platform": platform, "workspace": workspace},
-        resolve=resolve
+        resolve=resolve,
     )
     print(OmegaConf.to_yaml(mlcube_config))
 
 
 @cli.command(
-    name='configure', cls=MLCubeCommand, add_help_option=False, epilog=UsageExamples.configure,
-    context_settings={'ignore_unknown_options': True, 'allow_extra_args': True, 'max_content_width': _TERMINAL_WIDTH}
+    name="configure",
+    cls=MLCubeCommand,
+    add_help_option=False,
+    epilog=UsageExamples.configure,
+    context_settings={
+        "ignore_unknown_options": True,
+        "allow_extra_args": True,
+        "max_content_width": _TERMINAL_WIDTH,
+    },
 )
 @Options.mlcube
 @Options.platform
@@ -203,15 +228,21 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
         p: Additional MLCube configuration parameters (these parameters are those parameters that normally start with
             `-P` prefix). Here, due to original implementation, we need to `unparse` by adding `-P` prefix.
     """
-    logger.debug("mlcube::configure, mlcube=%s, platform=%s, p=%s", mlcube, platform, str(p))
+    logger.debug(
+        "mlcube::configure, mlcube=%s, platform=%s, p=%s", mlcube, platform, str(p)
+    )
     if mlcube is None:
         mlcube = os.getcwd()
-    logger.info("Configuring MLCube (`%s`) for `%s` platform.", os.path.abspath(mlcube), platform)
+    logger.info(
+        "Configuring MLCube (`%s`) for `%s` platform.",
+        os.path.abspath(mlcube),
+        platform,
+    )
     try:
         runner_cls, mlcube_config = parse_cli_args(
-            unparsed_args=['-P' + param for param in p],
+            unparsed_args=["-P" + param for param in p],
             parsed_args={"mlcube": mlcube, "platform": platform},
-            resolve=True
+            resolve=True,
         )
         runner = runner_cls(mlcube_config, task=None)
         runner.configure()
@@ -229,8 +260,15 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
 
 
 @cli.command(
-    name='run', cls=MLCubeCommand, add_help_option=False, epilog=UsageExamples.run,
-    context_settings={'ignore_unknown_options': True, 'allow_extra_args': True, 'max_content_width': _TERMINAL_WIDTH}
+    name="run",
+    cls=MLCubeCommand,
+    add_help_option=False,
+    epilog=UsageExamples.run,
+    context_settings={
+        "ignore_unknown_options": True,
+        "allow_extra_args": True,
+        "max_content_width": _TERMINAL_WIDTH,
+    },
 )
 @mlcube_option
 @platform_option
@@ -272,15 +310,30 @@ def run(
     """
     logger.info(
         "run input_arg mlcube=%s, platform=%s, task=%s, workspace=%s, network=%s, security=%s, gpus=%s, memory=%s, "
-        "cpu=%s", mlcube, platform, task, workspace, network, security, gpus, memory, cpu
+        "cpu=%s",
+        mlcube,
+        platform,
+        task,
+        workspace,
+        network,
+        security,
+        gpus,
+        memory,
+        cpu,
     )
     runner_cls, mlcube_config = parse_cli_args(
         unparsed_args=ctx.args,
         parsed_args={
-            "mlcube": mlcube, "platform": platform, "workspace": workspace,
-            "network": network, "security": security, "gpus": gpus, "memory": memory, "cpu": cpu
+            "mlcube": mlcube,
+            "platform": platform,
+            "workspace": workspace,
+            "network": network,
+            "security": security,
+            "gpus": gpus,
+            "memory": memory,
+            "cpu": cpu,
         },
-        resolve=True
+        resolve=True,
     )
     mlcube_tasks: t.List[str] = list(
         (mlcube_config.get("tasks", None) or {}).keys()
@@ -332,8 +385,11 @@ def run(
 
 
 @cli.command(
-    name='describe', cls=MLCubeCommand, add_help_option=False, epilog=UsageExamples.describe,
-    context_settings={'max_content_width': _TERMINAL_WIDTH}
+    name="describe",
+    cls=MLCubeCommand,
+    add_help_option=False,
+    epilog=UsageExamples.describe,
+    context_settings={"max_content_width": _TERMINAL_WIDTH},
 )
 @Options.mlcube
 @Options.help
@@ -347,9 +403,7 @@ def describe(mlcube: t.Optional[str]) -> None:
     if mlcube is None:
         mlcube = os.getcwd()
     _, mlcube_config = parse_cli_args(
-        unparsed_args=[],
-        parsed_args={"mlcube": mlcube},
-        resolve=True
+        unparsed_args=[], parsed_args={"mlcube": mlcube}, resolve=True
     )
     print("MLCube")
     print(f"  path = {mlcube_config.runtime.root}")
@@ -385,59 +439,108 @@ def describe(mlcube: t.Optional[str]) -> None:
 
 
 @cli.command(
-    name='config', cls=MLCubeCommand, add_help_option=False, epilog=UsageExamples.config,
-    context_settings={'ignore_unknown_options': True, 'allow_extra_args': True, 'max_content_width': _TERMINAL_WIDTH}
+    name="config",
+    cls=MLCubeCommand,
+    add_help_option=False,
+    epilog=UsageExamples.config,
+    context_settings={
+        "ignore_unknown_options": True,
+        "allow_extra_args": True,
+        "max_content_width": _TERMINAL_WIDTH,
+    },
 )
 @click.option(
-    '--list', 'list_all', is_flag=True,
-    help="Print out the content of system settings file."
+    "--list",
+    "list_all",
+    is_flag=True,
+    help="Print out the content of system settings file.",
 )
 @click.option(
-    '--get', required=False, type=str, default=None,
-    help="Return value of the key (use OmegaConf notation, e.g. `mlcube config --get runners.docker`)."
+    "--get",
+    required=False,
+    type=str,
+    default=None,
+    help="Return value of the key (use OmegaConf notation, e.g. `mlcube config --get runners.docker`).",
 )
 @click.option(
-    '--create_platform', '--create-platform', required=False, cls=MultiValueOption, type=tuple, default=None,
+    "--create_platform",
+    "--create-platform",
+    required=False,
+    cls=MultiValueOption,
+    type=tuple,
+    default=None,
     help="Create a new platform instance for this runner. Default runner parameters are used to initialize this new "
-         "platform."
+    "platform.",
 )
 @click.option(
-    '--remove_platform', '--remove-platform', required=False, type=str, default=None,
+    "--remove_platform",
+    "--remove-platform",
+    required=False,
+    type=str,
+    default=None,
     help="Remove this platform. If this is one of the default platforms (e.g., `docker`), it will be recreated (with "
-         "default values) next time `mlcube` runs."
+    "default values) next time `mlcube` runs.",
 )
 @click.option(
-    '--rename_platform', '--rename-platform', required=False, cls=MultiValueOption, type=tuple, default=None,
+    "--rename_platform",
+    "--rename-platform",
+    required=False,
+    cls=MultiValueOption,
+    type=tuple,
+    default=None,
     help="Rename existing platform. If default platform is to be renamed (e.g., `docker`), it will be recreated "
-         "(with default values) next time `mlcube` runs."
+    "(with default values) next time `mlcube` runs.",
 )
 @click.option(
-    '--copy_platform', '--copy-platform', required=False, cls=MultiValueOption, type=tuple, default=None,
+    "--copy_platform",
+    "--copy-platform",
+    required=False,
+    cls=MultiValueOption,
+    type=tuple,
+    default=None,
     help="Copy existing platform. This can be useful for creating new platforms off existing platforms, for instance,"
-         "creating a new SSH runner configuration that runs MLCubes on a new remote server."
+    "creating a new SSH runner configuration that runs MLCubes on a new remote server.",
 )
 @click.option(
-    '--rename_runner', '--rename-runner', required=False, cls=MultiValueOption, type=tuple, default=None,
+    "--rename_runner",
+    "--rename-runner",
+    required=False,
+    cls=MultiValueOption,
+    type=tuple,
+    default=None,
     help="Rename existing MLCube runner. If platforms exist that reference this runner, users must explicitly provide "
-         "`--update-platforms` flag to confirm they want to update platforms' description too."
+    "`--update-platforms` flag to confirm they want to update platforms' description too.",
 )
 @click.option(
-    '--remove_runner', '--remove-runner', required=False, type=str, default=None,
+    "--remove_runner",
+    "--remove-runner",
+    required=False,
+    type=str,
+    default=None,
     help="Remove existing runner. If platforms exist that reference this runner, users must explicitly provide "
-         "`--remove-platforms` flag to confirm they want to remove platforms too."
+    "`--remove-platforms` flag to confirm they want to remove platforms too.",
 )
 @Options.help
 @click.pass_context
-def config(ctx: click.core.Context,
-           list_all: bool,                          # mlcube config --list
-           get: t.Optional[str],                    # mlcube config --get KEY
-           create_platform: t.Optional[t.Tuple],    # mlcube config --create-platform RUNNER PLATFORM
-           remove_platform: t.Optional[str],        # mlcube config --remove-platform NAME
-           rename_platform: t.Optional[t.Tuple],    # mlcube config --rename-platform OLD_NAME NEW_NAME
-           copy_platform: t.Optional[t.Tuple],      # mlcube config --copy-platform EXISTING_PLATFORM NEW_PLATFORM
-           rename_runner: t.Optional[t.Tuple],      # mlcube config --rename-runner OLD_NAME NEW_NAME
-           remove_runner: t.Optional[str]           # mlcube config --remove-runner NAME
-           ) -> None:
+def config(
+    ctx: click.core.Context,
+    list_all: bool,  # mlcube config --list
+    get: t.Optional[str],  # mlcube config --get KEY
+    create_platform: t.Optional[
+        t.Tuple
+    ],  # mlcube config --create-platform RUNNER PLATFORM
+    remove_platform: t.Optional[str],  # mlcube config --remove-platform NAME
+    rename_platform: t.Optional[
+        t.Tuple
+    ],  # mlcube config --rename-platform OLD_NAME NEW_NAME
+    copy_platform: t.Optional[
+        t.Tuple
+    ],  # mlcube config --copy-platform EXISTING_PLATFORM NEW_PLATFORM
+    rename_runner: t.Optional[
+        t.Tuple
+    ],  # mlcube config --rename-runner OLD_NAME NEW_NAME
+    remove_runner: t.Optional[str],  # mlcube config --remove-runner NAME
+) -> None:
     """Work with MLCube [system settings](https://mlcommons.github.io/mlcube/getting-started/system-settings/) similar
     to `git config`.
 
@@ -479,10 +582,14 @@ def config(ctx: click.core.Context,
             settings.copy_platform(rename_platform, delete_source=False)
         elif rename_runner:
             _check_tuple(rename_runner, "rename_runner", 2, "OLD_NAME NEW_NAME")
-            update_platforms: bool = "--update-platforms" in ctx.args or "--update_platforms" in ctx.args
+            update_platforms: bool = (
+                "--update-platforms" in ctx.args or "--update_platforms" in ctx.args
+            )
             settings.rename_runner(rename_runner, update_platforms=update_platforms)
         elif remove_runner:
-            remove_platforms: bool = "--remove-platforms" in ctx.args or "--remove_platforms" in ctx.args
+            remove_platforms: bool = (
+                "--remove-platforms" in ctx.args or "--remove_platforms" in ctx.args
+            )
             settings.remove_runner(remove_runner, remove_platforms=remove_platforms)
     except MLCubeError as e:
         logger.error(
@@ -491,8 +598,11 @@ def config(ctx: click.core.Context,
 
 
 @cli.command(
-    name='create', add_help_option=False, cls=MLCubeCommand, epilog=UsageExamples.create,
-    context_settings={'max_content_width': _TERMINAL_WIDTH}
+    name="create",
+    add_help_option=False,
+    cls=MLCubeCommand,
+    epilog=UsageExamples.create,
+    context_settings={"max_content_width": _TERMINAL_WIDTH},
 )
 @Options.help
 def create() -> None:
@@ -513,6 +623,58 @@ def create() -> None:
         print("Cookiecutter library not found.")
         print("\tInstall it: pip install cookiecutter")
         print(f"\tMore details: {mlcube_cookiecutter_url}")
+
+
+@cli.command(
+    name="inspect",
+    cls=MLCubeCommand,
+    add_help_option=False,
+    epilog=UsageExamples.inspect,
+    context_settings={"max_content_width": _TERMINAL_WIDTH},
+)
+@Options.mlcube
+@Options.platform
+@click.option(
+    "--force",
+    is_flag=True,
+    help="Force inspecting the MLCube object. For instance, if MLCube has not been pulled or built it, then pull "
+    "or build it.",
+)
+@click.option(
+    "--format",
+    "format_",
+    metavar="FORMAT",
+    required=False,
+    type=click.Choice(["json", "yaml"]),
+    default="json",
+    help="Format for reporting results.",
+)
+@Options.help
+def inspect(
+    mlcube: t.Optional[str], platform: str, force: bool = False, format_: str = "json"
+) -> None:
+    """Return low-level information on MLCube objects."""
+    runner_cls, mlcube_config = parse_cli_args(
+        parsed_args={"mlcube": mlcube, "platform": platform},
+        unparsed_args=[],
+        resolve=True,
+    )
+    try:
+        runner = runner_cls(mlcube_config, task=None)
+        info: t.Dict = runner.inspect(force=force)
+        logger.debug("inspect info=%s", info)
+        if format_ == "json":
+            import json
+
+            print(json.dumps(info))
+        else:
+            import yaml
+
+            yaml.dump(info, sys.stdout)
+    except MLCubeError as err:
+        logger.exception(err)
+        print(str(err))
+        exit(1)
 
 
 if __name__ == "__main__":
