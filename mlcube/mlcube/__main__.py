@@ -136,7 +136,8 @@ def cli(log_level: t.Optional[str]):
         log_level = log_level.upper()
         logging.basicConfig(level=log_level)
         coloredlogs.install(level=log_level)
-        logging.info("Setting Log Level from CLI argument to '%s'.", log_level)
+        logging.info("cli setting log Level from CLI argument to '%s'.", log_level)
+    logger.debug("cli command=%s", sys.argv)
     _ = SystemSettings().update_installed_runners()
 
 
@@ -269,6 +270,10 @@ def run(
         memory: Memory RAM options defined during MLCube container execution.
         cpu: CPU options defined during MLCube container execution.
     """
+    logger.info(
+        "run input_arg mlcube=%s, platform=%s, task=%s, workspace=%s, network=%s, security=%s, gpus=%s, memory=%s, "
+        "cpu=%s", mlcube, platform, task, workspace, network, security, gpus, memory, cpu
+    )
     runner_cls, mlcube_config = parse_cli_args(
         unparsed_args=ctx.args,
         parsed_args={
@@ -315,12 +320,12 @@ def run(
     try:
         # TODO: Sergey - Can we have one instance for all tasks?
         for task in tasks:
-            logger.info("Task = %s", task)
+            logger.info("run task = %s", task)
             runner = runner_cls(mlcube_config, task=task)
             runner.run()
     except MLCubeError as err:
         exit_code = err.context.get("code", 1) if isinstance(err, ExecutionError) else 1
-        logger.exception(f"Failed to run MLCube with error code {exit_code}.")
+        logger.exception(f"run failed to run MLCube with error code {exit_code}.")
         if isinstance(err, ExecutionError):
             print(err.describe())
         sys.exit(exit_code)

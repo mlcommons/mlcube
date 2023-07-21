@@ -114,17 +114,17 @@ class MLCubeConfig(object):
                 not present in system settings (e.g., outdated version)and to validate to overall configuration.
                 TODO: This class should also be used to do runner-specific parsing of input parameters.
         """
+        logger.debug(
+            "MLCubeConfig.create_mlcube_config input_arg mlcube_config_file=%s, mlcube_cli_args=%s, task_cli_args=%s, "
+            "runner_config=%s, workspace=%s",
+            mlcube_config_file, mlcube_cli_args, task_cli_args, runner_config, workspace
+        )
         if mlcube_cli_args is None:
             mlcube_cli_args = OmegaConf.create({})
         if task_cli_args is None:
             task_cli_args = {}
         if runner_config is None:
             runner_config = OmegaConf.create({})
-        logger.debug("mlcube_config_file = %s", mlcube_config_file)
-        logger.debug("mlcube_cli_args = %s", mlcube_cli_args)
-        logger.debug("task_cli_args = %s", task_cli_args)
-        logger.debug("runner_config = %s", str(runner_config))
-        logger.debug("workspace = %s", workspace)
 
         # Load MLCube configuration and maybe override parameters from command line (like -Pdocker.build_strategy=...).
         actual_workspace = '${runtime.root}/workspace' if workspace is None else MLCubeConfig.get_uri(workspace)

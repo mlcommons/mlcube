@@ -77,7 +77,7 @@ class Runner(object):
         self.mlcube = mlcube
         self.task = task
 
-        logger.debug("%s configuration: %s", self.__class__.__name__, str(self.mlcube.runner))
+        logger.debug("%s.__init__ configuration: %s", self.__class__.__name__, str(self.mlcube.runner))
 
     def configure(self) -> None:
         """Configure this MLCube."""
