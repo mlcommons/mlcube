@@ -6,6 +6,7 @@ import copy
 import logging
 import os
 import shutil
+import subprocess
 import sys
 import typing as t
 from distutils import dir_util
@@ -98,6 +99,25 @@ class Shell(object):
         else:
             logger.info(msg)
         return exit_code
+
+    @staticmethod
+    def run_and_capture_output(cmd: t.List[str]) -> t.Tuple[int, str]:
+        """Run command and return the exit code and command output.
+
+        Args:
+            cmd: Command to execute, will be passed to `subprocess.check_output` as is.
+
+        Returns:
+             A tuple containing exit code (either 0 or `subprocess.CalledProcessError.returncode`) and command output
+             which is either output of `subprocess.check_output` or `subprocess.CalledProcessError.output.decode()`.
+        """
+        try:
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+            exit_code = 0
+        except subprocess.CalledProcessError as err:
+            output = err.output.decode()
+            exit_code = err.returncode
+        return exit_code, output.strip()
 
     @staticmethod
     def docker_image_exists(docker: t.Optional[str], image: str) -> bool:
