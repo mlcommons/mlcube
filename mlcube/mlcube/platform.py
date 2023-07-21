@@ -53,8 +53,8 @@ class Platform(object):
                 get_runner_class: t.Optional[t.Callable] = getattr(module, 'get_runner_class', None)
                 if get_runner_class is None:
                     logger.warning(
-                        "Candidate MLCube runner package (%s) does not provide runner class "
-                        "function (get_runner_class).", pkg_name
+                        "Platform.get_installed_runners candidate MLCube runner package (%s) does not provide runner "
+                        "class function (get_runner_class).", pkg_name
                     )
                     continue
                 runner_cls: t.Type[Runner] = get_runner_class()
@@ -62,9 +62,15 @@ class Platform(object):
                     raise TypeError(f"Invalid type of a runner ({runner_cls}). Expecting subclass of {Runner}.")
                 runner_name = runner_cls.CONFIG.DEFAULT.runner
                 installed_runners[runner_name] = {'config': {'pkg': pkg_name}, 'runner_cls': runner_cls}
-                logger.info("Found installed MLCube runner: platform=%s, pkg=%s", runner_name, pkg_name)
+                logger.info(
+                    "Platform.get_installed_runners found installed MLCube runner: platform=%s, pkg=%s",
+                    runner_name, pkg_name
+                )
             except (AttributeError, TypeError) as e:
-                logger.warning("Package (%s) is not a valid MLCube runner. Error = \"%s\"", pkg_name, str(e))
+                logger.warning(
+                    "Platform.get_installed_runners package (%s) is not a valid MLCube runner. Error=\"%s\"",
+                    pkg_name, str(e)
+                )
         return installed_runners
 
     @staticmethod
