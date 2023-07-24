@@ -2,10 +2,10 @@ import logging
 import typing as t
 from pathlib import Path
 
-from mlcube_singularity.singularity_client import Client
+from mlcube_singularity.singularity_client import Client, DockerHubClient, ImageSpec
 from omegaconf import DictConfig, OmegaConf
 
-from mlcube.errors import ConfigurationError, ExecutionError
+from mlcube.errors import ConfigurationError, ExecutionError, MLCubeError
 from mlcube.runner import Runner, RunnerConfig
 from mlcube.shell import Shell
 from mlcube.validate import Validate
@@ -154,11 +154,11 @@ class SingularityRun(Runner):
         """Build Singularity Image on a current host."""
         s_cfg: DictConfig = self.mlcube.runner
         self.client.build(
-            self.mlcube.runtime.root,
-            s_cfg.build_file,
-            s_cfg.image_dir,
-            s_cfg.image,
-            s_cfg.build_args,
+            build_dir=self.mlcube.runtime.root,
+            recipe=s_cfg.build_file,
+            image_dir=s_cfg.image_dir,
+            image_name=s_cfg.image,
+            build_args=s_cfg.build_args,
         )
 
     def run(self) -> None:
@@ -216,3 +216,96 @@ class SingularityRun(Runner):
             # By contract, custom entry points do not accept task name as the first argument.
             task_args = task_args[1:]
         self.client.run(run_args, volumes, str(image_file), task_args, entrypoint)
+
+    def inspect(self, force: bool = False) -> t.Dict:
+        s_cfg: DictConfig = self.mlcube.runner
+        image_file = Path(s_cfg.image_dir, s_cfg.image)
+
+        def _local_file_sha256sum(file_path: Path) -> str:
+            """Compute sha256 hash sum of the local file."""
+            _exit_code, _output = Shell.run_and_capture_output(
+                ["sha256sum", file_path.as_posix()]
+            )
+            if _exit_code != 0:
+                _output = _output.replace("\n", " ")
+                raise MLCubeError(
+                    f"SingularityRun.inspect failed to compute sha256 sum of the local file. File={file_path}, "
+                    f"sha256sum_exitcode={_exit_code}, sha256sum_output={_output}"
+                )
+            return _output.split(" ")[0].strip()
+
+        if not s_cfg.build_file:
+            # The build specs do not exist. This probably means that the SIF file must exist.
+            if not image_file.is_file():
+                raise MLCubeError(
+                    "The build file (build_file) that specifies how a SIF image is to be built is not specified or "
+                    "empty. This means the SIF image must exist (image_dir=%s, image_name=%s) but it does not. "
+                    "Inspection failed.",
+                    s_cfg.image_dir,
+                    s_cfg.image,
+                )
+            logger.debug(
+                "SingularityRun.inspect: build file (%s) is not specified, but SIF image exists (%s) - will use it to "
+                "compute hash.",
+                s_cfg.build_file,
+                image_file.as_posix(),
+            )
+            return {"hash": _local_file_sha256sum(image_file)}
+
+        if s_cfg.build_file.startswith("docker-archive:"):
+            # MLCube is distributed as docker save image (tar archive): I (sergey) guess we need to recover ID of the
+            # original docker image from the tar archive.
+            raise MLCubeError(
+                "SingularityRun.inspect: docker archives not supported yet."
+            )
+
+        if s_cfg.build_file.startswith("docker:"):
+            # MLCube is distributed as docker image: need to identify image ID of this image by querying the docker
+            # registry (docker hub).
+            # TODO: Current implementation makes an API call to docker registry. It's quite possible that the next call
+            #       (e.g., configure) will pull a newer version of this image. Need to address this in subsequent
+            #       patches.
+            docker_hub = DockerHubClient(self.client)
+            manifest = docker_hub.get_image_manifest(s_cfg.build_file)
+            logger.debug(
+                "SingularityRun.inspect build file is a docker image (%s) - I will consider it as a distribution "
+                "format for this MLCube, and MLCube hash will be docker image ID. Image manifest: %s",
+                s_cfg.build_file,
+                manifest,
+            )
+            return {"hash": manifest["config"]["digest"][7:]}
+
+        # Here, the recipe file (s_cfg.build_file) must point to a singularity image file. Is there an easy way to
+        # validate it here?
+        recipe_file = Path(self.mlcube.runtime.root, s_cfg.build_file)
+        if not recipe_file.is_file():
+            raise MLCubeError(
+                f"SingularityRun.inspect: the build file ({s_cfg.build_file}) is specified, and it is assumed it is a "
+                f"singularity definition file, but it does not exist ({recipe_file.as_posix()}). Can't identify how "
+                "this MLCube is distributed."
+            )
+
+        if not image_file.is_file():
+            if not force:
+                raise MLCubeError(
+                    f"SingularityRun.inspect: SIF image file does not exist ({image_file}), but build recipe file "
+                    f"exist ({recipe_file}). It is assumed that this MLCube is distributed as a singularity image, and "
+                    "I need this image to identify its hash, but `force` parameter is set to false. Configure this "
+                    "MLCube or set this parameter to true (e.g., rerun inspect command with `--force` CLi switch)."
+                )
+            logger.debug(
+                "SingularityRun.inspect build recipe file exists (%s), SIF image file does not exist (%s), and `force` "
+                "parameter is set to true - will build SIF image and will use it to compute hash.",
+                recipe_file.as_posix(),
+                image_file.as_posix(),
+            )
+            self.configure()
+        else:
+            logger.debug(
+                "SingularityRun.inspect: build file (%s) is specified, build recipe exists (%s), SIF image exists (%s) "
+                "- will use it to compute hash.",
+                s_cfg.build_file,
+                recipe_file.as_posix(),
+                image_file.as_posix(),
+            )
+        return {"hash": _local_file_sha256sum(image_file)}

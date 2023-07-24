@@ -1,15 +1,17 @@
+import json
 import logging
 import typing as t
 from enum import Enum
 from pathlib import Path
 
+import requests
 import semver
 
 from mlcube.errors import ExecutionError
 from mlcube.shell import Shell
 from mlcube.system_settings import SystemSettings
 
-__all__ = ["Runtime", "Version", "Client"]
+__all__ = ["Runtime", "Version", "ImageSpec", "Client", "DockerHubClient"]
 
 logger = logging.getLogger(__name__)
 
@@ -29,6 +31,25 @@ class Version:
 
     def __str__(self) -> str:
         return f"Version(runtime={self.runtime.name}, version={self.version})"
+
+
+class ImageSpec(Enum):
+    """Build specification format for building singularity images.
+
+    Primary purpose of this enum is to help MLCube guess how to compute the hash for MLCube-based project.
+    """
+
+    OTHER = 0
+    """Other type pretty much means everything that's not covered by types defined below."""
+
+    DOCKER = 1
+    """Docker image ('docker://')."""
+
+    DOCKER_ARCHIVE = 2
+    """Local tar files ('docker-archive:')."""
+
+    SINGULARITY = 3
+    """Singularity Image File."""
 
 
 class Client:
@@ -222,3 +243,131 @@ class Client:
                 f"Error occurred while running MLCube task. See context for more details.",
                 **err.context,
             )
+
+    def image_spec(self, uri: str) -> ImageSpec:
+        if uri.startswith("docker://"):
+            return ImageSpec.DOCKER
+
+        if uri.startswith("docker-archive:"):
+            return ImageSpec.DOCKER_ARCHIVE
+
+        if not Path(uri).is_file():
+            logger.warning(
+                "Client.image_spec URI (%s) not a file. Can't identify image spec.", uri
+            )
+            return ImageSpec.OTHER
+
+        exit_code, _ = Shell.run_and_capture_output(
+            self.singularity + ["sif", "header", uri]
+        )
+        if exit_code == 0:
+            return ImageSpec.SINGULARITY
+
+
+class DockerHubClient:
+    """Ad-hoc implementation for interacting with remote docker registries."""
+
+    def __init__(self, singularity_: Client) -> None:
+        """
+        self.token: t.Optional[str] = None
+
+        if singularity.version.runtime == Runtime.APPTAINER:
+            config_paths = [
+                Path("~/.apptainer/docker-config.json").expanduser(),
+                Path("~/.singularity/docker-config.json").expanduser(),
+            ]
+        else:
+            config_paths = [
+                Path("~/.singularity/docker-config.json").expanduser(),
+                Path("~/.apptainer/docker-config.json").expanduser(),
+            ]
+        config_paths.append(Path("~/.docker/config.json").expanduser())
+
+        for config_path in config_paths:
+            if not config_path.is_file():
+                logger.debug("DockerHubClient.__init__ no such file: %s", config_path.as_posix())
+                continue
+            with open(config_path, 'rt') as file:
+                config = json.load(file)
+            if not isinstance(config, dict) or \
+                    "auths" not in config or \
+                    "https://index.docker.io/v1/" not in config["auths"] or \
+                    "auth" not in config["auths"]["https://index.docker.io/v1/"]:
+                logger.debug("DockerHubClient.__init__: no docker.io credentials in %s", config_path.as_posix())
+                continue
+            self.token = config["auths"]["https://index.docker.io/v1/"]["auth"]
+            logger.debug("DockerHubClient.__init__: found auth credentials in %s.", config_path.as_posix())
+            break
+        if not self.token:
+            logger.warning(
+                "DockerHubClient.__init__: could not credentials to authenticate in docker registry in %s",
+                [name.as_posix() for name in config_paths]
+            )
+        """
+        pass
+
+    def get_image_manifest(self, image_name: str) -> t.Dict:
+        """Return image manifest pulled from a remote docker registry.
+        Args:
+            image_name: Docker image name, e.g., docker://mlcommons/mnist:0.0.1
+        Returns:
+            Dictionary containing image manifest pulled from docker registry.
+        """
+        user, repository, tag = self.parse_image_name(image_name)
+        token = self.get_token(user, repository)
+
+        url = f"https://registry-1.docker.io/v2/{user}/{repository}/manifests/{tag}"
+        headers = {
+            "Accept": "application/vnd.docker.distribution.manifest.v2+json",
+            "Authorization": f"Bearer {token}",
+        }
+        response = requests.get(url, headers=headers)
+        if response.status_code != 200:
+            raise ValueError(
+                f"Failed to get image manifest (status={response.status_code}, url={url}, response={response.text}"
+            )
+        return response.json()
+
+    @staticmethod
+    def get_token(user: str, repository: str) -> str:
+        """Return authentication token for pulling from {user}/{repository} repository.
+
+        Args:
+            user: Username in a remote docker registry.
+            repository: Repository name in a remote docker registry.
+        Returns:
+            Access token for pulling from {user}/{repository} repository. It should be used in the Authorization header:
+            `"Authorization": f"Bearer {token}"`.
+        """
+        url = f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{user}/{repository}:pull"
+        response = requests.get(url)
+        if response.status_code != 200:
+            raise ValueError(
+                f"Failed to get token (status={response.status_code}, url={url}, response={response.text}"
+            )
+        return response.json()["token"]
+
+    @staticmethod
+    def parse_image_name(name: str) -> t.Tuple[str, str, str]:
+        """Parse image name and return username, repository name and image tag.
+
+        Args:
+            name: Image name.
+        Returns:
+            Tuple containing username, repository name and image tag.
+        """
+        if name.startswith("docker:"):
+            name = name[7:]
+        while True:
+            if len(name) > 0 and name[0] == "/":
+                name = name[1:]
+            else:
+                break
+        name_tag = name.split(":")
+        if len(name_tag) != 2:
+            raise ValueError(f"Unsupported image name: {name}")
+        user_repository = name_tag[0].split("/")
+        if len(user_repository) != 2:
+            raise ValueError(f"Unsupported image name: {name}")
+
+        return (user_repository[0], user_repository[1], name_tag[1])
