@@ -32,7 +32,7 @@ class TestDockerRunner(TestCase):
     def _check_inspect_output(self, info: t.Dict) -> None:
         self.assertIsInstance(info, dict)
         self.assertIn("hash", info)
-        self.assertTrue(info["hash"].startswith("sha256:"))
+        self.assertFalse(info["hash"].startswith("sha256:"))
 
     @staticmethod
     def noop(*args, **kwargs) -> None:

@@ -376,4 +376,7 @@ class DockerRun(Runner):
                 f"Unexpected output from `{' '.join(docker_inspect_cmd)}`. Expected a list of dicts of length 1."
             )
 
-        return {"hash": image_info[0].get("Id", None)}
+        image_id: str = image_info[0].get("Id", None)
+        if image_id and image_id.startswith("sha256:"):
+            image_id = image_id[7:]
+        return {"hash": image_id}
