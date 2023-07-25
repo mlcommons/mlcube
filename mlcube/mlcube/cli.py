@@ -1,4 +1,5 @@
 import copy
+import inspect
 import os
 import typing as t
 from io import StringIO
@@ -97,8 +98,11 @@ def markdown2text(text: str) -> str:
         def unmark_element(element: Element, stream: t.Optional[StringIO] = None):
             if stream is None:
                 stream = StringIO()
-            if element.text:
-                stream.write(element.text)
+            element_text = element.text
+            if element_text:
+                if element.tag == "code":
+                    element_text = f"`{element_text}`"
+                stream.write(element_text)
             for sub in element:
                 unmark_element(sub, stream)
             if element.tail:
@@ -176,7 +180,8 @@ class HelpEpilog(object):
         def __enter__(self) -> None:
             self.formatter.indent()
             self.formatter.write_heading("- " + self.title)
-            self.formatter.write_paragraph()
+            # The next instruction writes an empty line between an example header and sequence of commands.
+            # self.formatter.write_paragraph()
             self.formatter.current_indent += 2 * self.formatter.indent_increment
 
         def __exit__(self, exc_type, exc_val, exc_tb) -> None:
@@ -191,7 +196,7 @@ class HelpEpilog(object):
     ) -> None:
         if not self.examples:
             return
-        formatter.write_heading("\nEXAMPLES")
+        formatter.write_heading("\nExamples")
         for title, commands in self.examples:
             with HelpEpilog.Example(formatter, title):
                 for cmd in commands:
@@ -213,14 +218,48 @@ class MLCubeCommand(click.Command):
     """
 
     def format_help_text(self, ctx, formatter):
-        """Writes the help text to the formatter if it exists."""
-        if self.help:
-            formatter.write_paragraph()
+        """Writes the help text to the formatter if it exists.
+
+        This works for CLI, and not ford web. Since we override the default implementation, we need to add possibility
+        to exclude certain paragraphs from output (such as `Args` and others).
+        """
+        # The text message here is basically a docstring of the command function. It is assumed that the first line
+        # is the brief description, and (maybe) everything else is a long description
+        text: str = self.help
+        if text:
+            # When invoking --help on a command line, we do not show the `long` description (that
+            # is rendered in web version).
+            start_idx: int = text.find("<long>")
+            if start_idx >= 0:
+                end_idx: int = text.find("</long>", start_idx)
+                if end_idx >= 0:
+                    text = text[:start_idx] + text[end_idx + 7:]
+            # This is supported in default implementation, so need to reimplement it here. All that goes after the
+            # `\f` character is not rendered (e.g., description of parameters, TODOs, etc.).
+            text = text.split("\f")[0]
+            # Remove unnecessary indentation (markdown2text is not going to work otherwise).
+            text = inspect.cleandoc(text)
+
+            paragraphs = text.split("\n")
+            if len(paragraphs) == 1:
+                brief_description, long_description = paragraphs[0], ""
+            else:
+                brief_description, long_description = paragraphs[0], "\n".join(
+                    paragraphs[1:]
+                )
+
+            formatter.write_heading("\nBrief description")
             with formatter.indentation():
-                help_text = markdown2text(self.help)
-                if self.deprecated:
-                    help_text += DEPRECATED_HELP_NOTICE
-                formatter.write_text(help_text)
+                brief_description = markdown2text(brief_description)
+                formatter.write_text(brief_description)
+
+            long_description = markdown2text(long_description)
+            if self.deprecated:
+                text += DEPRECATED_HELP_NOTICE
+            if long_description:
+                formatter.write_heading("\nLong description")
+                with formatter.indentation():
+                    formatter.write_text(long_description)
         elif self.deprecated:
             formatter.write_paragraph()
             with formatter.indentation():
@@ -248,14 +287,10 @@ class MLCubeCommand(click.Command):
         self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter
     ) -> None:
         """Format epilog if its type `mlcube.EpilogWithExamples`, else fallback to default implementation."""
-        if self.epilog:
-            try:
-                self.epilog.format_epilog(ctx, formatter)
-            except AttributeError:
-                super().format_epilog(ctx, formatter)
-            except TypeError:
-                # TODO: raise an exception or do logging or something else
-                ...
+        if isinstance(self.epilog, HelpEpilog):
+            self.epilog.format_epilog(ctx, formatter)
+        elif self.epilog is not None:
+            super().format_epilog(ctx, formatter)
         formatter.write_text(f"MLCube online documentation: {OnlineDocs.url()}")
 
 
