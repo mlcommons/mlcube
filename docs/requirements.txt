@@ -1,5 +1,9 @@
 mkdocs>=1.0.4
+
+# This slightly updated version respects Click's help feature to skip everything that comes after the \f symbol.
+# mkdocs-click
+mkdocs-click @ git+https://github.com/sergey-serebryakov/mkdocs-click@feature/respect-ff-escape-char
+
 mkdocs-material>=4.4.0
-mkdocs-click
 pymdown-extensions>=7.1
 -r ../mlcube/requirements.txt
