@@ -19,7 +19,7 @@
         <link rel="next" href="../../tutorials/create-mlcube/">
       
       <link rel="icon" href="../../assets/favicon.ico">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.1.6">
+      <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.19">
     
     
       
@@ -27,10 +27,10 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.ded33207.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.eebd395e.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.a0c5b2b5.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ecc896b0.min.css">
       
       
 
@@ -63,7 +63,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo">
   
     
     
@@ -116,25 +116,31 @@
       </div>
     </div>
     
-      <form class="md-header__option" data-md-component="palette">
-        
+      
+        <form class="md-header__option" data-md-component="palette">
           
-          <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent=""  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+            
+            
+            <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+            
+              <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+              </label>
+            
           
-            <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
-            </label>
+            
+            
+            
+            <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
+            
+              <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+              </label>
+            
           
-        
-          
-          <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent=""  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_2">
-          
-            <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
-            </label>
-          
-        
-      </form>
+        </form>
+      
     
     
     
@@ -656,6 +662,7 @@
 <li><em><a href="#mlcube-configure">configure</a></em>: Configure MLCube.</li>
 <li><em><a href="#mlcube-create">create</a></em>: Create a new Python project from the MLCube cookiecutter template.</li>
 <li><em><a href="#mlcube-describe">describe</a></em>: Describe this MLCube.</li>
+<li><em><a href="#mlcube-inspect">inspect</a></em>: Return low-level information on MLCube objects.</li>
 <li><em><a href="#mlcube-run">run</a></em>: Run MLCube task(s).</li>
 <li><em><a href="#mlcube-show_config">show_config</a></em>: Show effective MLCube configuration.</li>
 </ul>
@@ -743,11 +750,6 @@ source code most likely will provide a <code>Dockerfile</code> to build a docker
 a docker image before MLCube runner can run it, is called a configuration phase. In general, users do not need to
 run this command manually - MLCube runners should be able to figure out when they need to run it, and will run it
 as part of <code>mlcube run</code> command.</p>
-<p>Args:
-    mlcube: Path to MLCube root directory or mlcube.yaml file.
-    platform: Platform to use to configure this MLCube for (docker, singularity, gcp, k8s etc).
-    p: Additional MLCube configuration parameters (these parameters are those parameters that normally start with
-        <code>-P</code> prefix). Here, due to original implementation, we need to <code>unparse</code> by adding <code>-P</code> prefix.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>mlcube configure [OPTIONS]
 </code></pre></div>
@@ -817,8 +819,6 @@ automatically: install it with <code>pip install cookiecutter</code>.</p>
 </table>
 <h2 id="mlcube-describe">mlcube describe<a class="headerlink" href="#mlcube-describe" title="Permanent link">&para;</a></h2>
 <p>Describe this MLCube.</p>
-<p>Args:
-    mlcube: Path to MLCube root directory or mlcube.yaml file.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>mlcube describe [OPTIONS]
 </code></pre></div>
@@ -847,19 +847,56 @@ automatically: install it with <code>pip install cookiecutter</code>.</p>
 </tr>
 </tbody>
 </table>
+<h2 id="mlcube-inspect">mlcube inspect<a class="headerlink" href="#mlcube-inspect" title="Permanent link">&para;</a></h2>
+<p>Return low-level information on MLCube objects.</p>
+<p><strong>Usage:</strong></p>
+<div class="highlight"><pre><span></span><code>mlcube inspect [OPTIONS]
+</code></pre></div>
+<p><strong>Options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>--mlcube</code></td>
+<td>text</td>
+<td>Path to an MLCube project. It can be a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-root-directory">directory path</a>, or a path to an MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration file</a>. When it is a directory path, MLCube runtime assumes this directory is the MLCube root directory containing <code>mlcube.yaml</code> file. When it is a file path, this file is assumed to be the MLCube configuration file (<code>mlcube.yaml</code>), and a parent directory of this file is considered to be the MLCube root directory. Default value is current directory.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--platform</code></td>
+<td>text</td>
+<td><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#platform">Platform</a> name to run MLCube on (a platform is a configured instance of an MLCube runner). Multiple platforms are supported, including <code>docker</code> (<a href="https://mlcommons.github.io/mlcube/runners/docker-runner">Docker and Podman</a>), <code>singularity</code> (<a href="https://mlcommons.github.io/mlcube/runners/singularity-runner">Singularity</a>). Other runners are in experimental stage: <code>gcp</code> (<a href="https://mlcommons.github.io/mlcube/runners/gcp-runner">Google Cloud Platform</a>), <code>k8s</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubernetes">Kubernetes</a>), <code>kubeflow</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubeflow">KubeFlow</a>), ssh (<a href="https://mlcommons.github.io/mlcube/runners/ssh-runner">SSH runner</a>). Default is <code>docker</code>. Platforms are defined and configured in MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/system-settings/">system settings file</a>.</td>
+<td><code>docker</code></td>
+</tr>
+<tr>
+<td><code>--force</code></td>
+<td>boolean</td>
+<td>Force inspecting the MLCube object. For instance, if MLCube has not been pulled or built it, then pull or build it.</td>
+<td><code>False</code></td>
+</tr>
+<tr>
+<td><code>--format</code></td>
+<td>choice (<code>json</code> &#x7C; <code>yaml</code>)</td>
+<td>Format for reporting results.</td>
+<td><code>json</code></td>
+</tr>
+<tr>
+<td><code>--help</code>, <code>-h</code></td>
+<td>boolean</td>
+<td>Show help message and exit.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
 <h2 id="mlcube-run">mlcube run<a class="headerlink" href="#mlcube-run" title="Permanent link">&para;</a></h2>
 <p>Run MLCube task(s).</p>
-<p>Args:
-    ctx: Click context for unknown options
-    mlcube: Path to MLCube root directory or mlcube.yaml file.
-    platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
-    task: Comma separated list of tasks to run.
-    workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
-    network: Networking options defined during MLCube container execution.
-    security: Security options defined during MLCube container execution.
-    gpus: GPU usage options defined during MLCube container execution.
-    memory: Memory RAM options defined during MLCube container execution.
-    cpu: CPU options defined during MLCube container execution.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>mlcube run [OPTIONS]
 </code></pre></div>
@@ -941,13 +978,6 @@ automatically: install it with <code>pip install cookiecutter</code>.</p>
 <p>Effective MLCube configuration is the one used by one of MLCube runners to run this MLCube. This configuration is
 built by merging (1) default runner configuration retrieved from system settings, (2) MLCube project configuration
 and (3) configuration parameters passed by a user on a command line (CONFIG_PARAM).</p>
-<p>Args:
-    ctx: Click context for unknown options
-    mlcube: Path to MLCube root directory or mlcube.yaml file.
-    platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
-    workspace: Workspace path to use. If not specified, default workspace inside MLCube directory is used.
-    resolve: if True, compute values in MLCube configuration.
-    p: Additional configuration parameters.</p>
 <p><strong>Usage:</strong></p>
 <div class="highlight"><pre><span></span><code>mlcube show_config [OPTIONS]
 </code></pre></div>
@@ -1052,10 +1082,10 @@ and (3) configuration parameters passed by a user on a command line (CONFIG_PARA
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.208ed371.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["search.suggest", "search.highlight", "search.share"], "search": "../../assets/javascripts/workers/search.74e28a9f.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.51198bba.min.js"></script>
+      <script src="../../assets/javascripts/bundle.220ee61c.min.js"></script>
       
     
   </body>
