@@ -541,13 +541,14 @@ def config(
     ],  # mlcube config --rename-runner OLD_NAME NEW_NAME
     remove_runner: t.Optional[str],  # mlcube config --remove-runner NAME
 ) -> None:
-    """Work with MLCube [system settings](https://mlcommons.github.io/mlcube/getting-started/system-settings/) similar
-    to `git config`.
+    """Display or change MLCube system settings.
 
-    Manage MLCube system settings (these settings define global configuration common for all MLCube runners and
-    platforms). When this command runs without arguments, a path to system settings file is printed out. This is useful
-    to automate certain operations with system settings. Alternatively, it may be easier to manipulate system settings
-    file directly (it is a yaml file).
+    MLCube [system settings](https://mlcommons.github.io/mlcube/getting-started/system-settings) define global
+    configuration common for all MLCube runners and platforms. When this command runs without arguments, a path to
+    system settings file is printed out. This is useful to automate certain operations with system settings.
+    system settings file is printed out. This is useful to automate certain operations with system settings.
+
+    Alternatively, it may be easier to manipulate system settings file directly (it is a yaml file).
     """
     print(f"System settings file path = {SystemSettings.system_settings_file()}")
     settings = SystemSettings()
