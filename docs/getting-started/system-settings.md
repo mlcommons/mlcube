@@ -1,7 +1,7 @@
 # MLCube System Settings
-MLCube system settings configure MLCube and MLCube runners at a system level. The term `system level` here implies that
-these settings are not tied to particular MLCubes (MLCube compliant ML projects). Instead, these settings are used by
-MLCube runners on every machine where MLCube runtime is configured to use these settings.
+MLCube&reg; system settings configure MLCube and MLCube runners at a system level. The term `system level` here implies 
+that these settings are not tied to particular MLCubes (MLCube compliant ML projects). Instead, these settings are used 
+by MLCube runners on every machine where MLCube runtime is configured to use these settings.
 
 ## Introduction
 When MLCube runners run MLCubes, they need to know not only the content of MLCubes (tasks that MLCubes provide), but 

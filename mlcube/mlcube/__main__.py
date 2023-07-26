@@ -129,7 +129,7 @@ cpu_option = click.option(
 @Options.loglevel
 @Options.help
 def cli(log_level: t.Optional[str]):
-    """MLCube 📦 is a tool for packaging, distributing and running Machine Learning (ML) projects and models.
+    """MLCube® is a tool for packaging, distributing and running Machine Learning (ML) projects and models.
 
     \b
     - GitHub: https://github.com/mlcommons/mlcube

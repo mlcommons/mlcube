@@ -1,5 +1,5 @@
 # Runners
-MLCube runners run MLCube cubes on one or multiple platforms. Examples of platforms are Docker and Singularity 
+MLCube&reg; runners run MLCube cubes on one or multiple platforms. Examples of platforms are Docker and Singularity 
 containers, Kubernetes, remote hosts, virtual machines in the cloud, etc. Every runner has a fixed set of configuration
 parameters that users can change to configure MLCubes and runners for their environments. Concretely, runners can take
 information from three different sources:

@@ -3,7 +3,7 @@
 !!! warning
     Work in progress. Some functionality described below may not be available.
 
-SSH runner uses other runners to run MLCube cubes on remote hosts. It uses `ssh` and `rsync` internally. It
+SSH runner uses other runners to run MLCube&reg; cubes on remote hosts. It uses `ssh` and `rsync` internally. It
 supports two mandatory commands - `configure` and `run` with standard arguments - `mlcube`, `platform` and `task`. Users 
 can configure SSH runner in system setting file, and override parameters on a command line.
 

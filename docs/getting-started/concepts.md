@@ -1,7 +1,7 @@
 # MLCube concepts
 
 ### Command Line Arguments
-MLCube runtime and MLCube runners accept multiple command line arguments. They can be classified into two categories:
+MLCube&reg; runtime and MLCube runners accept multiple command line arguments. They can be classified into two categories:
 
 - Fixed command-specific parameters such as `--mlcube`, `--platform` and `--task` for the MLCube's `run` command, or
   `create_platform` and `rename_platform` for the `config` command.

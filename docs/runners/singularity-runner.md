@@ -1,5 +1,5 @@
 # Singularity Runner
-Singularity runner uses singularity to run MLCube cubes. It supports two mandatory commands - `configure` and
+Singularity runner uses singularity to run MLCube&reg; cubes. It supports two mandatory commands - `configure` and
 `run` with standard arguments - `mlcube`, `platform` and `task`. Users can configure Singularity runner in MLCube 
 configuration file, system setting file, and override parameters on a command line.
 
