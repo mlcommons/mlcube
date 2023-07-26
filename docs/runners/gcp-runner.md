@@ -1,7 +1,7 @@
 # Google Compute Platform (GCP) Runner
 
 !!! attention
-      MLCube is under active development. Allocating and using instances in clouds are associated with costs. Users of 
+      MLCube&reg; is under active development. Allocating and using instances in clouds are associated with costs. Users of 
       GCP runners should be aware about it, especially, taking into account capability of GCP runners to automatically 
       create and start remote instances. GCP RUNNERS in current implementation DO NOT stop/destroy remote instances. 
       Users are encouraged to visit web consoles to identify what virtual instances exist and run.

@@ -1,6 +1,6 @@
 # MNIST
 The [MNIST dataset](http://yann.lecun.com/exdb/mnist/) is a collection of 60,000 handwritten digits widely used for
-training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCube example demonstrates
+training statistical, Machine Learning (ML) and Deep Learning (DL) models. The MNIST MLCube&reg; example demonstrates
 how data scientists, ML and DL researchers and developers can distribute their ML projects (including training,
 validation and inference code) as MLCube cubes. MLCube establishes a standard to package user workloads,
 and provides unified command line interface. In addition, MLCube provides a number of reference 

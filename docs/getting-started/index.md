@@ -1,6 +1,6 @@
 # Installation
 
-Here is the step-by-step guide to install MLCube library and run simple MLCube cubes.
+Here is the step-by-step guide to install MLCube&reg; library and run simple MLCube cubes.
 
 ## Create a python environment
 

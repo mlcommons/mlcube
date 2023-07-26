@@ -6,6 +6,8 @@ on:
     - '.github/workflows/docs-site.yml'
     - 'docs/**'
     - 'mkdocs.yml'
+    - 'mlcube/mlcube/__main__.py'
+    - 'mlcube/mlcube/cli.py'
 
 jobs:
   docs:

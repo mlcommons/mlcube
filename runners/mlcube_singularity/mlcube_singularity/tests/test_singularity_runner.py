@@ -16,20 +16,24 @@ import typing as t
 import unittest
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import (mock_open, patch)
+from unittest.mock import mock_open, patch
 
-from mlcube.config import MLCubeConfig
-from mlcube.shell import Shell
-
-from mlcube_singularity.singularity_run import (Config, SingularityRun)
-
+from mlcube_singularity.singularity_client import Client
+from mlcube_singularity.singularity_run import Config, SingularityRun
 from omegaconf import DictConfig, OmegaConf
 
-from spython.utils.terminal import check_install as check_singularity_installed
+from mlcube.config import MLCubeConfig
+from mlcube.errors import ExecutionError
+from mlcube.shell import Shell
 
-_HAVE_SINGULARITY: bool = check_singularity_installed(software='singularity')
+try:
+    client = Client.from_env()
+    client.init()
+except ExecutionError:
+    client = None
 
 _IMAGE_DIRECTORY: Path = Path(tempfile.mkdtemp())
+
 
 _MLCUBE_DEFAULT_ENTRY_POINT = """
 singularity:
@@ -38,7 +42,9 @@ singularity:
 tasks:
   ls: {parameters: {inputs: {}, outputs: {}}}
   pwd: {parameters: {inputs: {}, outputs: {}}}
-""".replace('{IMAGE_DIRECTORY}', _IMAGE_DIRECTORY.as_posix())
+""".replace(
+    "{IMAGE_DIRECTORY}", _IMAGE_DIRECTORY.as_posix()
+)
 
 
 _MLCUBE_CUSTOM_ENTRY_POINTS = """
@@ -48,7 +54,9 @@ singularity:
 tasks:
   ls: {parameters: {inputs: {}, outputs: {}}}
   free: {entrypoint: '/usr/bin/free', parameters: {inputs: {}, outputs: {}}}
-""".replace('{IMAGE_DIRECTORY}', _IMAGE_DIRECTORY.as_posix())
+""".replace(
+    "{IMAGE_DIRECTORY}", _IMAGE_DIRECTORY.as_posix()
+)
 
 _sync_workspace_fn: t.Optional[t.Callable] = None
 
@@ -69,13 +77,20 @@ class TestSingularityRunner(TestCase):
         _sync_workspace_fn = Shell.sync_workspace
         Shell.sync_workspace = TestSingularityRunner.noop
 
-        if _HAVE_SINGULARITY:
+        if client:
             if not _IMAGE_DIRECTORY.exists():
                 _IMAGE_DIRECTORY.mkdir(parents=True, exist_ok=True)
-            Shell.run(
-                ['singularity', 'build', (_IMAGE_DIRECTORY / 'ubuntu-18.04.sif').as_posix(), 'docker://ubuntu:18.04'],
-                on_error='raise'
+            client.build(
+                Path.cwd().as_posix(),
+                "docker://ubuntu:18.04",
+                _IMAGE_DIRECTORY.as_posix(),
+                "ubuntu-18.04.sif",
+                build_args="",
             )
+            # Shell.run(
+            #     ['singularity', 'build', (_IMAGE_DIRECTORY / 'ubuntu-18.04.sif').as_posix(), 'docker://ubuntu:18.04'],
+            #     on_error='raise'
+            # )
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -84,38 +99,45 @@ class TestSingularityRunner(TestCase):
         if _IMAGE_DIRECTORY.exists():
             shutil.rmtree(_IMAGE_DIRECTORY.as_posix())
 
-    @unittest.skipUnless(_HAVE_SINGULARITY, reason="No singularity available.")
+    @unittest.skipUnless(client is not None, reason="No singularity available.")
     def test_mlcube_default_entrypoints(self):
         with patch("io.open", mock_open(read_data=_MLCUBE_DEFAULT_ENTRY_POINT)):
             mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=SingularityRun
+                "/some/path/to/mlcube.yaml",
+                runner_config=Config.DEFAULT,
+                runner_cls=SingularityRun,
             )
-        self.assertEqual(mlcube.runner.image, 'ubuntu-18.04.sif')
+        self.assertEqual(mlcube.runner.image, "ubuntu-18.04.sif")
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
             {
-                'ls': {'parameters': {'inputs': {}, 'outputs': {}}},
-                'pwd': {'parameters': {'inputs': {}, 'outputs': {}}}
-            }
+                "ls": {"parameters": {"inputs": {}, "outputs": {}}},
+                "pwd": {"parameters": {"inputs": {}, "outputs": {}}},
+            },
         )
         SingularityRun(mlcube, task=None).configure()
-        SingularityRun(mlcube, task='ls').run()
-        SingularityRun(mlcube, task='pwd').run()
+        SingularityRun(mlcube, task="ls").run()
+        SingularityRun(mlcube, task="pwd").run()
 
-    @unittest.skipUnless(_HAVE_SINGULARITY, reason="No singularity available.")
+    @unittest.skipUnless(client is not None, reason="No singularity available.")
     def test_mlcube_custom_entrypoints(self):
         with patch("io.open", mock_open(read_data=_MLCUBE_CUSTOM_ENTRY_POINTS)):
             mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=SingularityRun
+                "/some/path/to/mlcube.yaml",
+                runner_config=Config.DEFAULT,
+                runner_cls=SingularityRun,
             )
-        self.assertEqual(mlcube.runner.image, 'ubuntu-18.04.sif')
+        self.assertEqual(mlcube.runner.image, "ubuntu-18.04.sif")
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
             {
-                'ls': {'parameters': {'inputs': {}, 'outputs': {}}},
-                'free': {'entrypoint': '/usr/bin/free', 'parameters': {'inputs': {}, 'outputs': {}}}
-            }
+                "ls": {"parameters": {"inputs": {}, "outputs": {}}},
+                "free": {
+                    "entrypoint": "/usr/bin/free",
+                    "parameters": {"inputs": {}, "outputs": {}},
+                },
+            },
         )
         SingularityRun(mlcube, task=None).configure()
-        SingularityRun(mlcube, task='ls').run()
-        SingularityRun(mlcube, task='free').run()
+        SingularityRun(mlcube, task="ls").run()
+        SingularityRun(mlcube, task="free").run()

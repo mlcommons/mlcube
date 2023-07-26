@@ -64,10 +64,12 @@ class SystemSettings(object):
         """
         self.path: Path = Path(path if path is not None else SystemSettings.system_settings_file()).resolve()
         if not self.path.exists():
-            logger.info("MLCube system settings file does not exist (%s).", str(self.path))
+            logger.info(
+                "SystemSettings.__init__ MLCube system settings file does not exist (%s).", self.path.as_posix()
+            )
             self.path.touch()
         else:
-            logger.info("MLCube system settings file exists (%s)", str(self.path))
+            logger.info("SystemSettings.__init__ MLCube system settings file exists (%s)", self.path.as_posix())
         self.settings: DictConfig = OmegaConf.load(self.path)
         if not isinstance(self.settings, DictConfig):
             raise ValueError(f"Invalid object read from {self.path} (type = {type(self.settings)}). "

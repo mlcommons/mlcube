@@ -6,12 +6,11 @@
 import logging
 import typing as t
 
-from mlcube.errors import ConfigurationError
+from omegaconf import DictConfig, OmegaConf
 
-from omegaconf import (DictConfig, OmegaConf)
+from mlcube.errors import ConfigurationError, MLCubeError
 
-
-__all__ = ['RunnerConfig', 'Runner']
+__all__ = ["RunnerConfig", "Runner"]
 
 
 logger = logging.getLogger(__name__)
@@ -54,7 +53,7 @@ class RunnerConfig(object):
         ...
 
 
-RunnerConfigType = t.TypeVar('RunnerConfigType', bound='RunnerConfig')
+RunnerConfigType = t.TypeVar("RunnerConfigType", bound="RunnerConfig")
 
 
 class Runner(object):
@@ -62,7 +61,9 @@ class Runner(object):
 
     CONFIG: RunnerConfigType = RunnerConfig
 
-    def __init__(self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]) -> None:
+    def __init__(
+        self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]
+    ) -> None:
         """Initialize the base runner.
 
         Args:
@@ -72,12 +73,18 @@ class Runner(object):
         if isinstance(mlcube, dict):
             mlcube: DictConfig = OmegaConf.create(mlcube)
         if not isinstance(mlcube, DictConfig):
-            raise ConfigurationError(f"Invalid mlcube type ('{type(DictConfig)}'). Expecting 'DictConfig'.")
+            raise ConfigurationError(
+                f"Invalid mlcube type ('{type(DictConfig)}'). Expecting 'DictConfig'."
+            )
 
         self.mlcube = mlcube
         self.task = task
 
-        logger.debug("%s configuration: %s", self.__class__.__name__, str(self.mlcube.runner))
+        logger.debug(
+            "%s.__init__ configuration: %s",
+            self.__class__.__name__,
+            str(self.mlcube.runner),
+        )
 
     def configure(self) -> None:
         """Configure this MLCube."""
@@ -86,3 +93,14 @@ class Runner(object):
     def run(self) -> None:
         """Run one MLCube task."""
         ...
+
+    def inspect(self, force: bool = False) -> t.Dict:
+        """Return low-level information about MLCube objects.
+
+        Args:
+            force: If true, and MLCube does not exist (e.g., has not been pulled or built yet), then pull/build it.
+        """
+        raise MLCubeError(
+            f"The `inspect` command has not been implemented yet (runner={self.mlcube['runner']['runner']}, "
+            f"cls={self.__class__.__name__})."
+        )
