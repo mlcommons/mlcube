@@ -1,6 +1,6 @@
 # MLCube Release process
 
-To run MLCube and MLCuber runners unitests, run the following command in the root directory of the project:
+To run MLCube&reg; and MLCube runners unittests, run the following command in the root directory of the project:
 ```shell
 conda create -n mlcube python=3.6
 conda activate mlcube
