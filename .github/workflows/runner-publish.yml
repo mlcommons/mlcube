@@ -10,6 +10,8 @@ on:
 jobs:
   ssh_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -27,10 +29,8 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
         skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
         packages_dir: runners/mlcube_ssh/dist/
         repository_url: https://upload.pypi.org/legacy/
       env:
@@ -38,6 +38,8 @@ jobs:
 
   docker_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -55,10 +57,8 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
         skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
         packages_dir: runners/mlcube_docker/dist/
         repository_url: https://upload.pypi.org/legacy/
         verbose: true
@@ -67,6 +67,8 @@ jobs:
 
   singularity_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -84,10 +86,8 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
         skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
         packages_dir: runners/mlcube_singularity/dist/
         repository_url: https://upload.pypi.org/legacy/
         verbose: true
@@ -96,6 +96,8 @@ jobs:
 
   kubernetes_runner_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -113,10 +115,8 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
         skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
         packages_dir: runners/mlcube_k8s/dist/
         repository_url: https://upload.pypi.org/legacy/
         verbose: true
@@ -125,6 +125,8 @@ jobs:
 
   gcp_runner_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -142,10 +144,8 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
         verify_metadata: true
         skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
         packages_dir: runners/mlcube_gcp/dist/
         repository_url: https://upload.pypi.org/legacy/
         verbose: true
@@ -154,6 +154,8 @@ jobs:
 
   kubeflow_runner_deploy:
       runs-on: ubuntu-latest
+      permissions:
+        id-token: write
       steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -171,10 +173,8 @@ jobs:
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: ${{ secrets.PYPI_USER }}
           verify_metadata: true
           skip_existing: true
-          password: ${{ secrets.PYPI_PASSWORD }}
           packages_dir: runners/mlcube_kubeflow/dist/
           repository_url: https://upload.pypi.org/legacy/
           verbose: true
