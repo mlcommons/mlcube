@@ -89,6 +89,6 @@ More Information on python-publish action & Repository Dispatch action can be fo
 ### Secrets used
 | Name  |   |
 |---|---|
-|PYPI_USER        |pypi login credentials used in GitHub workflows    |
-|PYPI_PASSWORD    |pypi login credentials used in GitHub workflows    |
+|PYPI_USER (depreciated)        |pypi login credentials used in GitHub workflows    |
+|PYPI_PASSWORD (depreciated)    |pypi login credentials used in GitHub workflows    |
 |MLCOMMONS_REPO_ACCESS   |public_repo ACL for request dispatch in GitHub workflows  |
