@@ -142,6 +142,11 @@ class Client:
                     Runtime.SINGULARITY,
                     version_string[20:].strip(),
                 )
+            elif version_string.startswith("singularity-ce version "):
+                runtime, version_string = (
+                    Runtime.SINGULARITY,
+                    version_string[23:].strip(),
+                )
             elif version_string.startswith("apptainer version "):
                 runtime, version_string = Runtime.APPTAINER, version_string[18:].strip()
             elif "/" in version_string:  # Handle old stuff like "x.y.z-pull/123-0a5d"
