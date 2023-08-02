@@ -58,6 +58,7 @@ tasks:
     "{IMAGE_DIRECTORY}", _IMAGE_DIRECTORY.as_posix()
 )
 
+
 _sync_workspace_fn: t.Optional[t.Callable] = None
 
 
@@ -141,3 +142,15 @@ class TestSingularityRunner(TestCase):
         SingularityRun(mlcube, task=None).configure()
         SingularityRun(mlcube, task="ls").run()
         SingularityRun(mlcube, task="free").run()
+
+    @unittest.skipUnless(client is not None, reason="No singularity available.")
+    def test_mlcube_no_singularity_section_config(self):
+        mlcube: t.Union[DictConfig, t.Dict] = MLCubeConfig.create_mlcube_config(
+            (Path(__file__).parent / "resources" / "docker_mlcube.yaml").as_posix(),
+            runner_config=Config.DEFAULT,
+            runner_cls=SingularityRun,
+        )
+        self.assertIsInstance(mlcube, DictConfig)
+
+        mlcube = OmegaConf.to_container(mlcube, resolve=True)
+        self.assertIsInstance(mlcube, dict)
