@@ -104,16 +104,18 @@ class Client:
     def supports_fakeroot(self) -> bool:
         singularity_35 = (
             self.version.runtime == Runtime.SINGULARITY
-            and self.version >= semver.VersionInfo(major=3, minor=5)
+            and self.version.version >= semver.VersionInfo(major=3, minor=5)
         )
         apptainer = self.version.runtime == Runtime.APPTAINER
         return singularity_35 or apptainer
 
-    def __init__(self, singularity: t.Union[str, t.List]) -> None:
+    def __init__(
+        self, singularity: t.Union[str, t.List], version: t.Optional[Version] = None
+    ) -> None:
         if isinstance(singularity, str):
             singularity = singularity.split(" ")
         self.singularity: t.List[str] = [c.strip() for c in singularity if c.strip()]
-        self.version: t.Optional[Version] = None
+        self.version: t.Optional[Version] = version
         self.init()
         logger.debug(
             "Client.__init__ executable=%s, version=%s", self.singularity, self.version
