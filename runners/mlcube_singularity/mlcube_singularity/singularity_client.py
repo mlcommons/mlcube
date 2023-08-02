@@ -22,6 +22,18 @@ class Runtime(Enum):
     UNKNOWN = 0
     APPTAINER = 1
     SINGULARITY = 2
+    """Singularity / SingularityCE
+    
+    SingularityCE
+        https://github.com/sylabs/singularity/releases/tag/v3.8.0
+        This is the first release of SingularityCE 3.8.0, the Community Edition of the Singularity container runtime.
+        The package name for this release is now `singularity-ce`.
+    
+    Singularity
+        https://github.com/sylabs/singularity/releases/tag/v3.7.4
+        Singularity 3.7.4 is the most recent stable release of Singularity prior to Sylabs' fork from 
+        `github.com/hpcng/singularity`.
+    """
 
 
 class Version:
@@ -31,6 +43,33 @@ class Version:
 
     def __str__(self) -> str:
         return f"Version(runtime={self.runtime.name}, version={self.version})"
+
+    @classmethod
+    def from_version_string(cls, version_string: str) -> "Version":
+        version_string = version_string.strip()
+        if version_string.startswith("singularity version "):
+            runtime, version_string = (
+                Runtime.SINGULARITY,
+                version_string[20:].strip(),
+            )
+        elif version_string.startswith("singularity-ce version "):
+            runtime, version_string = (
+                Runtime.SINGULARITY,
+                version_string[23:].strip(),
+            )
+        elif version_string.startswith("apptainer version "):
+            runtime, version_string = Runtime.APPTAINER, version_string[18:].strip()
+        elif "/" in version_string:  # Handle old stuff like "x.y.z-pull/123-0a5d"
+            runtime, version_string = Runtime.SINGULARITY, version_string.replace(
+                "/", "+", 1
+            )
+        else:
+            logger.warning(
+                "Version.from_version_string unrecognized container runtime (version_string: %s)",
+                version_string,
+            )
+            runtime = Runtime.UNKNOWN
+        return Version(runtime, semver.VersionInfo.parse(version_string))
 
 
 class ImageSpec(Enum):
@@ -138,30 +177,7 @@ class Client:
                         "version_cmd": version_cmd,
                     },
                 )
-
-            if version_string.startswith("singularity version "):
-                runtime, version_string = (
-                    Runtime.SINGULARITY,
-                    version_string[20:].strip(),
-                )
-            elif version_string.startswith("singularity-ce version "):
-                runtime, version_string = (
-                    Runtime.SINGULARITY,
-                    version_string[23:].strip(),
-                )
-            elif version_string.startswith("apptainer version "):
-                runtime, version_string = Runtime.APPTAINER, version_string[18:].strip()
-            elif "/" in version_string:  # Handle old stuff like "x.y.z-pull/123-0a5d"
-                runtime, version_string = Runtime.SINGULARITY, version_string.replace(
-                    "/", "+", 1
-                )
-            else:
-                logger.warning(
-                    "Client.init unrecognized container runtime (version_string: %s)",
-                    version_string,
-                )
-                runtime = Runtime.UNKNOWN
-            self.version = Version(runtime, semver.VersionInfo.parse(version_string))
+            self.version = Version.from_version_string(version_string)
             logger.debug("Client.init version=%s", self.version)
 
     def build(
