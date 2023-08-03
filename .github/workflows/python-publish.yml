@@ -13,9 +13,9 @@ jobs:
     permissions:
       id-token: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -29,10 +29,10 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        verify_metadata: true
-        skip_existing: true
-        packages_dir: mlcube/dist/
-        repository_url: https://upload.pypi.org/legacy/
+        verify-metadata: true
+        skip-existing: true
+        packages-dir: mlcube/dist/
+        repository-url: https://upload.pypi.org/legacy/
         verbose: true
       env:
         LOGLEVEL: DEBUG
@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Repository Dispatch
-        uses: peter-evans/repository-dispatch@v1
+        uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.MLCOMMONS_REPO_ACCESS }}
           repository: mlcommons/mlcube
