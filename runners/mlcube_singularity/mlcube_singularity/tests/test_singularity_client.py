@@ -2,7 +2,8 @@ import typing as t
 from unittest import TestCase
 
 import semver
-from mlcube_singularity.singularity_client import Client, DockerImage, Runtime, Version
+from mlcube_singularity.singularity_client import (Client, DockerImage,
+                                                   Runtime, Version)
 
 
 class TestSingularityRunner(TestCase):
@@ -165,13 +166,16 @@ class TestSingularityRunner(TestCase):
         )
 
     def test_docker_image_to_string(self) -> None:
-        names = [
+        names: t.List[t.Union[t.Tuple[str, str], str]] = [
             "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE",
             "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE:TAG",
             "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE@IMG-DIGEST",
             "USERNAME/REPOSITORY:TAG",
             "mlcommons/hello_world:0.0.1",
+            ("docker:mlcommons/hello_world:0.0.1", "mlcommons/hello_world:0.0.1"),
+            ("docker:///mlcommons/hello_world:0.0.1", "mlcommons/hello_world:0.0.1"),
             "mlcommons/hello_world@sha256:9b77d4cb97f8dcf14ac137bf65185fc8980578",
         ]
         for name in names:
-            self.assertEqual(str(DockerImage.from_string(name)), name)
+            name_in, name_out = (name, name) if isinstance(name, str) else (name[0], name[1])
+            self.assertEqual(str(DockerImage.from_string(name_in)), name_out)

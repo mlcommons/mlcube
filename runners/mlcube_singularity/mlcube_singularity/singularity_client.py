@@ -1,4 +1,3 @@
-import json
 import logging
 import typing as t
 from enum import Enum
@@ -77,6 +76,10 @@ class DockerImage:
         Returns:
             DockerImage instance with parsed components.
         """
+        # Remove protocol if present
+        if name.startswith("docker:"):
+            name = name[7:].lstrip("/")
+
         # Split into parts that are separated by "/".
         parts: t.List[str] = name.strip().split("/")
 
