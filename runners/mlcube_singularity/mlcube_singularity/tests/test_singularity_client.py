@@ -1,7 +1,8 @@
+import typing as t
 from unittest import TestCase
 
 import semver
-from mlcube_singularity.singularity_client import Client, Runtime, Version
+from mlcube_singularity.singularity_client import Client, DockerImage, Runtime, Version
 
 
 class TestSingularityRunner(TestCase):
@@ -94,3 +95,83 @@ class TestSingularityRunner(TestCase):
                 semver.VersionInfo(1, 0, 32),
             ),
         )
+
+    def check_docker_image(self, image: DockerImage, expected: DockerImage) -> None:
+        self.assertIsInstance(image, DockerImage)
+
+        def _check_nullable_value(_actual: t.Optional, _expected: t.Optional) -> None:
+            if expected is None:
+                self.assertIsNone(_actual)
+            else:
+                self.assertIsInstance(_actual, type(_expected))
+                self.assertEqual(_actual, _expected)
+
+        _check_nullable_value(image.host, expected.host)
+        _check_nullable_value(image.port, expected.port)
+
+        self.assertIsInstance(image.path, list)
+        self.assertTrue(len(image.path) > 0)
+        self.assertListEqual(image.path, expected.path)
+
+        _check_nullable_value(image.tag, expected.tag)
+        _check_nullable_value(image.digest, expected.digest)
+
+    def test_docker_image_from_string(self) -> None:
+        self.check_docker_image(
+            DockerImage.from_string(
+                "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE"
+            ),
+            DockerImage(
+                host="LOCATION-docker.pkg.dev",
+                path=["PROJECT-ID", "REPOSITORY", "IMAGE"],
+            ),
+        )
+        self.check_docker_image(
+            DockerImage.from_string(
+                "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE:TAG"
+            ),
+            DockerImage(
+                host="LOCATION-docker.pkg.dev",
+                path=["PROJECT-ID", "REPOSITORY", "IMAGE"],
+                tag="TAG",
+            ),
+        )
+        self.check_docker_image(
+            DockerImage.from_string(
+                "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE@IMG-DIGEST"
+            ),
+            DockerImage(
+                host="LOCATION-docker.pkg.dev",
+                path=["PROJECT-ID", "REPOSITORY", "IMAGE"],
+                digest="IMG-DIGEST",
+            ),
+        )
+        self.check_docker_image(
+            DockerImage.from_string("USERNAME/REPOSITORY:TAG"),
+            DockerImage(path=["USERNAME", "REPOSITORY"], tag="TAG"),
+        )
+        self.check_docker_image(
+            DockerImage.from_string("mlcommons/hello_world:0.0.1"),
+            DockerImage(path=["mlcommons", "hello_world"], tag="0.0.1"),
+        )
+        self.check_docker_image(
+            DockerImage.from_string(
+                "mlcommons/hello_world@sha256:9b77d4cb97f8dcf14ac137bf65185fc8980578"
+            ),
+            DockerImage(
+                path=["mlcommons", "hello_world"],
+                digest="sha256:9b77d4cb97f8dcf14ac137bf65185fc8980578",
+            ),
+        )
+
+    def test_docker_image_to_string(self) -> None:
+        names = [
+            "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE",
+            "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE:TAG",
+            "LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY/IMAGE@IMG-DIGEST",
+            "USERNAME/REPOSITORY:TAG",
+            "mlcommons/hello_world:0.0.1",
+            "mlcommons/hello_world@sha256:9b77d4cb97f8dcf14ac137bf65185fc8980578",
+        ]
+        for name in names:
+            self.assertEqual(str(DockerImage.from_string(name)), name)

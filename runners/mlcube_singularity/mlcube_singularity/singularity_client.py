@@ -16,6 +16,100 @@ __all__ = ["Runtime", "Version", "ImageSpec", "Client", "DockerHubClient"]
 logger = logging.getLogger(__name__)
 
 
+class DockerImage:
+    """Working with docker image names.
+
+    https://stackoverflow.com/questions/42115777/parsing-docker-image-tag-into-component-parts
+
+    Args:
+        host: Host name, e.g., "docker.synapse.org".
+        port: Port number.
+        path: Path component of a docker image name (excluding host). It's repository-specific, and can be
+            ["USERNAME", "REPOSITORY"], ["PROJECT", "REPOSITORY", "NAME"] etc. This is the only mandatory parameter.
+        tag: Image tag. When tag is present, digest must be none.
+        digest: Image digest. When present, tag must be none.
+    """
+
+    def __init__(
+        self,
+        host: t.Optional[str] = None,
+        port: t.Optional[int] = None,
+        path: t.Optional[t.List[str]] = None,
+        tag: t.Optional[str] = None,
+        digest: t.Optional[str] = None,
+    ) -> None:
+        _args = {"host": host, "port": port, "path": path, "tag": tag, "digest": digest}
+        if isinstance(path, str):
+            path = path.split("/")
+        if not path:
+            raise ValueError(f"Docker image can't have empty path ({_args}).")
+        if tag and digest:
+            raise ValueError(
+                f"Only one of tag/digest can be specified for docker image name ({_args})."
+            )
+
+        self.host: t.Optional[str] = host
+        self.port: t.Optional[int] = port
+        self.path: t.Optional[t.List[str]] = path
+        self.tag: t.Optional[str] = tag
+        self.digest: t.Optional[str] = digest
+
+    def __str__(self) -> str:
+        name: str = ""
+        if self.host:
+            name = self.host
+            if self.port:
+                name += f":{self.port}"
+            name += "/"
+        name += "/".join(self.path)
+        if self.tag:
+            name += f":{self.tag}"
+        if self.digest:
+            name += f"@{self.digest}"
+        return name
+
+    @classmethod
+    def from_string(cls, name: str) -> "DockerImage":
+        """Construct docker image name from string value.
+
+        Args:
+            name: string representation of a docker image, e.g., "mlcommons/hello_world:0.0.1 ".
+        Returns:
+            DockerImage instance with parsed components.
+        """
+        # Split into parts that are separated by "/".
+        parts: t.List[str] = name.strip().split("/")
+
+        # Determine if first part is a host/port pair
+        host: t.Optional[str] = None
+        port: t.Optional[int] = None
+        if parts[0] == "localhost":
+            host = parts[0]
+        if "." in parts[0]:
+            host_port: t.List[str] = parts[0].split(":")
+            host = host_port[0]
+            if len(host_port) > 1:
+                port = int(host_port[1])
+        if host is not None:
+            del parts[0]
+
+        # See of digest is present (must be checked first since it can include ":", e.g., @sha256:dt3...)
+        digest: t.Optional[str] = None
+        if "@" in parts[-1]:
+            image_digest: t.List[str] = parts[-1].split("@")
+            parts[-1] = image_digest[0]
+            digest = image_digest[1]
+
+        # See if tag is present
+        tag: t.Optional[str] = None
+        if ":" in parts[-1]:
+            image_tag: t.List[str] = parts[-1].split(":")
+            parts[-1] = image_tag[0]
+            tag = image_tag[1]
+
+        return DockerImage(host, port, parts, tag, digest)
+
+
 class Runtime(Enum):
     """Container runtime"""
 
