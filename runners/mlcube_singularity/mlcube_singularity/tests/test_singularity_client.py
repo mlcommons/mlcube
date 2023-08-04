@@ -2,8 +2,7 @@ import typing as t
 from unittest import TestCase
 
 import semver
-from mlcube_singularity.singularity_client import (Client, DockerImage,
-                                                   Runtime, Version)
+from mlcube_singularity.singularity_client import Client, DockerImage, Runtime, Version
 
 
 class TestSingularityRunner(TestCase):
@@ -164,6 +163,13 @@ class TestSingularityRunner(TestCase):
                 digest="sha256:9b77d4cb97f8dcf14ac137bf65185fc8980578",
             ),
         )
+        self.check_docker_image(
+            DockerImage.from_string("ubuntu:18.04"),
+            DockerImage(
+                path=["ubuntu"],
+                tag="18.04",
+            ),
+        )
 
     def test_docker_image_to_string(self) -> None:
         names: t.List[t.Union[t.Tuple[str, str], str]] = [
@@ -177,5 +183,7 @@ class TestSingularityRunner(TestCase):
             "mlcommons/hello_world@sha256:9b77d4cb97f8dcf14ac137bf65185fc8980578",
         ]
         for name in names:
-            name_in, name_out = (name, name) if isinstance(name, str) else (name[0], name[1])
+            name_in, name_out = (
+                (name, name) if isinstance(name, str) else (name[0], name[1])
+            )
             self.assertEqual(str(DockerImage.from_string(name_in)), name_out)

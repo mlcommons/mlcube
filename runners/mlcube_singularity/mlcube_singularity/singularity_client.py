@@ -86,15 +86,16 @@ class DockerImage:
         # Determine if first part is a host/port pair
         host: t.Optional[str] = None
         port: t.Optional[int] = None
-        if parts[0] == "localhost":
-            host = parts[0]
-        if "." in parts[0]:
-            host_port: t.List[str] = parts[0].split(":")
-            host = host_port[0]
-            if len(host_port) > 1:
-                port = int(host_port[1])
-        if host is not None:
-            del parts[0]
+        if len(parts) > 1:
+            if parts[0] == "localhost":
+                host = parts[0]
+            elif "." in parts[0]:
+                host_port: t.List[str] = parts[0].split(":")
+                host = host_port[0]
+                if len(host_port) > 1:
+                    port = int(host_port[1])
+            if host is not None:
+                del parts[0]
 
         # See of digest is present (must be checked first since it can include ":", e.g., @sha256:dt3...)
         digest: t.Optional[str] = None
