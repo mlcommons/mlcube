@@ -6,6 +6,7 @@ import copy
 import logging
 import os
 import shutil
+import subprocess
 import sys
 import typing as t
 from distutils import dir_util
@@ -73,8 +74,10 @@ class Shell(object):
             Exit status. On Windows, the exit status is the output of `os.system`. On Linux, the output is either
                 process exit status if that processes exited, or -1 in other cases (e.g., process was killed).
         """
+        logger.debug("Shell.run input_arg: cmd=%s, on_error=%s)", cmd, on_error)
         if isinstance(cmd, t.List):
-            cmd = ' '.join(cmd)
+            cmd = ' '.join(c for c in (c.strip() for c in cmd) if c)
+            logger.debug("Shell.run list->str: cmd=\"%s\")", cmd)
 
         if on_error not in ('raise', 'die', 'ignore'):
             raise ValueError(
@@ -84,9 +87,10 @@ class Shell(object):
         status: int = os.system(cmd)
         exit_code, exit_status = Shell.parse_exec_status(status)
         if exit_status == 'na':
-            logger.warning("Command (cmd=%s) did not exit properly (status=%d).", cmd, status)
+            logger.warning("Shell.run command (cmd=%s) did not exit properly (status=%d).", cmd, status)
 
-        msg = f"Command='{cmd}' status={status} exit_status={exit_status} exit_code={exit_code} on_error={on_error}"
+        msg = f"Shell.run command='{cmd}' status={status} exit_status={exit_status} exit_code={exit_code} "\
+              f"on_error={on_error}"
         if exit_code != 0:
             logger.error(msg)
             if on_error == 'die':
@@ -98,6 +102,31 @@ class Shell(object):
         else:
             logger.info(msg)
         return exit_code
+
+    @staticmethod
+    def run_and_capture_output(cmd: t.List[str]) -> t.Tuple[int, str]:
+        """Run command and return the exit code and command output.
+
+        Args:
+            cmd: Command to execute, will be passed to `subprocess.check_output` as is.
+
+        Returns:
+             A tuple containing exit code (either 0 or `subprocess.CalledProcessError.returncode`) and command output
+             which is either output of `subprocess.check_output` or `subprocess.CalledProcessError.output.decode()`.
+        """
+        try:
+            exit_code = 0
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+        except FileNotFoundError as err:
+            exit_code, output = 1, str(err)
+        except subprocess.CalledProcessError as err:
+            exit_code, output = err.returncode, err.output.decode()
+
+        logger.debug(
+            "Shell.run_and_capture_output cmd=%s, exit_code=%d, output=\"%s\"",
+            cmd, exit_code, output.replace("\n", " ")
+        )
+        return exit_code, output.strip()
 
     @staticmethod
     def docker_image_exists(docker: t.Optional[str], image: str) -> bool:

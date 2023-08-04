@@ -28,6 +28,15 @@ class TestShell(TestCase):
         with self.assertRaises(ExecutionError):
             _ = Shell.run('python -c "print(message)"', on_error='raise')
 
+    def test_run_and_capture_output(self) -> None:
+        exit_code, version_str = Shell.run_and_capture_output(["python", "--version"])
+        self.assertEqual(exit_code, 0, "Expecting exit code to be zero for `python --version`")
+        self.assertTrue(version_str.startswith("Python"), "Expecting version string to start with `Python`.")
+
+        exit_code, version_str = Shell.run_and_capture_output(["python", "-c" "print(message)"])
+        self.assertNotEqual(exit_code, 0, "Expecting exit code to be non zero for `python -c 'print(message)'.`")
+        self.assertIn("NameError: name 'message' is not defined", version_str, "No expected error.")
+
     def test_generate_mount_points(self) -> None:
         def _call_with_type_check(_task: str) -> t.Tuple[t.Dict, t.List, t.Dict]:
             _mounts, _args, _mounts_opts = Shell.generate_mounts_and_args(_mlcube_config, _task, make_dirs=False)

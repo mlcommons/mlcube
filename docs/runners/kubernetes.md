@@ -3,7 +3,7 @@
 !!! warning
     Work in progress. Some functionality described below may not be available.
 
-The Kubernetes Runner runs a MLCube on a Kubernetes cluster.
+The Kubernetes Runner runs a MLCube&reg; on a Kubernetes cluster.
 
 ## Why Kubernetes?
 

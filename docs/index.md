@@ -1,6 +1,6 @@
 # MLCube
 
-MLCube is a project that reduces friction for machine learning by ensuring that models are easily portable and 
+MLCube&reg; is a project that reduces friction for machine learning by ensuring that models are easily portable and 
 reproducible, e.g., between different stacks such as different clouds, between cloud and on-prem, etc.
 
 Interested in getting started with MLCube? Follow the 
