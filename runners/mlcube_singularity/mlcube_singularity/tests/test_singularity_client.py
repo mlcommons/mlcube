@@ -2,7 +2,13 @@ import typing as t
 from unittest import TestCase
 
 import semver
-from mlcube_singularity.singularity_client import Client, DockerImage, Runtime, Version
+from mlcube_singularity.singularity_client import (
+    Client,
+    DockerImage,
+    Runtime,
+    Version,
+    parse_key_value_string,
+)
 
 
 class TestSingularityRunner(TestCase):
@@ -187,3 +193,25 @@ class TestSingularityRunner(TestCase):
                 (name, name) if isinstance(name, str) else (name[0], name[1])
             )
             self.assertEqual(str(DockerImage.from_string(name_in)), name_out)
+
+    def test_key_value_separator(self) -> None:
+        self.assertDictEqual(
+            parse_key_value_string(
+                'realm="https://nvcr.io/proxy_auth",scope="repository:nvidia/pytorch:pull,push"'
+            ),
+            {
+                "realm": "https://nvcr.io/proxy_auth",
+                "scope": "repository:nvidia/pytorch:pull,push",
+            },
+        )
+        self.assertDictEqual(
+            parse_key_value_string(
+                'realm="https://auth.docker.io/token",service="registry.docker.io",'
+                'scope="repository:mlcommons/mnist:pull"'
+            ),
+            {
+                "realm": "https://auth.docker.io/token",
+                "service": "registry.docker.io",
+                "scope": "repository:mlcommons/mnist:pull",
+            },
+        )

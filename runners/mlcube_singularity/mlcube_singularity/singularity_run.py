@@ -266,7 +266,7 @@ class SingularityRun(Runner):
             #       (e.g., configure) will pull a newer version of this image. Need to address this in subsequent
             #       patches.
             docker_hub = DockerHubClient(self.client)
-            manifest = docker_hub.get_image_manifest(s_cfg.build_file)
+            manifest = docker_hub.get_manifest(s_cfg.build_file)
             logger.debug(
                 "SingularityRun.inspect build file is a docker image (%s) - I will consider it as a distribution "
                 "format for this MLCube, and MLCube hash will be docker image ID. Image manifest: %s",
