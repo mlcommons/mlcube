@@ -6,7 +6,7 @@ from pathlib import Path
 import requests
 import semver
 
-from mlcube.errors import ExecutionError
+from mlcube.errors import ExecutionError, MLCubeError
 from mlcube.shell import Shell
 from mlcube.system_settings import SystemSettings
 
@@ -434,61 +434,46 @@ class DockerHubClient:
         Returns:
             Dictionary containing image manifest pulled from docker registry.
         """
-        user, repository, tag = self.parse_image_name(image_name)
-        token = self.get_token(user, repository)
+        image = DockerImage.from_string(image_name)
+        logger.debug(
+            "DockerHubClient.get_image_manifest retrieving image manifest for %s.",
+            image,
+        )
 
-        url = f"https://registry-1.docker.io/v2/{user}/{repository}/manifests/{tag}"
-        headers = {
-            "Accept": "application/vnd.docker.distribution.manifest.v2+json",
-            "Authorization": f"Bearer {token}",
-        }
-        response = requests.get(url, headers=headers)
-        if response.status_code != 200:
-            raise ValueError(
-                f"Failed to get image manifest (status={response.status_code}, url={url}, response={response.text}"
-            )
-        return response.json()
+        if image.host is None or image.host == "docker.io":
+            # Image path within repository (`mlcommons/mnist` or `ubuntu`).
+            path: str = "/".join(image.path)
 
-    @staticmethod
-    def get_token(user: str, repository: str) -> str:
-        """Return authentication token for pulling from {user}/{repository} repository.
+            # Retrieve authentication token
+            url = f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{path}:pull"
+            response = requests.get(url)
+            if response.status_code != 200:
+                raise ValueError(
+                    f"Failed to get token (status={response.status_code}, url={url}, response={response.text}"
+                )
+            token = response.json()["token"]
 
-        Args:
-            user: Username in a remote docker registry.
-            repository: Repository name in a remote docker registry.
-        Returns:
-            Access token for pulling from {user}/{repository} repository. It should be used in the Authorization header:
-            `"Authorization": f"Bearer {token}"`.
-        """
-        url = f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{user}/{repository}:pull"
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise ValueError(
-                f"Failed to get token (status={response.status_code}, url={url}, response={response.text}"
-            )
-        return response.json()["token"]
+            # Retrieve image manifest
+            # https://docs.docker.com/registry/spec/api/
+            # GET /v2/<name>/manifests/<reference>
+            if not image.tag:
+                logger.warning(
+                    "DockerHubClient.get_image_manifest expecting tag to be present (image=%s)",
+                    image,
+                )
+            url = f"https://registry-1.docker.io/v2/{path}/manifests/{image.tag}"
+            headers = {
+                "Accept": "application/vnd.docker.distribution.manifest.v2+json",
+                "Authorization": f"Bearer {token}",
+            }
+            response = requests.get(url, headers=headers)
+            if response.status_code != 200:
+                raise ValueError(
+                    f"Failed to get image manifest (status={response.status_code}, url={url}, response={response.text}"
+                )
+            return response.json()
 
-    @staticmethod
-    def parse_image_name(name: str) -> t.Tuple[str, str, str]:
-        """Parse image name and return username, repository name and image tag.
-
-        Args:
-            name: Image name.
-        Returns:
-            Tuple containing username, repository name and image tag.
-        """
-        if name.startswith("docker:"):
-            name = name[7:]
-        while True:
-            if len(name) > 0 and name[0] == "/":
-                name = name[1:]
-            else:
-                break
-        name_tag = name.split(":")
-        if len(name_tag) != 2:
-            raise ValueError(f"Unsupported image name: {name}")
-        user_repository = name_tag[0].split("/")
-        if len(user_repository) != 2:
-            raise ValueError(f"Unsupported image name: {name}")
-
-        return (user_repository[0], user_repository[1], name_tag[1])
+        raise MLCubeError(
+            "DockerHubClient.get_image_manifest does not support this docker registry yet (image=%s)",
+            image,
+        )
