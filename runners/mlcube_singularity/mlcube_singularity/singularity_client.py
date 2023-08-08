@@ -1,16 +1,26 @@
 import logging
+import platform
 import typing as t
 from enum import Enum
 from pathlib import Path
+from shlex import shlex
 
 import requests
 import semver
 
-from mlcube.errors import ExecutionError
+from mlcube.errors import ExecutionError, MLCubeError
 from mlcube.shell import Shell
 from mlcube.system_settings import SystemSettings
 
-__all__ = ["Runtime", "Version", "ImageSpec", "Client", "DockerHubClient"]
+__all__ = [
+    "DockerImage",
+    "Runtime",
+    "Version",
+    "ImageSpec",
+    "Client",
+    "DockerHubClient",
+    "parse_key_value_string",
+]
 
 logger = logging.getLogger(__name__)
 
@@ -427,68 +437,196 @@ class DockerHubClient:
         """
         pass
 
-    def get_image_manifest(self, image_name: str) -> t.Dict:
+    def get_manifest(self, image: t.Union[str, DockerImage]) -> t.Dict:
         """Return image manifest pulled from a remote docker registry.
         Args:
-            image_name: Docker image name, e.g., docker://mlcommons/mnist:0.0.1
+            image: Docker image name, e.g., docker://mlcommons/mnist:0.0.1
         Returns:
             Dictionary containing image manifest pulled from docker registry.
         """
-        user, repository, tag = self.parse_image_name(image_name)
-        token = self.get_token(user, repository)
+        if isinstance(image, str):
+            image = DockerImage.from_string(image)
+        logger.debug(
+            "DockerHubClient.get_manifest retrieving image manifest for %s.",
+            image,
+        )
 
-        url = f"https://registry-1.docker.io/v2/{user}/{repository}/manifests/{tag}"
+        if not image.host or image.host == "docker.io":
+            repository_url = "https://registry-1.docker.io"
+        else:
+            repository_url = image.host
+            if not repository_url.startswith("https://"):
+                repository_url = f"https://{repository_url}"
+        logger.debug(
+            "DockerHubClient.get_manifest repository_url=%s (image.host=%s).",
+            repository_url,
+            image.host,
+        )
+
+        if len(image.path) == 1:
+            logger.warning(
+                "DockerHubClient.get_manifest short image name (%s) may result in `insufficient_scope` error, if "
+                "this happens you may need to update the image name, e.g. `ubuntu` -> `library/ubuntu`.",
+                image.path,
+            )
+
+        name: str = "/".join(image.path)
+        reference: str = (image.digest or image.tag) or "latest"
+
+        url = f"{repository_url}/v2/{name}/manifests/{reference}"
         headers = {
-            "Accept": "application/vnd.docker.distribution.manifest.v2+json",
-            "Authorization": f"Bearer {token}",
+            "Accept": "application/vnd.docker.distribution.manifest.v2+json,"  # single-arch image
+            "application/vnd.oci.image.index.v1+json,"  # multi-arch image
+            "application/vnd.oci.image.manifest.v1+json"  # single-arch image
         }
         response = requests.get(url, headers=headers)
-        if response.status_code != 200:
-            raise ValueError(
-                f"Failed to get image manifest (status={response.status_code}, url={url}, response={response.text}"
+        if response.status_code == 401:
+            logger.debug(
+                "DockerHubClient.get_manifest authentication requested (content=%s, headers=%s",
+                response.text.replace("\n", " "),
+                response.headers,
             )
-        return response.json()
-
-    @staticmethod
-    def get_token(user: str, repository: str) -> str:
-        """Return authentication token for pulling from {user}/{repository} repository.
-
-        Args:
-            user: Username in a remote docker registry.
-            repository: Repository name in a remote docker registry.
-        Returns:
-            Access token for pulling from {user}/{repository} repository. It should be used in the Authorization header:
-            `"Authorization": f"Bearer {token}"`.
-        """
-        url = f"https://auth.docker.io/token?service=registry.docker.io&scope=repository:{user}/{repository}:pull"
-        response = requests.get(url)
-        if response.status_code != 200:
-            raise ValueError(
-                f"Failed to get token (status={response.status_code}, url={url}, response={response.text}"
+            token = _get_authentication_token(
+                response.headers.get("www-authenticate", None)
             )
-        return response.json()["token"]
+            headers["Authorization"] = f"Bearer {token}"
+            response = requests.get(url, headers=headers)
 
-    @staticmethod
-    def parse_image_name(name: str) -> t.Tuple[str, str, str]:
-        """Parse image name and return username, repository name and image tag.
+        if response.status_code != 200:
+            raise MLCubeError(
+                "DockerHubClient.get_manifest failed to retrieve image manifest "
+                "(status_code=%d, content=%s, headers=%s)",
+                response.status_code,
+                response.text.replace("\n", " "),
+                response.headers,
+            )
 
-        Args:
-            name: Image name.
-        Returns:
-            Tuple containing username, repository name and image tag.
-        """
-        if name.startswith("docker:"):
-            name = name[7:]
-        while True:
-            if len(name) > 0 and name[0] == "/":
-                name = name[1:]
-            else:
-                break
-        name_tag = name.split(":")
-        if len(name_tag) != 2:
-            raise ValueError(f"Unsupported image name: {name}")
-        user_repository = name_tag[0].split("/")
-        if len(user_repository) != 2:
-            raise ValueError(f"Unsupported image name: {name}")
+        response = response.json()
+        media_type = response.get("mediaType", None)
+        if media_type in (
+            "application/vnd.docker.distribution.manifest.v2+json",
+            "application/vnd.oci.image.manifest.v1+json",
+        ):
+            ...
+        elif media_type == "application/vnd.oci.image.index.v1+json":
+            # This is a multi-arch OCI image. We need to identify the platform, and request one more time providing
+            # correct image digest.
+            manifests: t.List[t.Dict] = response.get("manifests", [])
+            manifest, system = _select_manifest(manifests)
+            if not manifest:
+                raise MLCubeError(
+                    f"DockerHubClient.get_manifest failed to find manifest for ({system}) in {manifests}."
+                )
+            image.tag = None
+            image.digest = manifest["digest"]
+            logger.debug(
+                "DockerHubClient.get_manifest original multi-arch image resolved to %s (system=%s).",
+                image,
+                system,
+            )
+            return self.get_manifest(image)
 
-        return (user_repository[0], user_repository[1], name_tag[1])
+        return response
+
+
+def _get_authentication_token(www_authenticate: t.Optional[str]) -> str:
+    """Retrieve bearer authentication token.
+
+    Args:
+        www_authenticate: A string that contains endpoint details where token must be requested. Must start with
+            `Bearer`: `Bearer realm="https://nvcr.io/proxy_auth",scope="repository:nvidia/pytorch:pull,push"`.
+
+    Returns:
+        Authentication token that can be used with docker registry API.
+    """
+    if not (www_authenticate and www_authenticate.startswith("Bearer")):
+        raise MLCubeError(
+            f"_get_authentication_token unsupported authentication method (www_authenticate={www_authenticate})."
+        )
+
+    parsed: t.Dict = parse_key_value_string(www_authenticate[7:])
+    logger.debug(
+        "_get_authentication_token www_authenticate=%s, parsed=%s",
+        www_authenticate,
+        parsed,
+    )
+
+    url: t.Optional[str] = parsed.pop("realm", None)
+    if not url:
+        raise MLCubeError(
+            f"_get_authentication_token unrecognized www_authenticate format (www_authenticate={www_authenticate}, "
+            f"parsed={parsed})."
+        )
+    logger.debug(
+        "_get_authentication_token requesting token at %s for %s.", url, parsed
+    )
+
+    response = requests.get(url, params=parsed)
+    if response.status_code != 200:
+        raise MLCubeError(
+            f"_get_authentication_token could not retrieve authentication token (url={url}, params={parsed}, "
+            f"status_code={response.status_code}, content={response.json()}, headers={response.headers})"
+        )
+    token = response.json()["token"]
+    return token
+
+
+def _select_manifest(
+    manifests: t.List[t.Dict],
+) -> t.Tuple[t.Optional[t.Dict], t.Tuple[str, str]]:
+    """Find image manifest for the given system using multi-arch image manifest.
+
+    Each element in `manifests` has the following structure:
+    ```json
+    {
+        'digest': 'sha256:dca176c9663a7ba4c1f0e710986f5a25e672842963d95b960191e2d9f7185ebe',
+        'mediaType': 'application/vnd.oci.image.manifest.v1+json',
+        'platform': {
+            'architecture': 'amd64',
+            'os': 'linux'
+        },
+        'size': 424
+    }
+    ```
+
+    Args:
+        manifests: List of multi-arch image manifests.
+
+    Returns:
+        A tuple containing one item (dictionary) from the `manifests` or none and a tuple containing system and
+        architecture for the given node (e.g., ("linux", "amd64")).
+    """
+    node = platform.uname()
+    system, arch = node.system.lower(), node.machine.lower()
+    if arch in ("x86_64", "amd64"):
+        arch = "amd64"
+    logger.debug(
+        "_select_manifest system=%s, arch=%s, manifests=%s", system, arch, manifests
+    )
+    for manifest in manifests:
+        if (
+            manifest["platform"]["os"] == system
+            and manifest["platform"]["architecture"] == arch
+        ):
+            return manifest, (system, arch)
+    return None, (system, arch)
+
+
+def parse_key_value_string(kv_str: str) -> t.Dict:
+    """Parse key-value string into dictionaries.
+
+    Multiple key-value pairs are separated with `,` character, while keys and values are separated with `=`. Solution is
+    from here: https://stackoverflow.com/questions/38737250/extracting-key-value-pairs-from-string-with-quotes
+
+    Args:
+        kv_str: Key value strings, examples are:
+            'realm="https://nvcr.io/proxy_auth",scope="repository:nvidia/pytorch:pull,push"'
+            'realm="https://auth.docker.io/token",service="registry.docker.io",scope="repository:mlcommons/mnist:pull"'
+
+    Returns:
+        Dictionary with parsed KV pairs.
+    """
+    lexer = shlex(kv_str, posix=True)
+    lexer.whitespace = ","
+    lexer.wordchars += "="
+    return dict(word.split(sep="=", maxsplit=1) for word in lexer)
