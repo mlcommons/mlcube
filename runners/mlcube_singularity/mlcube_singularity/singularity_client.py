@@ -1,6 +1,7 @@
 import base64
 import json
 import logging
+import os
 import platform
 import typing as t
 from enum import Enum
@@ -578,21 +579,37 @@ def _get_authentication_token(www_authenticate: t.Optional[str], auth_key: str) 
     )
 
     url: t.Optional[str] = parsed.pop("realm", None)
-    loggable_url: t.Optional[str] = url
-
-    auth_token: t.Optional[str] = _get_auth_token(auth_key)
-    if auth_token:
-        logger.info("_get_authentication_token using auth token from config file.")
-        if url.startswith("https://"):
-            url = url[8:]
-        loggable_url = f"https://***:***@{url}"
-        url = "https://" + base64.b64decode(auth_token).decode() + "@" + url
-
     if not url:
         raise MLCubeError(
             f"_get_authentication_token unrecognized www_authenticate format (www_authenticate={www_authenticate}, "
             f"parsed={parsed})."
         )
+    loggable_url: str = url
+
+    if url.startswith("https://"):
+        url = url[8:]
+
+    if os.environ.get("SINGULARITY_DOCKER_USERNAME", None) and os.environ.get(
+        "SINGULARITY_DOCKER_PASSWORD", None
+    ):
+        logger.info(
+            "_get_authentication_token found docker username (SINGULARITY_DOCKER_USERNAME) and "
+            "password (SINGULARITY_DOCKER_PASSWORD) environment variables."
+        )
+        loggable_url = f"https://***:***@{url}"
+        username, password = (
+            os.environ["SINGULARITY_DOCKER_USERNAME"],
+            os.environ["SINGULARITY_DOCKER_PASSWORD"],
+        )
+        url = f"{username}:{password}@{url}"
+    else:
+        auth_token: t.Optional[str] = _get_auth_token(auth_key)
+        if auth_token:
+            logger.info("_get_authentication_token using auth token from config file.")
+            loggable_url = f"https://***:***@{url}"
+            url = base64.b64decode(auth_token).decode() + "@" + url
+
+    url = f"https://{url}"
     logger.debug(
         "_get_authentication_token requesting token at %s for %s.", loggable_url, parsed
     )
