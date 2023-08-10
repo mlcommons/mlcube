@@ -16,6 +16,7 @@ from mlcube.cli import (
     UsageExamples,
     parse_cli_args,
 )
+from mlcube.config import MountType
 from mlcube.errors import ExecutionError, IllegalParameterValueError, MLCubeError
 from mlcube.parser import CliParser
 from mlcube.shell import Shell
@@ -122,6 +123,14 @@ cpu_option = click.option(
     type=str,
     default=None,
     help="CPU options defined during MLCube container execution.",
+)
+mount_option = click.option(
+    "--mount",
+    required=False,
+    type=click.Choice([MountType.RW, MountType.RO]),
+    default=None,
+    help="Mount options for all input parameters. These mount options override any other mount options defined for "
+    "each input parameters. A typical use case is to ensure that inputs are mounted in read-only (ro) mode.",
 )
 
 
@@ -279,6 +288,7 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
 @gpus_option
 @memory_option
 @cpu_option
+@mount_option
 @Options.help
 @click.pass_context
 def run(
@@ -292,6 +302,7 @@ def run(
     gpus: str,
     memory: str,
     cpu: str,
+    mount: str,
 ) -> None:
     """Run MLCube task(s).
 
@@ -307,9 +318,12 @@ def run(
         gpus: GPU usage options defined during MLCube container execution.
         memory: Memory RAM options defined during MLCube container execution.
         cpu: CPU options defined during MLCube container execution.
+        mount: Mount (global) options defined for all input parameters in all tasks to be executed. They override any
+            mount options defined for individual parameters.
     """
     logger.info(
-        "run input_arg mlcube=%s, platform=%s, task=%s, workspace=%s, network=%s, security=%s, gpus=%s, memory=%s, "
+        "run input_arg mlcube=%s, platform=%s, task=%s, workspace=%s, network=%s, security=%s, gpus=%s, "
+        "memory=%s, mount=%s"
         "cpu=%s",
         mlcube,
         platform,
@@ -320,6 +334,7 @@ def run(
         gpus,
         memory,
         cpu,
+        mount,
     )
     runner_cls, mlcube_config = parse_cli_args(
         unparsed_args=ctx.args,
@@ -332,6 +347,7 @@ def run(
             "gpus": gpus,
             "memory": memory,
             "cpu": cpu,
+            "mount": mount,
         },
         resolve=True,
     )

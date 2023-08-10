@@ -261,7 +261,7 @@ class MLCubeConfig(object):
             )
         #
         for name in parameters.keys():
-            # The `_param_name` is anyway there, so check it's not None.
+            # The `name` is anyway there, so check it's not None.
             [param_def] = MLCubeConfig.ensure_values_exist(parameters, name, dict)
             # Deal with the case when value is a string (default value).
             if isinstance(param_def, str):

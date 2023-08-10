@@ -2,7 +2,7 @@ import logging
 import typing as t
 from pathlib import Path
 
-from mlcube_singularity.singularity_client import Client, DockerHubClient, ImageSpec
+from mlcube_singularity.singularity_client import Client, DockerHubClient
 from omegaconf import DictConfig, OmegaConf
 
 from mlcube.errors import ConfigurationError, ExecutionError, MLCubeError
@@ -34,6 +34,7 @@ class Config(RunnerConfig):
             "--nv": None,  # usage options defined during MLCube container execution.
             "--vm-ram": None,  # RAM options defined during MLCube container execution.
             "--vm-cpu": None,  # CPU options defined during MLCube container execution.
+            "--mount_opts": "",  # Mount options for Singularity volumes.
         }
     )
 
@@ -129,7 +130,7 @@ class SingularityRun(Runner):
         extra_args = [
             f"{key}={value}"
             for key, value in self.mlcube.runner.items()
-            if key.startswith("--") and value is not None
+            if key.startswith("--") and value is not None and key != "--mount_opts"
         ]
         return " ".join(extra_args)
 
