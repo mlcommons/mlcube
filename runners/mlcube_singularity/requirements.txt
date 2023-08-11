@@ -1,2 +1,2 @@
-mlcube==0.0.10rc0
+mlcube==0.0.10rc1
 semver
