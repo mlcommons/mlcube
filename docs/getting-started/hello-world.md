@@ -1,5 +1,5 @@
 # Hello World
-Hello World MLCube is an example of a Docker-based MLCube.  
+Hello World MLCube&reg; is an example of a Docker-based MLCube.  
 
 
 ## QuickStart

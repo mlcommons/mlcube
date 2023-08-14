@@ -1,23 +1,29 @@
+import json
+import logging
 import os
 import shlex
-import logging
 import typing as t
 from pathlib import Path
-from omegaconf import DictConfig, OmegaConf
-from mlcube.shell import Shell
-from mlcube.runner import Runner, RunnerConfig
-from mlcube.errors import IllegalParameterValueError, ExecutionError, ConfigurationError
 
+from omegaconf import DictConfig, OmegaConf
+
+from mlcube.errors import (
+    ConfigurationError,
+    ExecutionError,
+    IllegalParameterValueError,
+    MLCubeError,
+)
+from mlcube.runner import Runner, RunnerConfig
+from mlcube.shell import Shell
+from mlcube.validate import Validate
 
 __all__ = ["Config", "DockerRun"]
-
-from mlcube.validate import Validate
 
 logger = logging.getLogger(__name__)
 
 
 class Config(RunnerConfig):
-    """ Helper class to manage `docker` environment configuration."""
+    """Helper class to manage `docker` environment configuration."""
 
     class BuildStrategy(object):
         """MLCube docker runner configuration strategy.
@@ -97,7 +103,7 @@ class Config(RunnerConfig):
 
     @staticmethod
     def validate(mlcube: DictConfig) -> None:
-        """ Initialize configuration from user config
+        """Initialize configuration from user config
         Args:
             mlcube: MLCube `container` configuration, possible merged with user local configuration.
         Return:
@@ -121,7 +127,7 @@ class Config(RunnerConfig):
 
 
 class DockerRun(Runner):
-    """ Docker runner. """
+    """Docker runner."""
 
     CONFIG = Config
 
@@ -193,7 +199,7 @@ class DockerRun(Runner):
                 )
 
     def run(self) -> None:
-        """ Run a cube. """
+        """Run a cube."""
         docker: t.Text = self.mlcube.runner.docker
         image: t.Text = self.mlcube.runner.image
 
@@ -224,17 +230,12 @@ class DockerRun(Runner):
 
         # The 'mounts' dictionary maps host paths to container paths
         try:
-            if "--mount_opts" in self.mlcube.runner:
-                global_mount = self.mlcube.runner["--mount_opts"]
-            else:
-                global_mount = ""
             mounts, task_args, mounts_opts = Shell.generate_mounts_and_args(
-                self.mlcube, self.task, global_mount
+                self.mlcube, self.task
             )
             if mounts_opts:
-                for key, value in mounts_opts.items():
-                    mounts[key] += f":{value}"
-            logger.info(f"mounts={mounts}, task_args={task_args}")
+                for host_path, mount_type in mounts_opts.items():
+                    mounts[host_path] += f":{mount_type}"
         except ConfigurationError as err:
             raise ExecutionError.mlcube_run_error(
                 self.__class__.__name__,
@@ -246,16 +247,20 @@ class DockerRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--volume")
         env_args = self.mlcube.runner.env_args
-        num_gpus: int = self.mlcube.get("platform", {}).get(
-            "accelerator_count", None
-        ) or 0
+        num_gpus: int = (
+            self.mlcube.get("platform", {}).get("accelerator_count", None) or 0
+        )
 
-        run_args: t.Text = self.mlcube.runner.cpu_args if num_gpus == 0 else self.mlcube.runner.gpu_args
+        run_args: t.Text = (
+            self.mlcube.runner.cpu_args
+            if num_gpus == 0
+            else self.mlcube.runner.gpu_args
+        )
 
         extra_args_list = [
             f"{key}={value}"
             for key, value in self.mlcube.runner.items()
-            if key.startswith('--') and value is not None and key != "--mount_opts"
+            if key.startswith("--") and value is not None and key != "--mount_opts"
         ]
         extra_args = " ".join(extra_args_list)
         if extra_args:
@@ -345,3 +350,34 @@ class DockerRun(Runner):
                 f"volumes={volumes}, image={image}, task_args={task_args}).",
                 **err.context,
             )
+
+    def inspect(self, force: bool = False) -> t.Dict:
+        docker: str = self.mlcube.runner.docker
+        image: str = self.mlcube.runner.image
+        if not Shell.docker_image_exists(docker, image):
+            if not force:
+                raise MLCubeError(
+                    "MLCube does not exist. Either configure MLCube (e.g., `mlcube configure ...`) or set `force` "
+                    "argument to True (e.g., `mlcube inspect --force ...`)."
+                )
+            self.configure()
+
+        docker_inspect_cmd = [docker, "inspect", image]
+        exit_code, output = Shell.run_and_capture_output(docker_inspect_cmd)
+        if exit_code != 0:
+            raise MLCubeError(output)
+
+        image_info: t.List[t.Dict] = json.loads(output)
+        if (
+            not isinstance(image_info, list)
+            or len(image_info) != 1
+            or not isinstance(image_info[0], dict)
+        ):
+            raise MLCubeError(
+                f"Unexpected output from `{' '.join(docker_inspect_cmd)}`. Expected a list of dicts of length 1."
+            )
+
+        image_id: str = image_info[0].get("Id", None)
+        if image_id and image_id.startswith("sha256:"):
+            image_id = image_id[7:]
+        return {"hash": image_id}

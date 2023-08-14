@@ -1,7 +1,7 @@
 # Kubeflow Runner
 
 !!! warning
-    Work in progress. Some functionality described below may not be available.
+    MLCube&reg; Kubeflow runner is work in progress. Some functionality described below may not be available.
 
 Kubeflow supports two mandatory commands - `configure` and `run` with standard arguments - `mlcube`, `platform` and 
 `task`. Users can configure SSH runner in system setting file, and override parameters on a command line.

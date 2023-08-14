@@ -1,6 +1,6 @@
 # MLCube Configuration
 
-MLCube configuration provides information about MLCube's authors, requirements and  
+MLCube&reg; configuration provides information about MLCube's authors, requirements and  
 [tasks](https://mlcommons.github.io/mlcube/getting-started/concepts/#task). This is example configuration for
 the [MNIST MLCube](https://github.com/mlcommons/mlcube_examples/tree/master/mnist):
 

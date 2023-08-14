@@ -1,15 +1,17 @@
+import typing as t
 import unittest
 from unittest import TestCase
-from unittest.mock import (mock_open, patch)
+from unittest.mock import mock_open, patch
+
+from mlcube_docker.docker_run import Config, DockerRun
+from omegaconf import DictConfig, OmegaConf
 
 from mlcube.config import MLCubeConfig
 from mlcube.shell import Shell
 
-from mlcube_docker.docker_run import (Config, DockerRun)
+_HAVE_DOCKER: bool = Shell.run(["docker", "--version"], on_error="ignore") == 0
+_HAVE_PODMAN: bool = Shell.run(["podman", "--version"], on_error="ignore") == 0
 
-from omegaconf import DictConfig, OmegaConf
-
-_HAVE_DOCKER: bool = Shell.run(['docker', '--version'], on_error='ignore') == 0
 
 _MLCUBE_DEFAULT_ENTRY_POINT = """
 docker:
@@ -29,6 +31,10 @@ tasks:
 
 
 class TestDockerRunner(TestCase):
+    def _check_inspect_output(self, info: t.Dict) -> None:
+        self.assertIsInstance(info, dict)
+        self.assertIn("hash", info)
+        self.assertFalse(info["hash"].startswith("sha256:"))
 
     @staticmethod
     def noop(*args, **kwargs) -> None:
@@ -50,40 +56,65 @@ class TestDockerRunner(TestCase):
     def tearDown(self) -> None:
         Shell.sync_workspace = self.sync_workspace
 
-    @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
-    def test_mlcube_default_entrypoints(self):
+    def default_entry_points(self, executable: str) -> None:
         with patch("io.open", mock_open(read_data=_MLCUBE_DEFAULT_ENTRY_POINT)):
             mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=DockerRun
+                "/some/path/to/mlcube.yaml",
+                runner_config=Config.DEFAULT,
+                runner_cls=DockerRun,
+                mlcube_cli_args=OmegaConf.create({"docker": {"docker": executable}}),
             )
-        self.assertEqual(mlcube.runner.image, 'ubuntu:18.04')
+        self.assertEqual(mlcube.runner.image, "ubuntu:18.04")
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
             {
-                'ls': {'parameters': {'inputs': {}, 'outputs': {}}},
-                'pwd': {'parameters': {'inputs': {}, 'outputs': {}}}
-            }
+                "ls": {"parameters": {"inputs": {}, "outputs": {}}},
+                "pwd": {"parameters": {"inputs": {}, "outputs": {}}},
+            },
         )
 
         DockerRun(mlcube, task=None).configure()
-        DockerRun(mlcube, task='ls').run()
-        DockerRun(mlcube, task='pwd').run()
+        self._check_inspect_output(DockerRun(mlcube, task=None).inspect())
+        DockerRun(mlcube, task="ls").run()
+        DockerRun(mlcube, task="pwd").run()
 
-    @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
-    def test_mlcube_custom_entrypoints(self):
+    def custom_entry_points(self, executable: str) -> None:
         with patch("io.open", mock_open(read_data=_MLCUBE_CUSTOM_ENTRY_POINTS)):
             mlcube: DictConfig = MLCubeConfig.create_mlcube_config(
-                "/some/path/to/mlcube.yaml", runner_config=Config.DEFAULT, runner_cls=DockerRun
+                "/some/path/to/mlcube.yaml",
+                runner_config=Config.DEFAULT,
+                runner_cls=DockerRun,
+                mlcube_cli_args=OmegaConf.create({"docker": {"docker": executable}}),
             )
-        self.assertEqual(mlcube.runner.image, 'ubuntu:18.04')
+        self.assertEqual(mlcube.runner.image, "ubuntu:18.04")
         self.assertDictEqual(
             OmegaConf.to_container(mlcube.tasks),
             {
-                'ls': {'parameters': {'inputs': {}, 'outputs': {}}},
-                'free': {'entrypoint': '/usr/bin/free', 'parameters': {'inputs': {}, 'outputs': {}}}
-            }
+                "ls": {"parameters": {"inputs": {}, "outputs": {}}},
+                "free": {
+                    "entrypoint": "/usr/bin/free",
+                    "parameters": {"inputs": {}, "outputs": {}},
+                },
+            },
         )
 
         DockerRun(mlcube, task=None).configure()
-        DockerRun(mlcube, task='ls').run()
-        DockerRun(mlcube, task='free').run()
+        self._check_inspect_output(DockerRun(mlcube, task=None).inspect())
+        DockerRun(mlcube, task="ls").run()
+        DockerRun(mlcube, task="free").run()
+
+    @unittest.skipUnless(_HAVE_PODMAN, reason="No podman available.")
+    def test_default_entrypoints_with_podman(self):
+        self.default_entry_points("podman")
+
+    @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
+    def test_default_entrypoints_with_docker(self):
+        self.default_entry_points("docker")
+
+    @unittest.skipUnless(_HAVE_PODMAN, reason="No podman available.")
+    def test_custom_entrypoints_with_podman(self):
+        self.custom_entry_points("podman")
+
+    @unittest.skipUnless(_HAVE_DOCKER, reason="No docker available.")
+    def test_custom_entrypoints_with_docker(self):
+        self.custom_entry_points("docker")

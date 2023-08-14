@@ -10,10 +10,12 @@ on:
 jobs:
   ssh_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -27,21 +29,21 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
-        verify_metadata: true
-        skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcube_ssh/dist/
-        repository_url: https://upload.pypi.org/legacy/
+        verify-metadata: true
+        skip-existing: true
+        packages-dir: runners/mlcube_ssh/dist/
+        repository-url: https://upload.pypi.org/legacy/
       env:
         LOGLEVEL: DEBUG
 
   docker_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -55,22 +57,22 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
-        verify_metadata: true
-        skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcube_docker/dist/
-        repository_url: https://upload.pypi.org/legacy/
+        verify-metadata: true
+        skip-existing: true
+        packages-dir: runners/mlcube_docker/dist/
+        repository-url: https://upload.pypi.org/legacy/
         verbose: true
       env:
         LOGLEVEL: DEBUG
 
   singularity_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -84,22 +86,22 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
-        verify_metadata: true
-        skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcube_singularity/dist/
-        repository_url: https://upload.pypi.org/legacy/
+        verify-metadata: true
+        skip-existing: true
+        packages-dir: runners/mlcube_singularity/dist/
+        repository-url: https://upload.pypi.org/legacy/
         verbose: true
       env:
         LOGLEVEL: DEBUG
 
   kubernetes_runner_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -113,22 +115,22 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
-        verify_metadata: true
-        skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcube_k8s/dist/
-        repository_url: https://upload.pypi.org/legacy/
+        verify-metadata: true
+        skip-existing: true
+        packages-dir: runners/mlcube_k8s/dist/
+        repository-url: https://upload.pypi.org/legacy/
         verbose: true
       env:
         LOGLEVEL: DEBUG
 
   gcp_runner_deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     - name: Install dependencies
@@ -142,22 +144,22 @@ jobs:
     - name: Publish
       uses: pypa/gh-action-pypi-publish@release/v1
       with:
-        user: ${{ secrets.PYPI_USER }}
-        verify_metadata: true
-        skip_existing: true
-        password: ${{ secrets.PYPI_PASSWORD }}
-        packages_dir: runners/mlcube_gcp/dist/
-        repository_url: https://upload.pypi.org/legacy/
+        verify-metadata: true
+        skip-existing: true
+        packages-dir: runners/mlcube_gcp/dist/
+        repository-url: https://upload.pypi.org/legacy/
         verbose: true
       env:
         LOGLEVEL: DEBUG
 
   kubeflow_runner_deploy:
       runs-on: ubuntu-latest
+      permissions:
+        id-token: write
       steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: '3.x'
       - name: Install dependencies
@@ -171,12 +173,10 @@ jobs:
       - name: Publish
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          user: ${{ secrets.PYPI_USER }}
-          verify_metadata: true
-          skip_existing: true
-          password: ${{ secrets.PYPI_PASSWORD }}
-          packages_dir: runners/mlcube_kubeflow/dist/
-          repository_url: https://upload.pypi.org/legacy/
+          verify-metadata: true
+          skip-existing: true
+          packages-dir: runners/mlcube_kubeflow/dist/
+          repository-url: https://upload.pypi.org/legacy/
           verbose: true
         env:
           LOGLEVEL: DEBUG

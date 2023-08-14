@@ -1,5 +1,5 @@
 # Tutorial: Create an MLCube 
-Interested in getting started with MLCube? Follow the instructions in this tutorial.    
+Interested in getting started with MLCube&reg;? Follow the instructions in this tutorial.    
 ## Step 1: Setup   
 Get MLCube, MLCube examples and MLCube Templates, and CREATE a Python environment.
 ```shell

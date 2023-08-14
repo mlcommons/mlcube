@@ -5,9 +5,9 @@
 - `CliParser`: Helper utilities to parse command linea arguments.
 """
 import abc
-from ast import Pass
 import os
 import typing as t
+from ast import Pass
 
 from omegaconf import DictConfig, OmegaConf
 
@@ -79,7 +79,7 @@ class CliParser(object):
 
     @staticmethod
     def parse_extra_arg(
-            unparsed_args: t.List[str], parsed_args: t.Dict[str, t.Optional[str]]
+        unparsed_args: t.List[str], parsed_args: t.Dict[str, t.Optional[str]]
     ) -> t.Tuple[DictConfig, t.Dict]:
         """Parse extra arguments on a command line.
 
@@ -112,31 +112,35 @@ class CliParser(object):
             [arg[2:] for arg in unparsed_args if arg.startswith("-P")]
         )
 
-        task_args = [arg.split("=") for arg in unparsed_args if not arg.startswith("-P")]
+        task_args = [
+            arg.split("=") for arg in unparsed_args if not arg.startswith("-P")
+        ]
         task_args = {arg[0]: arg[1] for arg in task_args}
 
         # Parse unparsed arguments
-        platform: t.Optional[str] = parsed_args.get('platform', None)
-        if platform in {'docker', 'singularity'}:
+        platform: t.Optional[str] = parsed_args.get("platform", None)
+        if platform in {"docker", "singularity"}:
             runner_run_args = {}
-            if parsed_args.get('network', None):
-                runner_run_args["--network"] = parsed_args['network']
-            if parsed_args.get('security', None):
+            if parsed_args.get("network", None):
+                runner_run_args["--network"] = parsed_args["network"]
+            if parsed_args.get("security", None):
                 key = "--security-opt" if platform == "docker" else "--security"
-                runner_run_args[key] = parsed_args['security']
-            if parsed_args.get('gpus', None):
+                runner_run_args[key] = parsed_args["security"]
+            if parsed_args.get("gpus", None):
                 if platform == "docker":
-                    runner_run_args["--gpus"] = parsed_args['gpus']
+                    runner_run_args["--gpus"] = parsed_args["gpus"]
                 else:
                     runner_run_args["--nv"] = ""
-                    os.environ['SINGULARITYENV_CUDA_VISIBLE_DEVICES'] = parsed_args['gpus']
-            if parsed_args.get('memory', None):
+                    os.environ["SINGULARITYENV_CUDA_VISIBLE_DEVICES"] = parsed_args[
+                        "gpus"
+                    ]
+            if parsed_args.get("memory", None):
                 key = "--memory" if platform == "docker" else "--vm-ram"
-                runner_run_args[key] = parsed_args['memory']
-            if parsed_args.get('cpu', None):
+                runner_run_args[key] = parsed_args["memory"]
+            if parsed_args.get("cpu", None):
                 key = "--cpuset-cpus" if platform == "docker" else "--vm-cpu"
-                runner_run_args[key] = parsed_args['cpu']
-            runner_run_args["--mount_opts"] = parsed_args['mount']
+                runner_run_args[key] = parsed_args["cpu"]
+            runner_run_args["--mount_opts"] = parsed_args["mount"]
 
             mlcube_args.merge_with({platform: runner_run_args})
 
