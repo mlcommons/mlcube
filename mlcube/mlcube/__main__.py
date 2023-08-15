@@ -257,9 +257,9 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
         runner.configure()
     except MLCubeError as err:
         exit_code = err.context.get("code", 1) if isinstance(err, ExecutionError) else 1
-        logger.exception(f"Failed to configure MLCube with error code {exit_code}.")
+        print(f"Failed to configure MLCube with error code {exit_code}.")
         if isinstance(err, ExecutionError):
-            print(err.describe())
+            logger.exception(err.describe())
         sys.exit(exit_code)
     logger.info(
         "MLCube (%s) has been successfully configured for `%s` platform.",
@@ -394,9 +394,9 @@ def run(
             runner.run()
     except MLCubeError as err:
         exit_code = err.context.get("code", 1) if isinstance(err, ExecutionError) else 1
-        logger.exception(f"run failed to run MLCube with error code {exit_code}.")
+        print(f"run failed to run MLCube with error code {exit_code}.")
         if isinstance(err, ExecutionError):
-            print(err.describe())
+            logger.exception(err.describe())
         sys.exit(exit_code)
 
 
@@ -689,8 +689,8 @@ def inspect(
 
             yaml.dump(info, sys.stdout)
     except MLCubeError as err:
+        print("MLCube inspect failed")
         logger.exception(err)
-        print(str(err))
         exit(1)
 
 
