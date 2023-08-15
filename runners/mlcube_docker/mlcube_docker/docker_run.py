@@ -89,6 +89,7 @@ class Config(RunnerConfig):
             "--gpus": None,  # GPU usage options defined during MLCube container execution.
             "--memory": None,  # RAM options defined during MLCube container execution.
             "--cpuset-cpus": None,  # CPU cores options for Docker.
+            "--mount_opts": "",  # Mount options for Docker volumes.
         }
     )
 
@@ -259,7 +260,7 @@ class DockerRun(Runner):
         extra_args_list = [
             f"{key}={value}"
             for key, value in self.mlcube.runner.items()
-            if key.startswith("--") and value is not None
+            if key.startswith("--") and value is not None and key != "--mount_opts"
         ]
         extra_args = " ".join(extra_args_list)
         if extra_args:
