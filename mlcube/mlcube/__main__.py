@@ -1,6 +1,7 @@
 """This requires the MLCube 2.0 that's located somewhere in one of dev branches."""
 import logging
 import os
+from pathlib import Path
 import shutil
 import sys
 import typing as t
@@ -673,7 +674,6 @@ def create() -> None:
     type=str,
     default=None,
     help="File path to store the MLCube information. Defaults to print to STDOUT",
-
 )
 @Options.help
 def inspect(
@@ -692,6 +692,8 @@ def inspect(
     if output_file is None:
         output_stream = sys.stdout
     else:
+        dir_path = Path(output_file).resolve().parent
+        os.makedirs(dir_path, exist_ok=True)
         output_stream = open(output_file, "w")
 
     try:
