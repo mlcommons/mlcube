@@ -704,7 +704,8 @@ def inspect(
             import json
 
             json.dump(info, output_stream)
-            print()  # json doesn't print a newline
+            if output_stream == sys.stdout:
+                print()  # json doesn't print a newline
         else:
             import yaml
 
