@@ -139,7 +139,8 @@ class CliParser(object):
             if parsed_args.get("cpu", None):
                 key = "--cpuset-cpus" if platform == "docker" else "--vm-cpu"
                 runner_run_args[key] = parsed_args["cpu"]
-            runner_run_args["--mount_opts"] = parsed_args["mount"]
+            if parsed_args.get("mount", None):
+                runner_run_args["--mount_opts"] = parsed_args["mount"]
 
             mlcube_args.merge_with({platform: runner_run_args})
 
