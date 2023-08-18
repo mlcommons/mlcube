@@ -681,7 +681,7 @@ def inspect(
     platform: str,
     force: bool = False,
     format_: str = "json",
-    output_file: str = None,
+    output_file: t.Optional[str] = None,
 ) -> None:
     """Return low-level information on MLCube objects."""
     runner_cls, mlcube_config = parse_cli_args(
@@ -693,7 +693,7 @@ def inspect(
         output_stream = sys.stdout
     else:
         dir_path = Path(output_file).resolve().parent
-        os.makedirs(dir_path, exist_ok=True)
+        dir_path.mkdir(parents=True, exist_ok=True)
         output_stream = open(output_file, "w")
 
     try:
