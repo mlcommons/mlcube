@@ -128,9 +128,6 @@ class CliParser(object):
             if parsed_args.get("gpus", None):
                 if platform == "docker":
                     runner_run_args["--gpus"] = parsed_args["gpus"]
-                    os.environ["CUDA_VISIBLE_DEVICES"] = parsed_args[
-                        "gpus"
-                    ]
                 else:
                     runner_run_args["--nv"] = ""
                     os.environ["SINGULARITYENV_CUDA_VISIBLE_DEVICES"] = parsed_args[

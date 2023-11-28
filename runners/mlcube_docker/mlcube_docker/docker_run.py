@@ -266,6 +266,9 @@ class DockerRun(Runner):
         if extra_args:
             run_args += " " + extra_args
 
+        cuda_visible_devices = self.mlcube.runner["--gpus"] if "--gpus" in self.mlcube.runner else num_gpus
+        run_args += f" --env CUDA_VISIBLE_DEVICES={cuda_visible_devices}"
+
         if "entrypoint" in self.mlcube.tasks[self.task]:
             logger.info(
                 "Using custom task entrypoint: task=%s, entrypoint='%s'",
