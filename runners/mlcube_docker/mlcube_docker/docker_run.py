@@ -266,7 +266,8 @@ class DockerRun(Runner):
         if extra_args:
             run_args += " " + extra_args
 
-        cuda_visible_devices = self.mlcube.runner["--gpus"] if "--gpus" in self.mlcube.runner else num_gpus
+        valid_gpu_flag = "--gpus" in self.mlcube.runner and self.mlcube.runner["--gpus"] is not None
+        cuda_visible_devices = self.mlcube.runner["--gpus"] if valid_gpu_flag else num_gpus
         run_args += f" --env CUDA_VISIBLE_DEVICES={cuda_visible_devices}"
 
         if "entrypoint" in self.mlcube.tasks[self.task]:
