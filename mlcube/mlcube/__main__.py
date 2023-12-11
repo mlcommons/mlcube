@@ -10,14 +10,7 @@ import click
 import coloredlogs
 from omegaconf import OmegaConf
 
-from mlcube.cli import (
-    MLCubeCommand,
-    MultiValueOption,
-    Options,
-    UsageExamples,
-    parse_cli_args,
-)
-from mlcube.config import MountType
+from mlcube.cli import MLCubeCommand, MultiValueOption, Options, UsageExamples, parse_cli_args
 from mlcube.errors import ExecutionError, IllegalParameterValueError, MLCubeError
 from mlcube.parser import CliParser
 from mlcube.shell import Shell
@@ -27,110 +20,6 @@ logger = logging.getLogger(__name__)
 
 _TERMINAL_WIDTH = shutil.get_terminal_size()[0]  # Since Python version 3.3
 """Width of a user terminal. MLCube overrides default (80) character width to make usage examples look better."""
-
-
-def add_to_parser(self, parser: click.parser.OptionParser, ctx: click.core.Context):
-    def parser_process(value: str, state: click.parser.ParsingState):
-        values: t.List[str] = [value]
-        prefixes: t.Tuple[str] = tuple(self._eat_all_parser.prefixes)
-        while state.rargs:
-            if state.rargs[0].startswith(prefixes):
-                break
-            values.append(state.rargs.pop(0))
-        self._previous_parser_process(tuple(values), state)
-
-    super(MultiValueOption, self).add_to_parser(parser, ctx)
-    for opt_name in self.opts:
-        our_parser: t.Optional[click.parser.Option] = parser._long_opt.get(opt_name) or parser._short_opt.get(opt_name)
-        if our_parser:
-            self._eat_all_parser = our_parser
-            self._previous_parser_process = our_parser.process
-            our_parser.process = parser_process
-            break
-
-
-log_level_option = click.option(
-    "--log-level",
-    "--log_level",
-    required=False,
-    type=str,
-    default="warning",
-    help="Log level to set, default is to do nothing.",
-)
-mlcube_option = click.option(
-    "--mlcube",
-    required=False,
-    type=str,
-    default=os.getcwd(),
-    help="Path to MLCube. This can be either a directory path that becomes MLCube's root directory, or path to MLCube"
-    "definition file (.yaml). In the latter case the MLCube's root directory becomes parent directory of the yaml"
-    "file. Default is current directory.",
-)
-platform_option = click.option(
-    "--platform",
-    required=False,
-    type=str,
-    default="docker",
-    help="Platform to run MLCube, default is 'docker' (that also supports podman).",
-)
-task_option = click.option(
-    "--task",
-    required=False,
-    type=str,
-    default=None,
-    help="MLCube task name(s) to run, default is `main`. This parameter can take a list value, in which case task names"
-    "are separated with ','.",
-)
-workspace_option = click.option(
-    "--workspace",
-    required=False,
-    type=str,
-    default=None,
-    help="Workspace location that is used to store input/output artifacts of MLCube tasks.",
-)
-network_option = click.option(
-    "--network",
-    required=False,
-    type=str,
-    default=None,
-    help="Networking options defined during MLCube container execution.",
-)
-security_option = click.option(
-    "--security",
-    required=False,
-    type=str,
-    default=None,
-    help="Security options defined during MLCube container execution.",
-)
-gpus_option = click.option(
-    "--gpus",
-    required=False,
-    type=str,
-    default=None,
-    help="GPU usage options defined during MLCube container execution.",
-)
-memory_option = click.option(
-    "--memory",
-    required=False,
-    type=str,
-    default=None,
-    help="Memory RAM options defined during MLCube container execution.",
-)
-cpu_option = click.option(
-    "--cpu",
-    required=False,
-    type=str,
-    default=None,
-    help="CPU options defined during MLCube container execution.",
-)
-mount_option = click.option(
-    "--mount",
-    required=False,
-    type=click.Choice([MountType.RW, MountType.RO]),
-    default=None,
-    help="Mount options for all input parameters. These mount options override any other mount options defined for "
-    "each input parameters. A typical use case is to ensure that inputs are mounted in read-only (ro) mode.",
-)
 
 
 @click.group(name="mlcube", add_help_option=False)
@@ -280,12 +169,12 @@ def configure(mlcube: t.Optional[str], platform: str, p: t.Tuple[str]) -> None:
 @Options.platform
 @Options.task
 @Options.workspace
-@network_option
-@security_option
-@gpus_option
-@memory_option
-@cpu_option
-@mount_option
+@Options.network
+@Options.security
+@Options.gpus
+@Options.memory
+@Options.cpu
+@Options.mount
 @Options.parameter
 @Options.help
 @click.pass_context
