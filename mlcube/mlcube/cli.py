@@ -15,7 +15,7 @@ except ImportError:
 from markdown import Markdown
 from omegaconf import DictConfig
 
-from mlcube.config import MLCubeConfig
+from mlcube.config import MLCubeConfig, MountType
 from mlcube.parser import CliParser, MLCubeDirectory
 from mlcube.platform import Platform
 from mlcube.runner import Runner
@@ -54,15 +54,11 @@ def parse_cli_args(
     mlcube_inst: MLCubeDirectory = CliParser.parse_mlcube_arg(parsed_args["mlcube"])
     Validate.validate_type(mlcube_inst, MLCubeDirectory)
 
-    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(
-        unparsed_args, parsed_args
-    )
+    mlcube_cli_args, task_cli_args = CliParser.parse_extra_arg(unparsed_args, parsed_args)
 
     if parsed_args.get("platform", None) is not None:
         system_settings = SystemSettings()
-        runner_config: t.Optional[DictConfig] = system_settings.get_platform(
-            parsed_args["platform"]
-        )
+        runner_config: t.Optional[DictConfig] = system_settings.get_platform(parsed_args["platform"])
         runner_cls: t.Optional[t.Type[Runner]] = Platform.get_runner(
             system_settings.runners.get(runner_config.runner, None)
         )
@@ -147,9 +143,9 @@ class MultiValueOption(click.Option):
 
         super(MultiValueOption, self).add_to_parser(parser, ctx)
         for opt_name in self.opts:
-            our_parser: t.Optional[click.parser.Option] = parser._long_opt.get(
+            our_parser: t.Optional[click.parser.Option] = parser._long_opt.get(opt_name) or parser._short_opt.get(
                 opt_name
-            ) or parser._short_opt.get(opt_name)
+            )
             if our_parser:
                 self._eat_all_parser = our_parser
                 self._previous_parser_process = our_parser.process
@@ -171,9 +167,7 @@ class HelpEpilog(object):
     class Example:
         """Context manager for helping with formatting epilogues when users invoke help on a command line."""
 
-        def __init__(
-            self, formatter: click.formatting.HelpFormatter, title: str
-        ) -> None:
+        def __init__(self, formatter: click.formatting.HelpFormatter, title: str) -> None:
             self.formatter = formatter
             self.title = title
 
@@ -191,9 +185,7 @@ class HelpEpilog(object):
     def __init__(self, examples: t.List[t.Tuple[str, t.List[str]]]) -> None:
         self.examples = examples
 
-    def format_epilog(
-        self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter
-    ) -> None:
+    def format_epilog(self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter) -> None:
         if not self.examples:
             return
         formatter.write_heading("\nExamples")
@@ -233,7 +225,7 @@ class MLCubeCommand(click.Command):
             if start_idx >= 0:
                 end_idx: int = text.find("</long>", start_idx)
                 if end_idx >= 0:
-                    text = text[:start_idx] + text[end_idx + 7:]
+                    text = text[:start_idx] + text[end_idx + 7 :]
             # This is supported in default implementation, so need to reimplement it here. All that goes after the
             # `\f` character is not rendered (e.g., description of parameters, TODOs, etc.).
             text = text.split("\f")[0]
@@ -244,9 +236,7 @@ class MLCubeCommand(click.Command):
             if len(paragraphs) == 1:
                 brief_description, long_description = paragraphs[0], ""
             else:
-                brief_description, long_description = paragraphs[0], "\n".join(
-                    paragraphs[1:]
-                )
+                brief_description, long_description = paragraphs[0], "\n".join(paragraphs[1:])
 
             formatter.write_heading("\nBrief description")
             with formatter.indentation():
@@ -265,9 +255,7 @@ class MLCubeCommand(click.Command):
             with formatter.indentation():
                 formatter.write_text(DEPRECATED_HELP_NOTICE)
 
-    def format_options(
-        self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter
-    ) -> None:
+    def format_options(self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter) -> None:
         """Writes all the options into the formatter if they exist.
 
         This implementation removes Markdown format from the options' help messages should they exist. Any errors
@@ -283,9 +271,7 @@ class MLCubeCommand(click.Command):
             with formatter.section("Options"):
                 formatter.write_dl(opts)
 
-    def format_epilog(
-        self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter
-    ) -> None:
+    def format_epilog(self, ctx: click.core.Context, formatter: click.formatting.HelpFormatter) -> None:
         """Format epilog if its type `mlcube.EpilogWithExamples`, else fallback to default implementation."""
         if isinstance(self.epilog, HelpEpilog):
             self.epilog.format_epilog(ctx, formatter)
@@ -332,9 +318,7 @@ class Options:
         type=click.Choice(["critical", "error", "warning", "info", "debug"]),
         help="Logging level is a lower-case string value for Python's logging library (see "
         "[Logging Levels]({log_level}) for more details). Only messages with this logging level or higher are "
-        "logged.".format(
-            log_level="https://docs.python.org/3/library/logging.html#logging-levels"
-        ),
+        "logged.".format(log_level="https://docs.python.org/3/library/logging.html#logging-levels"),
     )
 
     mlcube = click.option(
@@ -382,9 +366,7 @@ class Options:
         type=str,
         default=None,
         help="MLCube [task]({task}) name(s) to run, default is `main`. This parameter can take a list of values, in "
-        "which case task names are separated with comma (,).".format(
-            task=OnlineDocs.concept_url("task")
-        ),
+        "which case task names are separated with comma (,).".format(task=OnlineDocs.concept_url("task")),
     )
 
     workspace = click.option(
@@ -434,6 +416,50 @@ class Options:
         ),
     )
 
+    network = click.option(
+        "--network",
+        required=False,
+        type=str,
+        default=None,
+        help="Networking options defined during MLCube container execution.",
+    )
+    security = click.option(
+        "--security",
+        required=False,
+        type=str,
+        default=None,
+        help="Security options defined during MLCube container execution.",
+    )
+    gpus = click.option(
+        "--gpus",
+        required=False,
+        type=str,
+        default=None,
+        help="GPU usage options defined during MLCube container execution.",
+    )
+    memory = click.option(
+        "--memory",
+        required=False,
+        type=str,
+        default=None,
+        help="Memory RAM options defined during MLCube container execution.",
+    )
+    cpu = click.option(
+        "--cpu",
+        required=False,
+        type=str,
+        default=None,
+        help="CPU options defined during MLCube container execution.",
+    )
+    mount = click.option(
+        "--mount",
+        required=False,
+        type=click.Choice([MountType.RW, MountType.RO]),
+        default=None,
+        help="Mount options for all input parameters. These mount options override any other mount options defined for "
+        "each input parameters. A typical use case is to ensure that inputs are mounted in read-only (ro) mode.",
+    )
+
 
 def _mnist(steps: t.List[str]) -> t.List[str]:
     return [
@@ -451,9 +477,7 @@ class UsageExamples:
             ),
             (
                 "Show effective MLCube configuration overriding parameters on a command line",
-                _mnist(
-                    ["mlcube show_config --mlcube=mnist -Pdocker.build_strategy=auto"]
-                ),
+                _mnist(["mlcube show_config --mlcube=mnist -Pdocker.build_strategy=auto"]),
             ),
         ]
     )
@@ -473,19 +497,13 @@ class UsageExamples:
         [
             (
                 "Run MNIST MLCube project",
-                _mnist(
-                    [
-                        "mlcube run --mlcube=mnist --platform=docker --task=download,train"
-                    ]
-                ),
+                _mnist(["mlcube run --mlcube=mnist --platform=docker --task=download,train"]),
             )
         ]
     )
     """Usage examples for `mlcube run` command."""
 
-    describe = HelpEpilog(
-        [("Run MNIST MLCube project", _mnist(["mlcube describe --mlcube=mnist"]))]
-    )
+    describe = HelpEpilog([("Run MNIST MLCube project", _mnist(["mlcube describe --mlcube=mnist"]))])
     """Usage examples for `mlcube describe` command."""
 
     create = HelpEpilog([("Create a new empty MLCube project", ["mlcube create"])])
