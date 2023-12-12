@@ -276,8 +276,8 @@ class DockerRun(Runner):
         else:
             cuda_visible_devices = num_gpus
 
-        if cuda_visible_devices.isnumeric():
-            cuda_visible_devices = str(list(range(cuda_visible_devices)))
+        if str(cuda_visible_devices).isnumeric():
+            cuda_visible_devices = str(list(range(int(cuda_visible_devices))))
             cuda_visible_devices = cuda_visible_devices.replace(" ", "")[1:-1]
 
         run_args += f" --env CUDA_VISIBLE_DEVICES={cuda_visible_devices}"
