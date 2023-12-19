@@ -268,11 +268,8 @@ class DockerRun(Runner):
 
         valid_gpu_flag = "--gpus" in self.mlcube.runner and self.mlcube.runner["--gpus"] is not None
 
-
         if valid_gpu_flag:
             cuda_visible_devices = self.mlcube.runner["--gpus"]
-            if "device" in cuda_visible_devices:
-                cuda_visible_devices = cuda_visible_devices.replace("device=", "")
         else:
             cuda_visible_devices = num_gpus
 
