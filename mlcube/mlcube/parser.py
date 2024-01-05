@@ -126,13 +126,17 @@ class CliParser(object):
                 key = "--security-opt" if platform == "docker" else "--security"
                 runner_run_args[key] = parsed_args["security"]
             if parsed_args.get("gpus", None):
+                cuda_visible_devices = parsed_args["gpus"]
+                if "device" in cuda_visible_devices:
+                    cuda_visible_devices = cuda_visible_devices.replace("device=", "")
+                elif str(cuda_visible_devices).isnumeric():
+                    cuda_visible_devices = str(list(range(int(cuda_visible_devices))))
+                    cuda_visible_devices = cuda_visible_devices.replace(" ", "")[1:-1]
                 if platform == "docker":
-                    runner_run_args["--gpus"] = parsed_args["gpus"]
+                    runner_run_args["--gpus"] = cuda_visible_devices
                 else:
                     runner_run_args["--nv"] = ""
-                    os.environ["SINGULARITYENV_CUDA_VISIBLE_DEVICES"] = parsed_args[
-                        "gpus"
-                    ]
+                    os.environ["SINGULARITYENV_CUDA_VISIBLE_DEVICES"] = cuda_visible_devices
             if parsed_args.get("memory", None):
                 key = "--memory" if platform == "docker" else "--vm-ram"
                 runner_run_args[key] = parsed_args["memory"]
