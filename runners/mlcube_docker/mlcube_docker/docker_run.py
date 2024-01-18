@@ -13,6 +13,7 @@ from mlcube.errors import (
     IllegalParameterValueError,
     MLCubeError,
 )
+from mlcube.parser import CliParser, DeviceSpecs
 from mlcube.runner import Runner, RunnerConfig
 from mlcube.shell import Shell
 from mlcube.validate import Validate
@@ -247,37 +248,33 @@ class DockerRun(Runner):
 
         volumes = Shell.to_cli_args(mounts, sep=":", parent_arg="--volume")
         env_args = self.mlcube.runner.env_args
-        num_gpus: int = (
-            self.mlcube.get("platform", {}).get("accelerator_count", None) or 0
+
+        device_specs = DeviceSpecs.from_config(
+            accelerator_count=self.mlcube.get("platform", {}).get("accelerator_count", None),
+            gpus=self.mlcube.runner.get("--gpus", None)
         )
 
-        run_args: t.Text = (
+        run_args: str = (
             self.mlcube.runner.cpu_args
-            if num_gpus == 0
+            if device_specs.none
             else self.mlcube.runner.gpu_args
         )
 
         extra_args_list = [
             f"{key}={value}"
             for key, value in self.mlcube.runner.items()
-            if key.startswith("--") and value is not None and key != "--mount_opts"
+            if key.startswith("--") and value is not None and key not in ("--mount_opts", "--gpus")
         ]
         extra_args = " ".join(extra_args_list)
         if extra_args:
             run_args += " " + extra_args
 
-        valid_gpu_flag = "--gpus" in self.mlcube.runner and self.mlcube.runner["--gpus"] is not None
-
-        if valid_gpu_flag:
-            cuda_visible_devices = self.mlcube.runner["--gpus"]
-        else:
-            cuda_visible_devices = num_gpus
-
-        if str(cuda_visible_devices).isnumeric():
-            cuda_visible_devices = str(list(range(int(cuda_visible_devices))))
-            cuda_visible_devices = cuda_visible_devices.replace(" ", "")[1:-1]
-
-        run_args += f" --env CUDA_VISIBLE_DEVICES={cuda_visible_devices}"
+        if not device_specs.none:
+            docker_specs: DeviceSpecs.DockerSpecs = device_specs.get_docker_specs()
+            run_args += f" --gpus={docker_specs.gpus}"
+            logger.debug(
+                "Setting GPUs flag to --gpus=%s. CUDA_VISIBLE_DEVICES will not be set.", docker_specs.gpus
+            )
 
         if "entrypoint" in self.mlcube.tasks[self.task]:
             logger.info(

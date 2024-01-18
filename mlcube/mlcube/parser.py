@@ -5,10 +5,16 @@
 - `CliParser`: Helper utilities to parse command linea arguments.
 """
 import abc
+import logging
 import os
 import typing as t
+from dataclasses import dataclass
 
 from omegaconf import DictConfig, OmegaConf
+
+from mlcube.errors import ConfigurationError
+
+logger = logging.getLogger(__name__)
 
 
 class MLCubeInstance(abc.ABC):
@@ -42,6 +48,213 @@ class MLCubeDirectory(MLCubeInstance):
 
     def uri(self) -> str:
         return os.path.join(self.path, self.file)
+
+
+class DeviceSpecs:
+    """GPU specifications."""
+    @dataclass
+    class Device:
+        index: t.Optional[int] = None     # GPU index in a system (depends on ordering - see `CUDA_DEVICE_ORDER`).
+        uuid: t.Optional[str] = None      # always unique, e.g., GPU-1f22a253-c329-dfb7-0db4-e005efb6a4c7.
+
+        @classmethod
+        def create(cls, device: str) -> "DeviceSpecs.Device":
+            device = device.strip()
+            try:
+                return cls(index=int(device))
+            except ValueError:
+                return cls(uuid=device)
+
+        def str_spec(self) -> str:
+            return str(self.index) if self.index is not None else self.uuid
+
+        def __str__(self) -> str:
+            return f"Device(index={self.index}, uuid={self.uuid})"
+
+    @dataclass
+    class DockerSpecs:
+        gpus: t.Optional[str] = None
+        cuda_visible_devices: t.Optional[str] = None
+
+    def __init__(self) -> None:
+        """Init GPU specs so that it's none by default.
+
+        The values are set in factory methods. Only one instance variable out of 4 must be set.
+        """
+        self._none: bool = True
+        """No GPUs requested - use this to check if GPUs have not been requested."""
+        self._all: bool = False
+        """All GPUs requested (--gpus=all)."""
+        self._num_devices: t.Optional[int] = None  # Just number of GPUs
+        """Some number of GPUs requested (--gpus=2 for 2 (first) GPUs) - this either None or positive, never zero."""
+        self._devices: t.Optional[t.List[DeviceSpecs.Device]] = None
+        """List of GPU indices or IDs (--gpus=1,2 or --gpus=GPU-f234r2f23) - either None or at least one device."""
+
+    @property
+    def none(self) -> bool:
+        return self._none
+
+    @property
+    def all(self) -> bool:
+        return self._all
+
+    @property
+    def num_devices(self) -> t.Optional[int]:
+        return self._num_devices
+
+    @property
+    def devices(self) -> t.Optional[t.List["DeviceSpecs.Device"]]:
+        return self._devices if self._devices is None else self._devices.copy()
+
+    def check_with_platform_specs(self, accelerator_count: t.Optional[int] = None) -> None:
+        if accelerator_count is None:
+            # Number of accelerators is not specified in the MLCube configuration file. We assume this is really
+            # optional now, so will not be doing any further checks.
+            return
+        if accelerator_count < 0:
+            # This should generally never happen here since MLCube needs to validate values before this method is
+            # called (what is normally should happen right before MLCube runs the MLCube project).
+            return
+        if accelerator_count == 0:
+            # The accelerator count value has been set to 0
+            if self.none:
+                logger.info(
+                    "`platform.accelerator_count = 0` is consistent with device specs (%s).", str(self)
+                )
+                return
+            logger.warning(
+                "`platform.accelerator_count = 0` is not consistent with device specs (%s).", str(self)
+            )
+        # Some number of accelerators has been specified
+        if (
+                self.all is True or
+                self.num_devices is not None and self.num_devices == accelerator_count or
+                self._devices is not None and len(self._devices) == accelerator_count
+        ):
+            logger.info(
+                "`platform.accelerator_count = %d` is probably consistent with device specs (%s).",
+                accelerator_count, str(self)
+            )
+        logger.warning(
+            "`platform.accelerator_count = %d` is not consistent with device specs (%s).",
+            accelerator_count, str(self)
+        )
+
+    def get_docker_specs(self) -> "DeviceSpecs.DockerSpecs":
+        if self.none:
+            # Do not provide --gpus flag
+            return DeviceSpecs.DockerSpecs()
+        if self.all:
+            # provide --gpus=all, do not know yet how to compute total number of devices
+            logger.warning(
+                "Device docker specs: identifying CUDA_VISIBLE_DEVICES when gpus = 'all' is not supported yet."
+            )
+            return DeviceSpecs.DockerSpecs(gpus="all")
+        if self.num_devices is not None:
+            # --gpus=N, CUDA_VISIBLE_DEVICES=0,1,2,..N-1
+            return DeviceSpecs.DockerSpecs(
+                gpus=f"{self.num_devices}",
+                cuda_visible_devices=",".join(str(i) for i in range(self.num_devices))
+            )
+        # --gpus=device=A,B,C, CUDA_VISIBLE_DEVICES=0,1,2,..N-1
+        assert isinstance(self._devices, list) and len(self._devices) > 0
+        return DeviceSpecs.DockerSpecs(
+            gpus="device=" + ",".join(dev.str_spec() for dev in self._devices),
+            cuda_visible_devices=",".join(str(i) for i in range(len(self._devices)))
+        )
+
+    @classmethod
+    def from_string(cls, gpus: t.Optional[str] = None) -> "DeviceSpecs":
+        _gpus = str(gpus)
+        gpus = (gpus or "").strip()
+
+        # No GPUs requested
+        if not gpus:
+            logger.debug("Device specs (`%s`) resolved to `none`.", _gpus)
+            return DeviceSpecs()
+
+        # Exposes all available GPUs (e.g., 8). To set CUDA_VISIBLE_DEVICES, MLCube needs to identify the number of
+        # available GPUs. The NVIDIA_VISIBLE_DEVICES=all will be set automatically by docker.
+        if gpus == "all":
+            logger.debug("Device specs (`%s`) resolved to `all`.", _gpus)
+            gpu_specs = DeviceSpecs()
+            gpu_specs._none = False
+            gpu_specs._all = True
+            return gpu_specs
+
+        # Exposes "first" N GPUs. CUDA_VISIBLE_DEVICES is set to list(0, range(N)). The NVIDIA_VISIBLE_DEVICES will be
+        # set automatically (in this case, it seems like these two environment variables will have the same value).
+        try:
+            num_gpus = int(gpus)
+            if num_gpus <= 0:
+                logger.debug("Device spec (`%s`) resolved to `none`.", _gpus)
+                return DeviceSpecs()
+            logger.debug("Device spec (`%s`) resolved to device count (num_devices=%d)", _gpus, num_gpus)
+            gpu_specs = DeviceSpecs()
+            gpu_specs._none = False
+            gpu_specs._num_devices = num_gpus
+            return gpu_specs
+        except ValueError:
+            ...
+
+        if gpus.startswith("device="):
+            _devices = [
+                device for device in (
+                    device.strip() for device in gpus[7:].split(",")
+                ) if device
+            ]
+            if not _devices:
+                logger.debug("Device spec (`%s`) resolved to `none`.", _gpus)
+                return DeviceSpecs()
+
+            logger.debug("Device spec (`%s`) resolved to device list (devices=%s).", _gpus, _devices)
+            gpu_specs = DeviceSpecs()
+            gpu_specs._none = False
+            gpu_specs._devices = [DeviceSpecs.Device.create(device) for device in _devices]
+            return gpu_specs
+
+        # Do not know how to parse
+        raise ConfigurationError(
+            f"The `gpus` configuration parameter has invalid or unsupported value (gpus=`{gpus}`). It can take one"
+            "of the following values: (1) empty or not specified, (2) 'all', (3) be single integer value or (4) "
+            "be a string that starts with 'device=' that is followed by a comma-separated list of integers or device "
+            "IDs (strings). For more details, see "
+            "https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/docker-specialized.html."
+        )
+
+    @classmethod
+    def from_config(cls, accelerator_count: t.Optional[int] = None, gpus: t.Optional[str] = None) -> "DeviceSpecs":
+        """Probably a temporary workaround to infer device specs based upon platform section and CLI's --gpus arg."""
+
+        # Determine initial device specs. The `accelerator_count` is part of the MLCube's `platform` section that
+        # defines (optionally) number of GPUs required by an MLCube. If not set, specs set to none (not needed).
+        if accelerator_count is not None and accelerator_count > 0:
+            platform_device_specs = DeviceSpecs.from_string(str(accelerator_count))
+        else:
+            platform_device_specs = DeviceSpecs()
+
+        # The `gpus` arg is none when it's not provided by a user. We need to differentiate between not set (None) and
+        # empty (e.g., --gpus="") what means disable GPUs.
+        if gpus is None:
+            device_specs = platform_device_specs
+        else:
+            # Get device specs from CLI (e.g., mlcube run ... --gpus='"device=1,5"'). These always, always override
+            # platform device specs when present. We also print out warning (no actions will be taken) if user specs
+            # (--gpus) conflict with platform specs (platform.accelerator_count).
+            device_specs = DeviceSpecs.from_string(gpus)
+            device_specs.check_with_platform_specs(platform_device_specs.num_devices)
+
+        logger.info(
+            "Device params `platform.accelerator_count` (%s) and `--gpus` (%s) resolved to device specs (%s).",
+            str(accelerator_count), str(gpus), str(device_specs)
+        )
+
+        return device_specs
+
+    def __str__(self) -> str:
+        devices = "None" if self._devices is None else str([str(dev) for dev in self._devices])
+        return f"{self.__class__.__name__}(none={self._none}, all={self._all}, num_gpus={self._num_devices}, "\
+               f"devices={devices})"
 
 
 class CliParser(object):
@@ -96,7 +309,7 @@ class CliParser(object):
                 `--` prefix, and are normally parsed by libraries such as `click` or `argparse`. This dictionary will
                  also include such arguments as `--platform`, `--mlcube` and others. Keys in this dictionary are
                  argument names without `--` prefix. The following is the list of arguments this function can parse:
-                    - `platform`: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
+                    - `platform`: Platform to use to run this MLCube (docker, singularity, gcp, k8s, etc.).
                     - `network_option`: Networking options defined during MLCube container execution.
                     - `security_option`: Security options defined during MLCube container execution.
                     - `gpus_option`: GPU usage options defined during MLCube container execution.
@@ -116,7 +329,9 @@ class CliParser(object):
         ]
         task_args = {arg[0]: arg[1] for arg in task_args}
 
-        # Parse unparsed arguments
+        # Set runner-specific parameters - think about refactoring, this needs to be done by runners.
+        # Orr, maybe, these parameters can go first into platform section, and then be parsed by runners.
+        # When not present, they need to be None. Empty values (e.g., --gpus="") will be interpreted as set.
         platform: t.Optional[str] = parsed_args.get("platform", None)
         if platform in {"docker", "singularity"}:
             runner_run_args = {}
@@ -125,18 +340,11 @@ class CliParser(object):
             if parsed_args.get("security", None):
                 key = "--security-opt" if platform == "docker" else "--security"
                 runner_run_args[key] = parsed_args["security"]
-            if parsed_args.get("gpus", None):
-                cuda_visible_devices = parsed_args["gpus"]
-                if "device" in cuda_visible_devices:
-                    cuda_visible_devices = cuda_visible_devices.replace("device=", "")
-                elif str(cuda_visible_devices).isnumeric():
-                    cuda_visible_devices = str(list(range(int(cuda_visible_devices))))
-                    cuda_visible_devices = cuda_visible_devices.replace(" ", "")[1:-1]
+            if parsed_args.get("gpus", None) is not None:
                 if platform == "docker":
-                    runner_run_args["--gpus"] = cuda_visible_devices
+                    runner_run_args["--gpus"] = parsed_args["gpus"].strip()
                 else:
                     runner_run_args["--nv"] = ""
-                    os.environ["SINGULARITYENV_CUDA_VISIBLE_DEVICES"] = cuda_visible_devices
             if parsed_args.get("memory", None):
                 key = "--memory" if platform == "docker" else "--vm-ram"
                 runner_run_args[key] = parsed_args["memory"]
@@ -160,7 +368,7 @@ class CliParser(object):
         cpu_option: t.Optional[str],
         mount_option: t.Optional[str],
     ) -> t.Tuple[DictConfig, t.Dict]:
-        """platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s etc).
+        """platform: Platform to use to run this MLCube (docker, singularity, gcp, k8s, etc.).
         network_option: Networking options defined during MLCube container execution.
         security_option: Security options defined during MLCube container execution.
         gpus_option: GPU usage options defined during MLCube container execution.
