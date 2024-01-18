@@ -1036,6 +1036,12 @@ automatically: install it with <code>pip install cookiecutter</code>.</p>
 <td><code>json</code></td>
 </tr>
 <tr>
+<td><code>--output-file</code>, <code>--output_file</code></td>
+<td>text</td>
+<td>File path to store the MLCube information. Defaults to print to STDOUT</td>
+<td>None</td>
+</tr>
+<tr>
 <td><code>--help</code>, <code>-h</code></td>
 <td>boolean</td>
 <td>Show help message and exit.</td>
@@ -1062,25 +1068,25 @@ automatically: install it with <code>pip install cookiecutter</code>.</p>
 <tr>
 <td><code>--mlcube</code></td>
 <td>text</td>
-<td>Path to MLCube. This can be either a directory path that becomes MLCube's root directory, or path to MLCubedefinition file (.yaml). In the latter case the MLCube's root directory becomes parent directory of the yamlfile. Default is current directory.</td>
-<td><code>/home/runner/work/mlcube/mlcube</code></td>
+<td>Path to an MLCube project. It can be a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-root-directory">directory path</a>, or a path to an MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">configuration file</a>. When it is a directory path, MLCube runtime assumes this directory is the MLCube root directory containing <code>mlcube.yaml</code> file. When it is a file path, this file is assumed to be the MLCube configuration file (<code>mlcube.yaml</code>), and a parent directory of this file is considered to be the MLCube root directory. Default value is current directory.</td>
+<td>None</td>
 </tr>
 <tr>
 <td><code>--platform</code></td>
 <td>text</td>
-<td>Platform to run MLCube, default is 'docker' (that also supports podman).</td>
+<td><a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#platform">Platform</a> name to run MLCube on (a platform is a configured instance of an MLCube runner). Multiple platforms are supported, including <code>docker</code> (<a href="https://mlcommons.github.io/mlcube/runners/docker-runner">Docker and Podman</a>), <code>singularity</code> (<a href="https://mlcommons.github.io/mlcube/runners/singularity-runner">Singularity</a>). Other runners are in experimental stage: <code>gcp</code> (<a href="https://mlcommons.github.io/mlcube/runners/gcp-runner">Google Cloud Platform</a>), <code>k8s</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubernetes">Kubernetes</a>), <code>kubeflow</code> (<a href="https://mlcommons.github.io/mlcube/runners/kubeflow">KubeFlow</a>), ssh (<a href="https://mlcommons.github.io/mlcube/runners/ssh-runner">SSH runner</a>). Default is <code>docker</code>. Platforms are defined and configured in MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/system-settings/">system settings file</a>.</td>
 <td><code>docker</code></td>
 </tr>
 <tr>
 <td><code>--task</code></td>
 <td>text</td>
-<td>MLCube task name(s) to run, default is <code>main</code>. This parameter can take a list value, in which case task namesare separated with ','.</td>
+<td>MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#task">task</a> name(s) to run, default is <code>main</code>. This parameter can take a list of values, in which case task names are separated with comma (,).</td>
 <td>None</td>
 </tr>
 <tr>
 <td><code>--workspace</code></td>
 <td>text</td>
-<td>Workspace location that is used to store input/output artifacts of MLCube tasks.</td>
+<td>Location of a <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#workspace">workspace</a> to store input and output artifacts of MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#task">tasks</a>. If not specified (None), <code>${MLCUBE_ROOT}/workspace/</code> is used.</td>
 <td>None</td>
 </tr>
 <tr>
@@ -1111,6 +1117,18 @@ automatically: install it with <code>pip install cookiecutter</code>.</p>
 <td><code>--cpu</code></td>
 <td>text</td>
 <td>CPU options defined during MLCube container execution.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>--mount</code></td>
+<td>choice (<code>rw</code> &#x7C; <code>ro</code>)</td>
+<td>Mount options for all input parameters. These mount options override any other mount options defined for each input parameters. A typical use case is to ensure that inputs are mounted in read-only (ro) mode.</td>
+<td>None</td>
+</tr>
+<tr>
+<td><code>-P</code>, <code>-p</code></td>
+<td>text</td>
+<td>MLCube <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration-parameter">configuration parameter</a> is a key-value pair. Must start with <code>-P</code> or '-p'. The dot (.) is used to refer to nested parameters, for instance, <code>-Pdocker.build_strategy=always</code>. These parameters have the highest priority and override any other parameters in <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#system-settings">system settings</a> and <a href="https://mlcommons.github.io/mlcube/getting-started/concepts/#mlcube-configuration">MLCube configuration</a>.</td>
 <td>None</td>
 </tr>
 <tr>
