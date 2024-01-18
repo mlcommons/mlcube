@@ -124,7 +124,9 @@ class Shell(object):
         """
         try:
             exit_code = 0
-            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode()
+            output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+            if isinstance(output, bytes):
+                output = output.decode()
         except FileNotFoundError as err:
             exit_code, output = 1, str(err)
         except subprocess.CalledProcessError as err:

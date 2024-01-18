@@ -8,17 +8,19 @@ from omegaconf import OmegaConf
 class TestConfig(TestCase):
     def test_merge(self) -> None:
         scfg = {'image': 'mnist-0.0.1.sif', 'image_dir': '/path/to/image', 'singularity': 'singularity'}
+        runtime = {'workspace': '/path/to/workspace', 'root': '/path/to/root'}
         config = OmegaConf.create({
             'singularity': scfg,
-            'runtime': {'workspace': '/path/to/workspace'}
+            'runtime': runtime,
+            'runner': Config.DEFAULT
         })
         Config.merge(config)
         self.assertEqual(
             config,
             OmegaConf.create({
-                'runner': scfg,
+                'runner': OmegaConf.merge(Config.DEFAULT, scfg),
                 'singularity': scfg,
-                'runtime': {'workspace': '/path/to/workspace'}
+                'runtime': runtime
             })
         )
 

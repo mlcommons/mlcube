@@ -51,65 +51,124 @@ class Config(RunnerConfig):
         to run this MLCube using information from `docker` section if it exists.
         """
         # The `runner` section will contain effective runner configuration. At this point, it may contain configuration
-        # from system settings file.
+        # from system settings file. In this function we will identify singularity configuration parameters and will
+        # update the `mlcube["runner"]` dictionary. The runner should probably check here that actually
+        # `mlcube["runner"]` exists and already contains all parameters.
         if "runner" not in mlcube:
             mlcube["runner"] = {}
 
-        # We need to merge with the user-provided configuration.
+        # Singularity specific configuration is stored in `mlcube["singularity"]` - see the above Config.DEFAULT for
+        # supported configuration parameters. One tricky thing here is that originally the `singularity` section
+        # may not be present intentionally, but when users specify singularity-specific CLI arguments such as
+        # `--network`, the configuration parser will create a default (empty) configuration that will only contain
+        # those CLI arguments. So here, we may end up in a situation where `singularity` section exists, but it does
+        # not specify how to build the SIF image, and there's no way for us to figure how to build it since we need
+        # singularity recipe for it. Instead, we need to try and see if other configuration info available that we can
+        # use. One such information is docker configuration.
         s_cfg: t.Optional[DictConfig] = mlcube.get("singularity", None)
         if not s_cfg:
-            # Singularity runner will try to use docker section. At this point, it will work as long as we assume we
-            # pull docker images from a docker hub.
-            logger.warning(
-                "Config.merge singularity configuration not found in MLCube file (singularity=%s).",
-                str(s_cfg),
-            )
+            s_cfg = OmegaConf.create({})
 
-            d_cfg = mlcube.get("docker", None)
-            if not d_cfg:
+        # This maybe useful to automatically detect singularity executable
+        try:
+            client: t.Optional[Client] = Client.from_env()
+
+            singularity_exec = s_cfg.singularity if "singularity" in s_cfg else mlcube.runner.singularity
+            client_singularity = " ".join(client.singularity)
+            if singularity_exec != client_singularity:
+                # Not updating for now since this is consistent with previous implementation.
                 logger.warning(
-                    "Config.merge docker configuration not found too. Singularity runner will likely "
-                    "fail to run."
+                    "Config.merge singularity executable from config (%s) is not the one MLCube can run (%s).",
+                    singularity_exec, client_singularity
                 )
+        except ExecutionError:
+            client = None
+
+        # TODO: need to double check what happens in SSH, GCP and other runners that run cubes on remote machines. When
+        #       do they call this method (on source or target machine, or both)?
+
+        # Lineage to explore [runner] <- SIF image <- SIF recipe | Docker recipe
+
+        # Let's see if SIF image specified and exist. If it exists, we are good. If it does not exist, or not specified,
+        # we need to make sure we know how to build one. If OK, no need to update `s_cfg`.
+        logger.debug("Config.merge 'image' in singularity configuration = %r.", "image" in s_cfg)
+        if "image" in s_cfg:
+            image_dir: str = s_cfg.image_dir if "image_dir" in s_cfg else mlcube.runner.image_dir
+            image_path = Path(image_dir) / s_cfg.image
+            logger.debug("Config.merge sif_file=%s, exists=%r.", image_path.as_posix(), image_path.exists())
+            if image_path.exists():
+                logger.info("Config.merge specified SIF file (%s) exists.", image_path.as_posix())
+                mlcube.runner = OmegaConf.merge(mlcube.runner, s_cfg)
                 return
 
-            # The idea is that we can use the remote docker image as a source for the build process, automatically
-            # generating an image name in a local environment. Key here is that the source has a scheme - `docker://`
-            # The --fakeroot switch is useful and is supported in singularity version >= 3.5
-            build_args = ""
-            # There's no `singularity` section, so we do not know what singularity executable to use. Several options
-            # that we have: look at system settings file, check for singularity, check for apptainer, check for
-            # sudo singularity, check for sudo apptainer.
-            # Let's assume
-            # it's just `singularity`.
-            client = Client.from_env()
-            if client.supports_fakeroot():
-                logger.info(
-                    "Config.merge will use --fakeroot CLI switch (CLI client seems to be supporting it)."
-                )
-                build_args = "--fakeroot"
-            else:
-                logger.warning(
-                    "Config.merge will not use --fakeroot CLI switch (CLI client too old or version unknown)"
-                )
-
-            build_file = "docker://" + d_cfg["image"]
-            if "tar_file" in d_cfg:
-                build_file = "docker-archive:" + d_cfg["tar_file"]
-            run_args = d_cfg.get("run_args", "")
-            s_cfg = OmegaConf.create(
-                dict(
-                    image="".join(c for c in d_cfg["image"] if c.isalnum()) + ".sif",
-                    build_file=build_file,
-                    build_args=build_args,
-                    run_args=run_args,
-                    singularity=" ".join(client.singularity),
-                )
-            )
+        # First obvious choice is to see if we have build recipe that we can use. If OK, will probably
+        # need to set `image` in `s_cfg` if this key does not exist.
+        recipe: str = s_cfg.build_file if "build_file" in s_cfg else mlcube.runner.build_file
+        recipe_ok: bool = (
+                recipe.startswith(("docker://", "docker-archive:")) or    # Docker image.
+                (Path(mlcube.runtime.root) / recipe).is_file()            # Singularity recipe (file).
+        )
+        logger.debug("Config.merge recipe (%s), recipe_ok=%r", recipe, recipe_ok)
+        if recipe_ok:
+            if "image" not in s_cfg:
+                s_cfg["image"] = "".join(c for c in recipe if c.isalnum()) + ".sif"
             logger.info(
-                f"Config.merge singularity runner has converted docker configuration to singularity (%s).",
-                str(OmegaConf.to_container(s_cfg)),
+                "Config.merge will build SIF file (image=%s) from singularity recipe (build_file=%s).",
+                s_cfg["image"], recipe
             )
+            mlcube.runner = OmegaConf.merge(mlcube.runner, s_cfg)
+            return
+
+        # Now, we can try to borrow config from `docker` section. This implementation may seem a bit weird, I keep
+        # it consistent with previous implementation for now. If OK, will need to update `image`, `build_file`,
+        # `build_args` and `singularity`. The latter two parameters are here for consistency with prev implementation.
+        logger.warning(
+            "Config.merge no SIF file has been identified and no valid recipe to build one has been found in "
+            "singularity configuration section. Will try to see if can reuse docker configuration as recipe to "
+            "build SIF (once build source like docker image is identified, I will determine the SIF full path that may"
+            "already exist)."
+        )
+
+        d_cfg = mlcube.get("docker", None)
+        if not d_cfg:
+            logger.warning(
+                "Config.merge docker configuration not found too. Singularity runner will surely fail to run."
+            )
+            mlcube.runner = OmegaConf.merge(mlcube.runner, s_cfg)
+            return
+
+        # The idea is that we can use the remote docker image as a source for the build process, automatically
+        # generating an image name in a local environment. Key here is that the source has a scheme - `docker://`
+        # The --fakeroot switch is useful and is supported in singularity version >= 3.5
+        extra_args = {}
+        if client is not None:
+            if "singularity" not in s_cfg:
+                extra_args["singularity"] = " ".join(client.singularity)
+            if "build_args" not in s_cfg:
+                if client.supports_fakeroot():
+                    logger.info(
+                        "Config.merge [build_args] will use --fakeroot CLI switch (CLI client seems to be "
+                        "supporting it)."
+                    )
+                    extra_args["build_args"] = "--fakeroot"
+                else:
+                    logger.warning(
+                        "Config.merge [build_args] will not use --fakeroot CLI switch (CLI client too old or "
+                        "version unknown)"
+                    )
+
+        build_file = "docker://" + d_cfg["image"]
+        if "tar_file" in d_cfg:
+            build_file = "docker-archive:" + d_cfg["tar_file"]
+        s_cfg.update(
+            image="".join(c for c in d_cfg["image"] if c.isalnum()) + ".sif",
+            build_file=build_file,
+            **extra_args
+        )
+        logger.info(
+            f"Config.merge singularity runner has converted docker configuration to singularity (%s).",
+            str(OmegaConf.to_container(s_cfg)),
+        )
 
         mlcube.runner = OmegaConf.merge(mlcube.runner, s_cfg)
 
