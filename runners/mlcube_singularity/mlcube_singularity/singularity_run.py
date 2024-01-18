@@ -186,12 +186,17 @@ class SingularityRun(Runner):
     def _get_extra_args(self) -> str:
         """Temporary solution to take into account run arguments provided by users."""
         # Collect all parameters that start with '--' and have a non-None value.
-        extra_args = [
-            f"{key}={value}"
-            for key, value in self.mlcube.runner.items()
-            if key.startswith("--") and value is not None and key != "--mount_opts"
-        ]
-        return " ".join(extra_args)
+        flags = {"--nv"}             # These do not require value.
+        ignored = {"--mount_opts"}   # Ignore these arguments.
+
+        extra_args: t.List[str] = []
+        for key, value in self.mlcube.runner.items():
+            if key.startswith("--") and value is not None and key not in ignored:
+                extra_args.append(key if key in flags else f"{key}={value}")
+
+        extra_args_as_str = " ".join(extra_args)
+        logger.debug("SingularityRun._get_extra_args extra_args='%s'.", extra_args_as_str)
+        return extra_args_as_str
 
     def __init__(
         self, mlcube: t.Union[DictConfig, t.Dict], task: t.Optional[str]
