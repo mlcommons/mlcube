@@ -312,7 +312,7 @@ class Shell(object):
                 mount_type: t.Optional[str] = _param_def.get("opts", None)
                 if _io == IOType.INPUT and mount_opts_for_input_params:
                     logger.debug(
-                        "Shell.generate_mounts_and_args overriding parameter mount options (task=%s, param=%, "
+                        "Shell.generate_mounts_and_args overriding parameter mount options (task=%s, param=%s, "
                         "io=%s, mount_opts=%s) with global mount option (%s) for input parameters.",
                         task,
                         _param_name,
