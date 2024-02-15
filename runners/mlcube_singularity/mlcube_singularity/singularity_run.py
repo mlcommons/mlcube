@@ -223,7 +223,7 @@ class SingularityRun(Runner):
             recipe=s_cfg.build_file,
             image_dir=s_cfg.image_dir,
             image_name=s_cfg.image,
-            build_args=s_cfg.build_args,
+            build_args=s_cfg.build_args or "",
         )
 
     def run(self) -> None:
