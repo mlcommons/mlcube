@@ -8,6 +8,7 @@ from enum import Enum
 from pathlib import Path
 from shlex import shlex
 
+import omegaconf
 import requests
 import semver
 
@@ -236,21 +237,50 @@ class Client:
     """
 
     @classmethod
-    def from_env(cls) -> "Client":
+    def from_env(
+            cls, preferred_exec: t.Optional[str] = None, platform_name: t.Optional[str] = None
+    ) -> "Client":
+        """Create Singularity client trying different commands to run it, return first that succeeds.
+
+        Args:
+            preferred_exec: First executable to try (e.g., the one from system settings file or MLCube config).
+            platform_name: Try executable in system settings file for this platform. Has lower priority than
+                `preferred_exec` if both specified.
+        Return:
+            Instance of singularity client that this system can run.
+        """
+        # TODO sergey: what if there are multiple different ways to run singularity (like different wrapper scripts
+        #      with pre/post actions, and user wants to use this particular runner) - think about adding `platform` -
+        #      the one that user specified on a command line.
+        # TODO sergey: what if by trying to run it below we trigger these unwanted pre/post condition actions?
         # Check if system settings file contains information about singularity.
         executables = ["singularity", "sudo singularity", "apptainer", "sudo apptainer"]
 
-        system_settings = SystemSettings()
-        if "singularity" in system_settings.platforms:
-            executables = [
-                system_settings.platforms["singularity"]["singularity"]
-            ] + executables
-            logger.info(
-                "Client.from_env found singularity platform config in MLCube system settings file "
-                "(file=%s, platform=%s). Will try it first for detecting singularity CLI client.",
-                system_settings.path.as_posix(),
-                system_settings.platforms["singularity"],
-            )
+        def _add(_exec: str) -> None:
+            if _exec in executables:
+                executables.remove(_exec)
+            executables.insert(0, _exec)
+
+        # Check if preferred executable is provided, and is not one of those above.
+        if preferred_exec is not None:
+            logger.debug("Client.from_env adding preferred singularity executable '%s'.", preferred_exec)
+            _add(preferred_exec)
+
+        if platform_name:
+            system_settings = SystemSettings()
+            # TODO sergey: we can have other `singularity` and `apptainer` platforms named differently. Need probably to
+            #      look at `value -> runner` that contains actual runner type.
+            if platform_name in system_settings.platforms:
+                preconfigured_platform: omegaconf.DictConfig = system_settings.platforms[platform_name]
+                if "singularity" in preconfigured_platform:
+                    _add(preconfigured_platform["singularity"])
+                    logger.info(
+                        "Client.from_env found singularity platform config in MLCube system settings file "
+                        "(file=%s, platform=%s). Will try it first or second for detecting singularity CLI client.",
+                        system_settings.path.as_posix(),
+                        preconfigured_platform["singularity"],
+                    )
+
         logger.debug(
             "Client.from_env will try candidate executables in the following order "
             "(first available will be selected): %s",
