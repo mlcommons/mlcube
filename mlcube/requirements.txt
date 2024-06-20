@@ -1,5 +1,6 @@
 click>=8.0.0,<9.0.0
 coloredlogs==14.0
-cookiecutter==2.1.1
+cookiecutter==1.7.3;python_version<"3.7"
+cookiecutter==2.1.1;python_version>="3.7"
 omegaconf==2.1.0
 markdown
