@@ -26,6 +26,14 @@ nav:
     - Kubernetes Runner: runners/kubernetes.md
     - Kubeflow Runner: runners/kubeflow.md
     - GCP Runner: runners/gcp-runner.md
+  - Minified Benchmarks:
+    - Introduction: minified-benchmarks/introduction.md
+    - LLama 2: minified-benchmarks/llama2.md
+    - Stable Diffusion: minified-benchmarks/stable-diffusion.md
+    - 3D Unet: minified-benchmarks/3d-unet.md
+    - ResNet: minified-benchmarks/resnet.md
+    - Bert: minified-benchmarks/bert.md
+    - Object Detection: minified-benchmarks/object-detection.md
 
 theme:
   features:
