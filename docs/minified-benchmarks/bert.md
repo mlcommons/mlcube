@@ -13,7 +13,7 @@ virtualenv -p python3 ./env && source ./env/bin/activate && pip install pip==24.
 git clone https://github.com/mlcommons/training && cd ./training/language_model/tensorflow/bert
 ```
 
-Go to mlcube directory and study what tasks MLCube implements.
+Go to the mlcube directory and study what tasks MLCube implements.
 
 ```shell
 cd ./mlcube
