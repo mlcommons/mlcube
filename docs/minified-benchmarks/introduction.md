@@ -18,3 +18,4 @@ The main advantages of these minified benchmarks are:
 - [ResNet](resnet.md)
 - [Bert](bert.md)
 - [Object Detection](object-detection.md)
+- [Graph Neural Network](gnn.md)
