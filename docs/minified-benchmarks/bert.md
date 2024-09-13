@@ -13,7 +13,7 @@ virtualenv -p python3 ./env && source ./env/bin/activate && pip install pip==24.
 git clone https://github.com/mlcommons/training && cd ./training/language_model/tensorflow/bert
 ```
 
-Go to mlcube directory and study what tasks MLCube implements.
+Go to the mlcube directory and study what tasks MLCube implements.
 
 ```shell
 cd ./mlcube
@@ -80,7 +80,7 @@ In the Google Cloud console, search for the Cloud TPU API page, then click Enabl
 
 Then go to the virtual machine sections and select [TPUs](https://console.cloud.google.com/compute/tpus)
 
-Select create TPU node, fill in all the needed parameters, the recommended TPU type in the [readme](../README.md#on-tpu-v3-128) is v3-128 and the recommended TPU software version is 2.4.0.
+Select create TPU node, fill in all the needed parameters, the recommended TPU type in the [readme](https://github.com/mlcommons/training/blob/3283fc35e68deb88f7197155964f7c3858705649/language_model/tensorflow/bert/README.md#on-tpu-v3-128) is v3-128 and the recommended TPU software version is 2.4.0.
 
 The 3 most important parameters you need to remember are: `project name`, `TPU name`, and `TPU Zone`.
 

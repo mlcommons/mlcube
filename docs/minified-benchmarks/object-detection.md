@@ -58,7 +58,7 @@ It's also possible to execute the two tasks in one single instruction:
 mlcube run --task=download_demo,demo -Pdocker.build_strategy=always
 ```
 
-### Aditonal options
+### Additional options
 
 Parameters defined at **mculbe/mlcube.yaml** could be overridden using: `--param=input`
 
