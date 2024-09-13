@@ -13,10 +13,8 @@
       
       
       
-        <link rel="prev" href="../resnet/">
+        <link rel="prev" href="../object-detection/">
       
-      
-        <link rel="next" href="../object-detection/">
       
       
       <link rel="icon" href="../../assets/favicon.ico">
@@ -24,7 +22,7 @@
     
     
       
-        <title>Bert - MLCube</title>
+        <title>Graph Neural Network - MLCube</title>
       
     
     
@@ -76,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#bert" class="md-skip">
+        <a href="#graph-neural-network" class="md-skip">
           Skip to content
         </a>
       
@@ -111,7 +109,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Bert
+              Graph Neural Network
             
           </span>
         </div>
@@ -860,6 +858,48 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../bert/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Bert
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../object-detection/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Object Detection
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -876,7 +916,7 @@
           
   
   <span class="md-ellipsis">
-    Bert
+    Graph Neural Network
   </span>
   
 
@@ -887,7 +927,7 @@
         
   
   <span class="md-ellipsis">
-    Bert
+    Graph Neural Network
   </span>
   
 
@@ -919,15 +959,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#demo-execution" class="md-nav__link">
-    <span class="md-ellipsis">
-      Demo execution
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#mlcube-tasks" class="md-nav__link">
     <span class="md-ellipsis">
       MLCube tasks
@@ -950,61 +981,10 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#tpu-training" class="md-nav__link">
-    <span class="md-ellipsis">
-      TPU Training
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../object-detection/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Object Detection
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../gnn/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Graph Neural Network
-  </span>
-  
-
-      </a>
     </li>
   
 
@@ -1054,15 +1034,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#demo-execution" class="md-nav__link">
-    <span class="md-ellipsis">
-      Demo execution
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#mlcube-tasks" class="md-nav__link">
     <span class="md-ellipsis">
       MLCube tasks
@@ -1085,15 +1056,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#tpu-training" class="md-nav__link">
-    <span class="md-ellipsis">
-      TPU Training
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1112,27 +1074,19 @@
   
 
 
-<h1 id="bert">Bert<a class="headerlink" href="#bert" title="Permanent link">&para;</a></h1>
-<p>The benchmark reference for Bert can be found in this <a href="https://github.com/mlcommons/training/tree/master/language_model/tensorflow/bert">link</a>, and here is the PR for the minified benchmark implementation: <a href="https://github.com/mlcommons/training/pull/632">link</a>.</p>
+<h1 id="graph-neural-network">Graph Neural Network<a class="headerlink" href="#graph-neural-network" title="Permanent link">&para;</a></h1>
+<p>The benchmark reference for Graph Neural Network can be found in this <a href="https://github.com/mlcommons/training/tree/master/graph_neural_network">link</a>, and here is the PR for the minified benchmark implementation: <a href="https://github.com/mlcommons/training/pull/762">link</a>.</p>
 <h2 id="project-setup">Project setup<a class="headerlink" href="#project-setup" title="Permanent link">&para;</a></h2>
 <p>An important requirement is that you must have Docker installed.</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Create Python environment and install MLCube Docker runner </span>
 virtualenv<span class="w"> </span>-p<span class="w"> </span>python3<span class="w"> </span>./env<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>./env/bin/activate<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span><span class="nv">pip</span><span class="o">==</span><span class="m">24</span>.0<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>mlcube-docker
 <span class="c1"># Fetch the implementation from GitHub</span>
-git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mlcommons/training<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>./training/language_model/tensorflow/bert
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/mlcommons/training<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">cd</span><span class="w"> </span>./training
+git<span class="w"> </span>fetch<span class="w"> </span>origin<span class="w"> </span>pull/762/head:feature/mlcube_graph_nn<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>git<span class="w"> </span>checkout<span class="w"> </span>feature/mlcube_graph_nn
+<span class="nb">cd</span><span class="w"> </span>./graph_neural_network/mlcube
 </code></pre></div>
-<p>Go to the mlcube directory and study what tasks MLCube implements.</p>
-<div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>./mlcube
-mlcube<span class="w"> </span>describe
-</code></pre></div>
-<h3 id="demo-execution">Demo execution<a class="headerlink" href="#demo-execution" title="Permanent link">&para;</a></h3>
-<p>These tasks will use a demo dataset to execute a faster training workload for a quick demo (~8 min):</p>
-<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>download_demo<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
-
-mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>demo<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
-</code></pre></div>
-<p>It's also possible to execute the two tasks in one single instruction:</p>
-<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>download_demo,demo<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
+<p>Inside the mlcube directory run the following command to check implemented tasks.</p>
+<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>describe
 </code></pre></div>
 <h3 id="mlcube-tasks">MLCube tasks<a class="headerlink" href="#mlcube-tasks" title="Permanent link">&para;</a></h3>
 <p>Download dataset.</p>
@@ -1141,50 +1095,13 @@ mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=
 <p>Process dataset.</p>
 <div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>process_data<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
 </code></pre></div>
-<p>Train SSD.</p>
+<p>Train GNN.</p>
 <div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>train<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
-</code></pre></div>
-<p>Run compliance checker.</p>
-<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>check_logs<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
 </code></pre></div>
 <h3 id="execute-the-complete-pipeline">Execute the complete pipeline<a class="headerlink" href="#execute-the-complete-pipeline" title="Permanent link">&para;</a></h3>
 <p>You can execute the complete pipeline with one single command.</p>
-<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>download_data,process_data,train,check_logs<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
+<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>download_data,process_data,train<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
 </code></pre></div>
-<h2 id="tpu-training">TPU Training<a class="headerlink" href="#tpu-training" title="Permanent link">&para;</a></h2>
-<p>For executing this benchmark using TPU you will need access to <a href="https://cloud.google.com/">Google Cloud Platform</a>, then you can create a project (Note: all the resources should be created in the same project) and after that, you will need to follow the next steps:</p>
-<ol>
-<li>Create a TPU node</li>
-</ol>
-<p>In the Google Cloud console, search for the Cloud TPU API page, then click Enable.</p>
-<p>Then go to the virtual machine sections and select <a href="https://console.cloud.google.com/compute/tpus">TPUs</a></p>
-<p>Select create TPU node, fill in all the needed parameters, the recommended TPU type in the <a href="https://github.com/mlcommons/training/blob/3283fc35e68deb88f7197155964f7c3858705649/language_model/tensorflow/bert/README.md#on-tpu-v3-128">readme</a> is v3-128 and the recommended TPU software version is 2.4.0.</p>
-<p>The 3 most important parameters you need to remember are: <code>project name</code>, <code>TPU name</code>, and <code>TPU Zone</code>.</p>
-<p>After creating, click on the TPU name to see the TPU details, and copy the Service account (should int the format: <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#45;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#64;&#99;&#108;&#111;&#117;&#100;&#45;&#116;&#112;&#117;&#46;&#105;&#97;&#109;&#46;&#103;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#97;&#99;&#99;&#111;&#117;&#110;&#116;&#46;&#99;&#111;&#109;">&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#45;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#120;&#64;&#99;&#108;&#111;&#117;&#100;&#45;&#116;&#112;&#117;&#46;&#105;&#97;&#109;&#46;&#103;&#115;&#101;&#114;&#118;&#105;&#99;&#101;&#97;&#99;&#99;&#111;&#117;&#110;&#116;&#46;&#99;&#111;&#109;</a>)</p>
-<ol>
-<li>Create a Google Storage Bucket</li>
-</ol>
-<p>Go to <a href="https://console.cloud.google.com/storage/browser">Google Storage</a> and create a new Bucket, define the needed parameters.</p>
-<p>In the bucket list select the checkbox for the bucket you just created, then click on permissions, after that click on add principal.</p>
-<p>In the new principals field paste the Service account from step 1, and then for the roles select, Storage Legacy Bucket Owner, Storage Legacy Bucket Reader and Storage Legacy Bucket Writer. Then click on save, this will allow the TPU to save the checkpoints during training.</p>
-<ol>
-<li>Create a VM instance</li>
-</ol>
-<p>The idea is to create a virtual machine instance containing all the code we will execute using MLCube.</p>
-<p>Go to <a href="https://console.cloud.google.com/compute/instances">VM instances</a>, then click on create instance and define all the needed parameters (No GPU needed).</p>
-<p><strong>IMPORTANT:</strong> In the section Identity and API access, check the option <code>Allow full access to all Cloud APIs</code>, this will allow the connection between this VM, the Cloud Storage Bucket and the TPU.</p>
-<p>Start the VM, connect to it via SSH, then use this <a href="https://docs.docker.com/engine/install/debian/">tutorial</a> to install Docker.</p>
-<p>After installing Docker, clone the repo and install MLCube and follow the to install MLCube, then go to the path: <code>training/language_model/tensorflow/bert/mlcube</code></p>
-<p>There modify the file at <code>workspace/parameters.yaml</code> and replace it with your data for:</p>
-<div class="highlight"><pre><span></span><code><span class="nt">output_gs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your_gs_bucket_name</span>
-<span class="nt">tpu_name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your_tpu_instance_name</span>
-<span class="nt">tpu_zone</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your_tpu_zone</span>
-<span class="nt">gcp_project</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">your_gcp_project</span>
-</code></pre></div>
-<p>After that run the command:</p>
-<div class="highlight"><pre><span></span><code>mlcube<span class="w"> </span>run<span class="w"> </span>--task<span class="o">=</span>train_tpu<span class="w"> </span>--mlcube<span class="o">=</span>mlcube_tpu.yaml<span class="w"> </span>-Pdocker.build_strategy<span class="o">=</span>always
-</code></pre></div>
-<p>This will start the MLCube task that internally in the host VM will send a gRPC with all the data to the TPU through gRPC, then the TPU will get the code to execute and the information of the Cloud Storage Bucket data and will execute the training workload.</p>
 
 
 
