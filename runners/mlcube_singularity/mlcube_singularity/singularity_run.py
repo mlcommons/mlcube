@@ -71,15 +71,15 @@ class Config(RunnerConfig):
 
         # This maybe useful to automatically detect singularity executable
         try:
-            client: t.Optional[Client] = Client.from_env()
+            client: t.Optional[Client] = Client.from_env(mlcube.runner.singularity)
 
-            singularity_exec = s_cfg.singularity if "singularity" in s_cfg else mlcube.runner.singularity
-            client_singularity = " ".join(client.singularity)
-            if singularity_exec != client_singularity:
+            exec_from_cfg = s_cfg.singularity if "singularity" in s_cfg else mlcube.runner.singularity
+            exec_from_env = " ".join(client.singularity)
+            if exec_from_cfg != exec_from_env:
                 # Not updating for now since this is consistent with previous implementation.
                 logger.warning(
-                    "Config.merge singularity executable from config (%s) is not the one MLCube can run (%s).",
-                    singularity_exec, client_singularity
+                    "Config.merge singularity executable from configuration '(%s)' is not the one MLCube detected "
+                    "from environment '(%s)'.", exec_from_cfg, exec_from_env
                 )
         except ExecutionError:
             client = None
@@ -140,22 +140,30 @@ class Config(RunnerConfig):
         # The idea is that we can use the remote docker image as a source for the build process, automatically
         # generating an image name in a local environment. Key here is that the source has a scheme - `docker://`
         # The --fakeroot switch is useful and is supported in singularity version >= 3.5
+        # TODO sergey: why do we even think that this case is special - why not rely on system settings that we can
+        #      automatically configure (e.g., detect correct (executable, fakeroot or no fakeroot) pairs?
         extra_args = {}
         if client is not None:
             if "singularity" not in s_cfg:
+                # TODO sergey: is this really a good idea to (maybe) replace exec from system settings if they differ?
                 extra_args["singularity"] = " ".join(client.singularity)
             if "build_args" not in s_cfg:
                 if client.supports_fakeroot():
-                    logger.info(
-                        "Config.merge [build_args] will use --fakeroot CLI switch (CLI client seems to be "
-                        "supporting it)."
-                    )
-                    extra_args["build_args"] = "--fakeroot"
+                    if 'fakeroot' not in mlcube.runner.build_args:
+                        logger.warning(
+                            "Config.merge build_args for runner configuration in system settings does not contain "
+                            "fakeroot, while singularity runtime seems to be supporting this. Previous implementation " 
+                            "would override this and would use '--fakeroot' in some corner cases (like this), but this "
+                            "was not intended behavior (a bug). If you believe your singularity runtime needs "
+                            "`--fakeroot`, please update your system settings file (for the platform you are "
+                            "using now)."
+                        )
                 else:
-                    logger.warning(
-                        "Config.merge [build_args] will not use --fakeroot CLI switch (CLI client too old or "
-                        "version unknown)"
-                    )
+                    if 'fakeroot' in mlcube.runner.build_args:
+                        logger.warning(
+                            "Config.merge you singularity client seems not to be supporting fakeroot, but the runner "
+                            "in system settings file is configured to use this switch."
+                        )
 
         build_file = "docker://" + d_cfg["image"]
         if "tar_file" in d_cfg:
