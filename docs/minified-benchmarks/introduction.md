@@ -19,3 +19,4 @@ The main advantages of these minified benchmarks are:
 - [Bert](bert.md)
 - [Object Detection](object-detection.md)
 - [Graph Neural Network](gnn.md)
+- [Automotive - BEVFormer](automotive.md)
