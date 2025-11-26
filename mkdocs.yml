@@ -35,6 +35,7 @@ nav:
     - Bert: minified-benchmarks/bert.md
     - Object Detection: minified-benchmarks/object-detection.md
     - Graph Neural Network: minified-benchmarks/gnn.md
+    - Automotive - BEVFormer: minified-benchmarks/automotive.md
 
 theme:
   features:
